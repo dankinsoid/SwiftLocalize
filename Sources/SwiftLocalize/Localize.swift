@@ -76,7 +76,7 @@ public enum Localize {
         
     }
 
-	public struct Forms: ExpressibleByStringLiteral, ExpressibleByDictionaryLiteral {
+	public struct Forms: ExpressibleByStringLiteral, ExpressibleByDictionaryLiteral, Hashable {
 		public typealias StringLiteralType = String
 		fileprivate var forms: [FormType: String]
         public var word: String? {

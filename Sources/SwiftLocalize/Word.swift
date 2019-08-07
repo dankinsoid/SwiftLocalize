@@ -10,7 +10,7 @@ import Foundation
 
 extension Localize {
     
-    public struct Word: ExpressibleByDictionaryLiteral, ExpressibleByStringLiteral {
+    public struct Word: ExpressibleByDictionaryLiteral, ExpressibleByStringLiteral, Hashable {
         internal let key: String
         private var words: [Language: Forms] = [:]
         
@@ -62,6 +62,9 @@ extension Localize {
             return Word(lhs + rhs.key, rhs.words.mapValues { lhs + $0 })
         }
         
+        public static func == (lhs: Localize.Word, rhs: Localize.Word) -> Bool {
+            return lhs.words == rhs.words
+        }
     }
     
     
