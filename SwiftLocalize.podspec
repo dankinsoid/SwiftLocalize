@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SwiftLocalize'
-  s.version          = '1.2.0'
+  s.version          = '1.3.0'
   s.summary          = 'A short description of SwiftLocalize.'
 
 # This description is used to generate tags and improve search results.
@@ -25,7 +25,7 @@ TODO: Add long description of the pod here.
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'voidilov' => 'voidilov@gmail.com' }
-  s.source           = { :git => 'https://github.com/dankinsoid/SwiftLocalize.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/dankinsoid/SwiftLocalize.git', :branch => 'release',  :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '10.0'
