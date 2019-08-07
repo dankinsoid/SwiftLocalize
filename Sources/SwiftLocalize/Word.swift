@@ -14,7 +14,7 @@ extension Localize {
         internal let key: String
         private var words: [Language: Forms] = [:]
         
-        init(_ word: String, _ variants: [Language: Forms] = [:]) {
+        public init(_ word: String, _ variants: [Language: Forms] = [:]) {
             key = word
             words = variants
             if words[.current] == nil {
@@ -46,7 +46,7 @@ extension Localize {
             self = Word(_key, _elements)
         }
         
-        func string(language: Language = .current, _ form: FormType = .default) -> String {
+        public func string(language: Language = .current, _ form: FormType = .default) -> String {
             return words[language]?[form] ?? key
         }
         

@@ -23,17 +23,17 @@ extension Localize {
             }
         }
         
-        init(_ words: Word...) {
+        public init(_ words: Word...) {
             self = Dictionary(words: words)
         }
         
-        init(words: [Word]) {
+        public init(words: [Word]) {
             words.forEach {
                 self.words[$0.key] = $0
             }
         }
         
-        init(dict: [String: Word]) {
+        public init(dict: [String: Word]) {
             words = dict
         }
     }

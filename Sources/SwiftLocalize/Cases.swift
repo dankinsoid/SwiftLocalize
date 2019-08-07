@@ -19,7 +19,7 @@ extension LanguageCaseProtocol {
 public enum NumberCase: UInt16, LanguageCaseProtocol {
     case singular, genitive, accusative
     
-    init(for number: Int) {
+    public init(for number: Int) {
         let twenty = number % 100
         if twenty > 10, twenty < 20 {
             self = .genitive
