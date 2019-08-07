@@ -100,6 +100,10 @@ public enum Localize {
 				forms[$0.0] = $0.1
 			}
 		}
+        
+        public init(_ elements: [FormType: String]) {
+            forms = elements
+        }
 		
 		public init(_ value: String) {
 			forms = [.default: value]
@@ -119,6 +123,18 @@ public enum Localize {
         
         public func all() -> [FormType: String] {
             return forms
+        }
+        
+        public static func +(_ lhs: Forms, _ rhs: Forms) -> Forms {
+            return Forms(Swift.Dictionary(Array(lhs.all()) + Array(rhs.all()), uniquingKeysWith: +))
+        }
+        
+        public static func +(_ lhs: Forms, _ rhs: String) -> Forms {
+            return Forms(lhs.all().mapValues({ $0 + rhs }))
+        }
+        
+        public static func +(_ lhs: String, _ rhs: Forms) -> Forms {
+            return Forms(rhs.all().mapValues({ lhs + $0 }))
         }
 	}
 	

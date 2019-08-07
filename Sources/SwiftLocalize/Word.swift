@@ -50,6 +50,18 @@ extension Localize {
             return words[language]?[form] ?? key
         }
         
+        public static func +(_ lhs: Word, _ rhs: Word) -> Word {
+            return Word(lhs.key + rhs.key, Swift.Dictionary(Array(lhs.words) + Array(rhs.words), uniquingKeysWith: +))
+        }
+        
+        public static func +(_ lhs: Word, _ rhs: String) -> Word {
+            return Word(lhs.key + rhs, lhs.words.mapValues { $0 + rhs })
+        }
+        
+        public static func +(_ lhs: String, _ rhs: Word) -> Word {
+            return Word(lhs + rhs.key, rhs.words.mapValues { lhs + $0 })
+        }
+        
     }
     
     
