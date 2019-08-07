@@ -13,16 +13,13 @@ extension Localize {
     public struct Word: ExpressibleByDictionaryLiteral, ExpressibleByStringLiteral, Hashable {
         internal let key: String
         private var words: [Language: Forms] = [:]
+        public var localized: String {
+            return string()
+        }
         
         public init(_ word: String, _ variants: [Language: Forms] = [:]) {
             key = word
             words = variants
-            if words[.current] == nil {
-                words[.current] = Forms(key)
-            }
-            if words[.current]?[.default] == nil {
-                words[.current]?[.default] = key
-            }
         }
         
         public subscript(_ language: Language) -> Forms? {
