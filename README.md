@@ -90,6 +90,7 @@ Add the following line to your Podfile:
 2. [Swift Package Manager](https://github.com/apple/swift-package-manager)
 
 Create a `Package.swift` file.
+
 	```swift
 	// swift-tools-version:5.0
 	import PackageDescription
@@ -104,6 +105,7 @@ Create a `Package.swift` file.
 	  ]
 	)
 	```
+	
 	```ruby
 	$ swift build
 	```
