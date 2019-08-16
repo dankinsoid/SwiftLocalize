@@ -62,18 +62,15 @@ The repo contains one custom `LanguageCaseProtocol` type `NumberCase` for Russia
 
 Examples of words with several forms:
 ```swift
-let word = Localize.Word("word", [
-	.ru: [.singular: "слово", .plural: "слова"],
-	.en: [.singular: "word", .plural: "words"],
-	.ja: "言葉"
-])
 let manWord = Localize.Word("man", [
+	.ru: [.singular: "человек", .plural: "люди"],
 	.en: [
-	[.singular, .male]: "man", 
-	[.plural, .male]: "men",
-	[.singular, .female]: "woman", 
-	[.plural, .female]: "women"
-	]
+		[.singular, .male]: "man", 
+		[.plural, .male]: "men",
+		[.singular, .female]: "woman", 
+		[.plural, .female]: "women"
+	     ],
+	 .ja: "人"
 ])
 ```
 
