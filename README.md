@@ -82,10 +82,10 @@ let manWord = Localize.Word("man", [
 1.  [CocoaPods](https://cocoapods.org)
 
 Add the following line to your Podfile:
-	```ruby
-	pod 'SwiftLocalize'
-	```
-	and run `pod update` from the podfile directory first.
+```ruby
+pod 'SwiftLocalize'
+```
+and run `pod update` from the podfile directory first.
 	
 2. [Swift Package Manager](https://github.com/apple/swift-package-manager)
 
