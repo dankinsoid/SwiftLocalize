@@ -71,7 +71,7 @@ let manWord = Localize.Word("man", [
 	.en: [
 	[.singular, .male]: "man", 
 	[.plural, .male]: "men",
-	[.singular, .female]: "men", 
+	[.singular, .female]: "woman", 
 	[.plural, .female]: "women"
 	]
 ])
