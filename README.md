@@ -60,18 +60,41 @@ let formType = Localize.FormType.cases(customFormEnum)
 ```
 The repo contains one custom `LanguageCaseProtocol` type `NumberCase` for Russian language as example of usage.
 
-Examples of words with several forms:
+Examples of word with several forms:
 ```swift
 let manWord = Localize.Word("man", [
 	.ru: [.singular: "человек", .plural: "люди"],
 	.en: [
-		[.singular, .male]: "man", 
-		[.plural, .male]: "men",
-		[.singular, .female]: "woman", 
-		[.plural, .female]: "women"
+		[.singular, .masculine]: "man", 
+		[.plural, .masculine]: "men",
+		[.singular, .feminine]: "woman", 
+		[.plural, .feminine]: "women"
 	     ],
 	 .ja: "人"
 ])
+```
+You can combine words to get phrases:
+```swift
+let tree = Localize.Word("tree", [
+    .ru: [
+        [.neuter, .singular]: "дерево",
+        .plural: "деревья"
+    ]
+])
+       
+let beautiful = Localize.Word("beautiful", [
+    .ru: [
+        .plural: "красивые",
+        .singular: [.masculine: "красивый", .feminine: "красивая", .neuter: "красивое"]
+    ]
+])
+       
+let phrase = beautiful + " " + tree
+
+print(phrase.string(language: .ru, .plural))
+    //prints "красивые деревья"
+print(phrase.string(language: .ru, .singular))
+    //prints "красивое дерево"
 ```
 
 ## Installation
