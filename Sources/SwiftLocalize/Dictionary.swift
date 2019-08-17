@@ -10,7 +10,7 @@ import Foundation
 
 extension Localize {
     
-    public struct Dictionary: ExpressibleByDictionaryLiteral {
+    public struct Dictionary: ExpressibleByDictionaryLiteral, Codable {
         private var words: [String: Word] = [:]
         
         public subscript(_ word: String) -> Word {
@@ -36,6 +36,16 @@ extension Localize {
         public init(dict: [String: Word]) {
             words = dict
         }
+        
+        public init(from decoder: Decoder) throws {
+            words = try decoder.singleValueContainer().decode([String: Word].self)
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(words)
+        }
+        
     }
     
 }

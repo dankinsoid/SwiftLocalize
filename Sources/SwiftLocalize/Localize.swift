@@ -18,7 +18,7 @@ public enum Localize {
 		 case male, female, neuter, indefinite
 	}
     
-    public struct FormType: OptionSet, Hashable, ExpressibleByIntegerLiteral {
+    public struct FormType: OptionSet, Hashable, ExpressibleByIntegerLiteral, Codable {
         public typealias IntegerLiteralType = UInt
 
         public var rawValue: UInt
@@ -45,7 +45,7 @@ public enum Localize {
                 .reduce(0, |))
         }
         
-        public static var `default`: FormType { return [.singular, .neuter] }
+        public static var `default`: FormType { return .none }
         public static var none: FormType { return 0 }
         public static var singular: FormType { return 1 }
         public static var plural: FormType { return 2 }
@@ -76,7 +76,7 @@ public enum Localize {
         
     }
 
-	public struct Forms: ExpressibleByStringLiteral, ExpressibleByDictionaryLiteral, Hashable {
+	public struct Forms: ExpressibleByStringLiteral, ExpressibleByDictionaryLiteral, Hashable, Codable {
 		public typealias StringLiteralType = String
 		fileprivate var forms: [FormType: String]
         public var word: String? {
@@ -94,10 +94,13 @@ public enum Localize {
             }
 		}
 		
-		public init(dictionaryLiteral elements: (FormType, String)...) {
+		public init(dictionaryLiteral elements: (FormType, Forms)...) {
 			forms = [:]
 			elements.forEach {
-				forms[$0.0] = $0.1
+                let type = $0.0
+                $0.1.forms.forEach {
+                    forms[[type, $0.0]] = $0.1
+                }
 			}
 		}
         
@@ -126,15 +129,15 @@ public enum Localize {
         }
         
         public static func +(_ lhs: Forms, _ rhs: Forms) -> Forms {
-            return Forms(Swift.Dictionary(Array(lhs.all()) + Array(rhs.all()), uniquingKeysWith: +))
+            return Forms(Swift.Dictionary(Array(lhs.forms) + Array(rhs.forms), uniquingKeysWith: +))
         }
         
         public static func +(_ lhs: Forms, _ rhs: String) -> Forms {
-            return Forms(lhs.all().mapValues({ $0 + rhs }))
+            return Forms(lhs.forms.mapValues({ $0 + rhs }))
         }
         
         public static func +(_ lhs: String, _ rhs: Forms) -> Forms {
-            return Forms(rhs.all().mapValues({ lhs + $0 }))
+            return Forms(rhs.forms.mapValues({ lhs + $0 }))
         }
 	}
 	

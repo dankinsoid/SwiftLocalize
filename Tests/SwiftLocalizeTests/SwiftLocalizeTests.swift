@@ -2,11 +2,17 @@ import XCTest
 @testable import SwiftLocalize
 
 final class SwiftLocalizeTests: XCTestCase {
+    
     func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(SwiftLocalize().text, "Hello, World!")
+        let tree = Localize.Word("tree", [.ru: [[.neuter, .singular]: "дерево", .plural: "деревья"]])
+        let be = Localize.Word("beatiful", [
+            .ru: [
+                .plural: "красивые",
+                .singular: [.male: "красивый", .female: "красивая", .neuter: "красивое"]
+            ]
+        ])
+        let two = be + " " + tree
+        print(two.string(language: .ru, .plural))
     }
 
     static var allTests = [

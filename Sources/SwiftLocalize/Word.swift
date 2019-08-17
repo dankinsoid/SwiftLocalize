@@ -10,7 +10,7 @@ import Foundation
 
 extension Localize {
     
-    public struct Word: ExpressibleByDictionaryLiteral, ExpressibleByStringLiteral, Hashable {
+    public struct Word: ExpressibleByDictionaryLiteral, Hashable, Codable {
         internal let key: String
         private var words: [Language: Forms] = [:]
         public var localized: String {
@@ -24,10 +24,6 @@ extension Localize {
         
         public subscript(_ language: Language) -> Forms? {
             return words[language]
-        }
-        
-        public init(stringLiteral value: String) {
-            self = Word(value)
         }
         
         public init(dictionaryLiteral elements: (Language, Forms)...) {
@@ -44,6 +40,9 @@ extension Localize {
         }
         
         public func string(language: Language = .current, _ form: FormType = .default) -> String {
+            if form == .none, let forms = words[language] {
+                return forms.word ?? key
+            }
             return words[language]?[form] ?? key
         }
         
