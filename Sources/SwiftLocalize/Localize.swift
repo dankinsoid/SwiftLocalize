@@ -15,7 +15,7 @@ public enum Localize {
 	}
 	
 	public enum Gender {
-		 case male, female, neuter, indefinite
+		 case masculine, feminine, neuter, common
 	}
     
     public struct FormType: OptionSet, Hashable, ExpressibleByIntegerLiteral, Codable {
@@ -32,10 +32,10 @@ public enum Localize {
         
         public static func gender(_ gender: Gender) -> FormType {
             switch gender {
-            case .male:         return .male
-            case .female:       return .female
-            case .neuter:       return .neuter
-            case .indefinite:   return .indefinite
+            case .masculine: return .masculine
+            case .feminine:  return .feminine
+            case .neuter:    return .neuter
+            case .common:    return .common
             }
         }
         
@@ -49,10 +49,10 @@ public enum Localize {
         public static var none: FormType { return 0 }
         public static var singular: FormType { return 1 }
         public static var plural: FormType { return 2 }
-        public static var male: FormType { return 4 }
-        public static var female: FormType { return 8 }
+        public static var masculine: FormType { return 4 }
+        public static var feminine: FormType { return 8 }
         public static var neuter: FormType { return 16 }
-        public static var indefinite: FormType { return 32 }
+        public static var common: FormType { return 32 }
         
         public init(rawValue: UInt) {
             self.rawValue = rawValue

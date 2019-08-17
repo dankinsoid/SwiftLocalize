@@ -8,7 +8,7 @@ final class SwiftLocalizeTests: XCTestCase {
         let be = Localize.Word("beatiful", [
             .ru: [
                 .plural: "красивые",
-                .singular: [.male: "красивый", .female: "красивая", .neuter: "красивое"]
+                .singular: [.masculine: "красивый", .feminine: "красивая", .common: "красивое"]
             ]
         ])
         let two = be + " " + tree
