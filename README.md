@@ -52,7 +52,7 @@ where
 	`language: Language` - language, default value is Language.current,
 	`form: FormType` - word form (`OptionSet`)
 	
-Supported forms: none, singular, plural, male, female, neuter, indefinite and any combination of them.
+Supported forms: none, singular, plural, masculine, feminine, neuter, common and any combination of them.
 
 You can create your own form type (for language cases as example) via `LanguageCaseProtocol` and use it:
 ```swift
@@ -118,7 +118,7 @@ import PackageDescription
 let package = Package(
   name: "SomeProject",
   dependencies: [
-    .package(url: "https://github.com/dankinsoid/SwiftLocalize.git", from: "0.1.0")
+    .package(url: "https://github.com/dankinsoid/SwiftLocalize.git", from: "1.9.0")
   ],
   targets: [
     .target(name: "SomeProject", dependencies: ["SwiftLocalize"])
