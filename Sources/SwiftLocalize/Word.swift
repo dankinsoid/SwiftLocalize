@@ -31,11 +31,11 @@ extension Localize {
                 self = Word("")
                 return
             }
-           let _key = elements.first(where: { $0.0 == Language.current })?.1.word ?? elements.first(where: { $0.0 == .en })?.1.word ?? elements.first?.1.word ?? ""
             var _elements: [Language: Forms] = [:]
             elements.forEach {
                 _elements[$0.0] = $0.1
             }
+            let _key = (_elements[.default] ?? _elements[.current] ?? elements.first?.1)?.word ?? ""
             self = Word(_key, _elements)
         }
         
