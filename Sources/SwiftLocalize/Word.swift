@@ -40,10 +40,10 @@ extension Localize {
         }
         
         public func string(language: Language = .current, _ form: FormType = .default) -> String {
-            if form == .none, let forms = words[language] {
+            if form == .none, let forms = words[language] ?? words[.default] {
                 return forms.word ?? key
             }
-            return words[language]?[form] ?? key
+            return (words[language] ?? words[.default])?[form] ?? key
         }
         
         public static func +(_ lhs: Word, _ rhs: Word) -> Word {

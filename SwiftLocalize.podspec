@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'SwiftLocalize'
-  s.version          = '1.9.0'
+  s.version          = '1.10.0'
   s.summary          = 'A short description of SwiftLocalize.'
 
   s.description      = <<-DESC

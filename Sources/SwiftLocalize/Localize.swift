@@ -8,6 +8,8 @@
 
 import Foundation
 
+public typealias Word = Localize.Word
+
 public enum Localize {
 	
 	public enum CountForm {
@@ -76,7 +78,7 @@ public enum Localize {
         
     }
 
-	public struct Forms: ExpressibleByStringLiteral, ExpressibleByDictionaryLiteral, Hashable, Codable {
+	public struct Forms: ExpressibleByStringInterpolation, ExpressibleByDictionaryLiteral, Hashable, Codable {
 		public typealias StringLiteralType = String
 		fileprivate var forms: [FormType: String]
         public var word: String? {
