@@ -9,11 +9,11 @@
 import Foundation
 
 public protocol LanguageCaseProtocol: RawRepresentable where RawValue == UInt16 {
-    var forms: Localize.FormType { get }
+    var forms: Word.FormType { get }
 }
 
 extension LanguageCaseProtocol {
-    public var forms: Localize.FormType { return .none }
+    public var forms: Word.FormType { return .none }
 }
 
 public enum NumberCase: UInt16, LanguageCaseProtocol {
@@ -33,12 +33,11 @@ public enum NumberCase: UInt16, LanguageCaseProtocol {
         }
     }
     
-    public var forms: Localize.FormType {
+    public var forms: Word.FormType {
         switch self {
         case .singular:     return .singular
         case .genitive:     return .plural
         case .accusative:   return .plural
         }
     }
-    
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Localize {
+extension Word {
     
     public struct Dictionary: ExpressibleByDictionaryLiteral, Codable {
         private var words: [String: Word] = [:]
@@ -45,7 +45,5 @@ extension Localize {
             var container = encoder.singleValueContainer()
             try container.encode(words)
         }
-        
     }
-    
 }

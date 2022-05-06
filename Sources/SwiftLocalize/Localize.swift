@@ -1,5 +1,5 @@
 //
-//  Localize.swift
+//  Word.swift
 //  SwiftLocalize
 //
 //  Created by Данил Войдилов on 05.08.2019.
@@ -8,9 +8,7 @@
 
 import Foundation
 
-public typealias Word = Localize.Word
-
-public enum Localize {
+extension Word {
 	
 	public enum CountForm {
 		case plural, singular
@@ -64,25 +62,25 @@ public enum Localize {
             rawValue = value
         }
         
-        public mutating func formUnion(_ other: __owned Localize.FormType) {
+        public mutating func formUnion(_ other: __owned Word.FormType) {
             rawValue = rawValue | other.rawValue
         }
         
-        public mutating func formIntersection(_ other: Localize.FormType) {
-            rawValue = rawValue & other.rawValue
+        public mutating func formIntersection(_ other: Word.FormType) {
+             rawValue = rawValue & other.rawValue
         }
         
-        public mutating func formSymmetricDifference(_ other: __owned Localize.FormType) {
+        public mutating func formSymmetricDifference(_ other: __owned Word.FormType) {
             rawValue = rawValue ^ other.rawValue
         }
-        
     }
 
 	public struct Forms: ExpressibleByStringInterpolation, ExpressibleByDictionaryLiteral, Hashable, Codable {
 		public typealias StringLiteralType = String
 		fileprivate var forms: [FormType: String]
         public var word: String? {
-            return forms[.default] ?? forms.first?.value
+          get { forms[.default] ?? forms.first?.value }
+					set { forms[.default] = newValue }
         }
         
 		public subscript(_ form: FormType) -> String? {
@@ -142,5 +140,4 @@ public enum Localize {
             return Forms(rhs.forms.mapValues({ lhs + $0 }))
         }
 	}
-	
 }

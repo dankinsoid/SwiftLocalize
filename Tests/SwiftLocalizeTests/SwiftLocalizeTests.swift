@@ -5,14 +5,14 @@ final class SwiftLocalizeTests: XCTestCase {
     
     func testExample() {
         
-        let tree = Localize.Word("tree", [
+        let tree = Word("tree", [
             .ru: [
                 [.neuter, .singular]: "дерево",
                 .plural: "деревья"
             ]
         ])
         
-        let beautiful = Localize.Word("beautiful", [
+        let beautiful = Word("beautiful", [
             .ru: [
                 .plural: "красивые",
                 .singular: [.masculine: "красивый", .feminine: "красивая", .neuter: "красивое"]

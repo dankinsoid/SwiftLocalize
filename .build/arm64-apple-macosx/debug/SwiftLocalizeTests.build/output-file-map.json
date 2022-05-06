@@ -1,0 +1,17 @@
+{
+  "": {
+    "swift-dependencies": "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/master.swiftdeps"
+  },
+  "/Users/danil/SwiftLocalize/Tests/SwiftLocalizeTests/SwiftLocalizeTests.swift": {
+    "dependencies": "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/SwiftLocalizeTests.d",
+    "object": "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/SwiftLocalizeTests.swift.o",
+    "swiftmodule": "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/SwiftLocalizeTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/SwiftLocalizeTests.swiftdeps"
+  },
+  "/Users/danil/SwiftLocalize/Tests/SwiftLocalizeTests/XCTestManifests.swift": {
+    "dependencies": "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/XCTestManifests.d",
+    "object": "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/XCTestManifests.swift.o",
+    "swiftmodule": "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/XCTestManifests~partial.swiftmodule",
+    "swift-dependencies": "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/XCTestManifests.swiftdeps"
+  }
+}

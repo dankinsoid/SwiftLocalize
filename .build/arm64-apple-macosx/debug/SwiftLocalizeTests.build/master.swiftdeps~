@@ -1,0 +1,7 @@
+version: "Apple Swift version 5.6 (swiftlang-5.6.0.323.62 clang-1316.0.20.8)"
+options: "5595f32c40e746dbf4c2bffda528789b35a90ac2f2da97b70b807f8831a5c8eb"
+build_start_time: [1651852062, 174031972]
+build_end_time: [1651852068, 377388000]
+inputs:
+  "/Users/danil/SwiftLocalize/Tests/SwiftLocalizeTests/SwiftLocalizeTests.swift": !private [1651851992, 144441127]
+  "/Users/danil/SwiftLocalize/Tests/SwiftLocalizeTests/XCTestManifests.swift": [1651851717, 528309822]

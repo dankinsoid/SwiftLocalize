@@ -12,12 +12,12 @@ import SwiftLocalize
 
 public enum Strings {
 
-	public static let ok = Localize.Word("Ok", [.ru: "Да"]).localized
-	public static let never = Localize.Word("Never", [.ru: "Никогда"]).localized
-	public static let later = Localize.Word("Later", [.ru: "Позже"]).localized
-	public static let error = Localize.Word("Error",  [.ru: "Ошибка"]).localized
+	public static let ok = Word("Ok", [.ru: "Да"]).localized
+	public static let never = Word("Never", [.ru: "Никогда"]).localized
+	public static let later = Word("Later", [.ru: "Позже"]).localized
+	public static let error = Word("Error",  [.ru: "Ошибка"]).localized
 
-	public static let coins = Localize.Word(
+	public static let coins = Word(
 	"coins", [
 	.ru: [
 		.cases(NumberCase.accusative): "монеты",
@@ -27,7 +27,7 @@ public enum Strings {
 	])
 	//Strings.coins.string(.cases(NumberCase(for: someInt)))
 	
-	public static let errors: Localize.Dictionary = [
+	public static let errors: Word.Dictionary = [
 		"unknown": [.ru: "Неизвестная ошибка", .en: "Unknown error"],
 		"server": [.ru: "Ошибка сервера", .en: "Server error"]
 	]
@@ -35,13 +35,13 @@ public enum Strings {
 }
 ```
 ## Usage
-To get a localized string create `Localize.Word` object:
+To get a localized string create `Word` object:
 ```swift 
-let word = Localize.Word(string, formsDictionary)
+let word = Word(string, formsDictionary)
 ```
 where
 	`string: String` - default value,
-	`formsDictionary: [Language: Localize.Forms]` - dictionary of forms
+	`formsDictionary: [Language: Word.Forms]` - dictionary of forms
 
 To get a string for current language use `word.localized`
 To get for a custom language or form call
@@ -56,13 +56,13 @@ Supported forms: none, singular, plural, masculine, feminine, neuter, common and
 
 You can create your own form type (for language cases as example) via `LanguageCaseProtocol` and use it:
 ```swift
-let formType = Localize.FormType.cases(customFormEnum)
+let formType = Word.FormType.cases(customFormEnum)
 ```
 The repo contains one custom `LanguageCaseProtocol` type `NumberCase` for Russian language as example of usage.
 
 Examples of word with several forms:
 ```swift
-let manWord = Localize.Word("man", [
+let manWord = Word("man", [
 	.ru: [.singular: "человек", .plural: "люди"],
 	.en: [
 		[.singular, .masculine]: "man", 
@@ -75,14 +75,14 @@ let manWord = Localize.Word("man", [
 ```
 You can combine words to get phrases:
 ```swift
-let tree = Localize.Word("tree", [
+let tree = Word("tree", [
     .ru: [
         [.neuter, .singular]: "дерево",
         .plural: "деревья"
     ]
 ])
        
-let beautiful = Localize.Word("beautiful", [
+let beautiful = Word("beautiful", [
     .ru: [
         .plural: "красивые",
         .singular: [.masculine: "красивый", .feminine: "красивая", .neuter: "красивое"]

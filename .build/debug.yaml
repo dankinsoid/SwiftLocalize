@@ -1,0 +1,78 @@
+client:
+  name: basic
+tools: {}
+targets:
+  "PackageStructure": ["<PackageStructure>"]
+  "SwiftLocalize-debug.module": ["<SwiftLocalize-debug.module>"]
+  "SwiftLocalizePackageTests-debug.test": ["<SwiftLocalizePackageTests-debug.test>"]
+  "SwiftLocalizeTests-debug.module": ["<SwiftLocalizeTests-debug.module>"]
+  "main": ["<SwiftLocalize-debug.module>"]
+  "test": ["<SwiftLocalize-debug.module>","<SwiftLocalizePackageTests-debug.test>","<SwiftLocalizeTests-debug.module>"]
+default: "main"
+nodes:
+  "/Users/danil/SwiftLocalize/Sources/SwiftLocalize/":
+    is-directory-structure: true
+  "/Users/danil/SwiftLocalize/Tests/SwiftLocalizeTests/":
+    is-directory-structure: true
+commands:
+  "<SwiftLocalize-debug.module>":
+    tool: phony
+    inputs: ["/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Cases.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Dictionary.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Languages.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Localize.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Word+StringProtocol.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Word.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.swiftmodule"]
+    outputs: ["<SwiftLocalize-debug.module>"]
+
+  "<SwiftLocalizePackageTests-debug.test>":
+    tool: phony
+    inputs: ["/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizePackageTests.xctest/Contents/MacOS/SwiftLocalizePackageTests"]
+    outputs: ["<SwiftLocalizePackageTests-debug.test>"]
+
+  "<SwiftLocalizeTests-debug.module>":
+    tool: phony
+    inputs: ["/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/SwiftLocalizeTests.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/XCTestManifests.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.swiftmodule"]
+    outputs: ["<SwiftLocalizeTests-debug.module>"]
+
+  "C.SwiftLocalize-debug.module":
+    tool: swift-compiler
+    inputs: ["/Users/danil/SwiftLocalize/Sources/SwiftLocalize/Cases.swift","/Users/danil/SwiftLocalize/Sources/SwiftLocalize/Dictionary.swift","/Users/danil/SwiftLocalize/Sources/SwiftLocalize/Languages.swift","/Users/danil/SwiftLocalize/Sources/SwiftLocalize/Localize.swift","/Users/danil/SwiftLocalize/Sources/SwiftLocalize/Word+StringProtocol.swift","/Users/danil/SwiftLocalize/Sources/SwiftLocalize/Word.swift"]
+    outputs: ["/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Cases.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Dictionary.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Languages.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Localize.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Word+StringProtocol.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Word.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.swiftmodule"]
+    executable: "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    module-name: "SwiftLocalize"
+    module-output-path: "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.swiftmodule"
+    import-paths: ["/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug"]
+    temps-path: "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build"
+    objects: ["/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Cases.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Dictionary.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Languages.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Localize.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Word+StringProtocol.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Word.swift.o"]
+    other-args: ["-target","arm64-apple-macosx10.10","-swift-version","5","-enable-batch-mode","-index-store-path","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-g","-j8","-DSWIFT_PACKAGE","-DDEBUG","-module-cache-path","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-parse-as-library","-emit-objc-header","-emit-objc-header-path","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/SwiftLocalize-Swift.h","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib"]
+    sources: ["/Users/danil/SwiftLocalize/Sources/SwiftLocalize/Cases.swift","/Users/danil/SwiftLocalize/Sources/SwiftLocalize/Dictionary.swift","/Users/danil/SwiftLocalize/Sources/SwiftLocalize/Languages.swift","/Users/danil/SwiftLocalize/Sources/SwiftLocalize/Localize.swift","/Users/danil/SwiftLocalize/Sources/SwiftLocalize/Word+StringProtocol.swift","/Users/danil/SwiftLocalize/Sources/SwiftLocalize/Word.swift"]
+    is-library: true
+    enable-whole-module-optimization: false
+    num-threads: 8
+
+  "C.SwiftLocalizePackageTests-debug.test":
+    tool: shell
+    inputs: ["/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Cases.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Dictionary.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Languages.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Localize.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Word+StringProtocol.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/Word.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/SwiftLocalizeTests.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/XCTestManifests.swift.o"]
+    outputs: ["/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizePackageTests.xctest/Contents/MacOS/SwiftLocalizePackageTests"]
+    description: "Linking ./.build/arm64-apple-macosx/debug/SwiftLocalizePackageTests.xctest/Contents/MacOS/SwiftLocalizePackageTests"
+    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-L","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug","-o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizePackageTests.xctest/Contents/MacOS/SwiftLocalizePackageTests","-module-name","SwiftLocalizePackageTests","-Xlinker","-bundle","-Xlinker","-rpath","-Xlinker","@loader_path/../../../","@/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizePackageTests.product/Objects.LinkFileList","-Xlinker","-rpath","-Xlinker","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx","-Xlinker","-rpath","-Xlinker","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.5/macosx","-target","arm64-apple-macosx11.0","-Xlinker","-add_ast_path","-Xlinker","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.swiftmodule","-Xlinker","-add_ast_path","-Xlinker","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.swiftmodule","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib"]
+
+  "C.SwiftLocalizeTests-debug.module":
+    tool: swift-compiler
+    inputs: ["/Users/danil/SwiftLocalize/Tests/SwiftLocalizeTests/SwiftLocalizeTests.swift","/Users/danil/SwiftLocalize/Tests/SwiftLocalizeTests/XCTestManifests.swift","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.swiftmodule"]
+    outputs: ["/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/SwiftLocalizeTests.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/XCTestManifests.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.swiftmodule"]
+    executable: "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    module-name: "SwiftLocalizeTests"
+    module-output-path: "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.swiftmodule"
+    import-paths: ["/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug"]
+    temps-path: "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build"
+    objects: ["/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/SwiftLocalizeTests.swift.o","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalizeTests.build/XCTestManifests.swift.o"]
+    other-args: ["-target","arm64-apple-macosx11.0","-swift-version","5","-enable-batch-mode","-index-store-path","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-g","-j8","-DSWIFT_PACKAGE","-DDEBUG","-module-cache-path","/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-parse-as-library","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib"]
+    sources: ["/Users/danil/SwiftLocalize/Tests/SwiftLocalizeTests/SwiftLocalizeTests.swift","/Users/danil/SwiftLocalize/Tests/SwiftLocalizeTests/XCTestManifests.swift"]
+    is-library: true
+    enable-whole-module-optimization: false
+    num-threads: 8
+
+  "PackageStructure":
+    tool: package-structure-tool
+    inputs: ["/Users/danil/SwiftLocalize/Sources/SwiftLocalize/","/Users/danil/SwiftLocalize/Tests/SwiftLocalizeTests/","/Users/danil/SwiftLocalize/Package.swift","/Users/danil/SwiftLocalize/Package.resolved"]
+    outputs: ["<PackageStructure>"]
+    description: "Planning build"
+    allow-missing-inputs: true
+

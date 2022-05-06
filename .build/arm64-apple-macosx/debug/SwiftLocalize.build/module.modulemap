@@ -1,0 +1,4 @@
+module SwiftLocalize {
+    header "/Users/danil/SwiftLocalize/.build/arm64-apple-macosx/debug/SwiftLocalize.build/SwiftLocalize-Swift.h"
+    requires objc
+}
