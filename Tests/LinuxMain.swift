@@ -8,7 +8,7 @@ struct EnglishTime: LanguageCaseProtocol {
     var rawValue: UInt16 {
         return (UInt16(absolute.rawValue) << 8) & UInt16(tense.rawValue)
     }
-    
+
     init?(rawValue: UInt16) {
         let timeBits = UInt8(rawValue >> 8)
         let tenseBits = UInt8((rawValue << 8) >> 8)
@@ -17,7 +17,7 @@ struct EnglishTime: LanguageCaseProtocol {
         }
         self = EnglishTime(time, _tense)
     }
-    
+
     init(_ absolute: AbsoluteTime, _ tense: Tense) {
         self.absolute = absolute
         self.tense = tense
@@ -26,9 +26,8 @@ struct EnglishTime: LanguageCaseProtocol {
     enum AbsoluteTime: UInt8 {
         case present = 0, past = 1, future = 2, futureInThePast = 4
     }
-    
+
     enum Tense: UInt8 {
         case simple = 0, perfect = 1, continuous = 2, perfectContinuous = 4
     }
-    
 }

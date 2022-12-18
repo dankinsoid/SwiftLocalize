@@ -1,27 +1,30 @@
-//
-//  Word.swift
-//  SwiftLocalize
-//
-//  Created by Данил Войдилов on 05.08.2019.
-//  Copyright © 2019 voidilov. All rights reserved.
-//
-
 import Foundation
 
 public struct Word: ExpressibleByDictionaryLiteral, Hashable, Codable, ExpressibleByStringInterpolation {
-    internal var key: String
     private var words: [Language: Forms] = [:]
 
     public var localized: String {
         get { string() }
         set {
-            words[.current, default: .init(newValue)][.default] = newValue
+            words[.current, default: Forms(newValue)][.default] = newValue
         }
     }
 
-    public init(_ word: String, _ variants: [Language: Forms] = [:]) {
-        key = word
-        words = variants
+    @available(*, deprecated, message: "Word key is deprecated, use Word.init([:]) instead")
+    public init(_: String, _ variants: [Language: Forms]) {
+        self = Word(variants)
+    }
+
+    public init(_ word: some StringProtocol) {
+        self = [.default: Forms(word)]
+    }
+
+    public init(_ variants: [Language: Forms]) {
+        if variants.isEmpty {
+            words = [.default: ""]
+        } else {
+            words = variants
+        }
     }
 
     public subscript(_ language: Language) -> Forms? {
@@ -30,16 +33,7 @@ public struct Word: ExpressibleByDictionaryLiteral, Hashable, Codable, Expressib
     }
 
     public init(dictionaryLiteral elements: (Language, Forms)...) {
-        guard !elements.isEmpty else {
-            self = Word("")
-            return
-        }
-        var _elements: [Language: Forms] = [:]
-        elements.forEach {
-            _elements[$0.0] = $0.1
-        }
-        let _key = (_elements[.default] ?? _elements[.current] ?? elements.first?.1)?.word ?? ""
-        self = Word(_key, _elements)
+        self = Word(Dictionary(elements) { _, s in s })
     }
 
     public init(stringInterpolation: DefaultStringInterpolation) {
@@ -51,25 +45,33 @@ public struct Word: ExpressibleByDictionaryLiteral, Hashable, Codable, Expressib
     }
 
     public func string(language: Language = .current, _ form: FormType = .default) -> String {
-        if form == .none, let forms = words[language] ?? words[.default] {
-            return forms.word ?? key
+        if form == .none, let forms = words[language] ?? words[.default] ?? words[.en] ?? words.first?.value {
+            return forms.word ?? ""
         }
-        return (words[language] ?? words[.default])?[form] ?? key
+        return (words[language] ?? words[.default] ?? words[.en] ?? words.first?.value)?[form] ?? ""
     }
 
-    public static func +(_ lhs: Word, _ rhs: Word) -> Word {
-        return Word(lhs.key + rhs.key, Swift.Dictionary(Array(lhs.words) + Array(rhs.words), uniquingKeysWith: +))
+    public static func + (_ lhs: Word, _ rhs: Word) -> Word {
+        Word(Swift.Dictionary(Array(lhs.words) + Array(rhs.words), uniquingKeysWith: +))
     }
 
-    public static func +(_ lhs: Word, _ rhs: String) -> Word {
-        return Word(lhs.key + rhs, lhs.words.mapValues { $0 + rhs })
+    public static func += (_ lhs: inout Word, _ rhs: Word) {
+        lhs = lhs + rhs
     }
 
-    public static func +(_ lhs: String, _ rhs: Word) -> Word {
-        return Word(lhs + rhs.key, rhs.words.mapValues { lhs + $0 })
+    public static func += (_ lhs: inout Word, _ rhs: some StringProtocol) {
+        lhs = lhs + rhs
+    }
+
+    public static func + (_ lhs: Word, _ rhs: some StringProtocol) -> Word {
+        Word(lhs.words.mapValues { $0 + rhs })
+    }
+
+    public static func + (_ lhs: some StringProtocol, _ rhs: Word) -> Word {
+        Word(rhs.words.mapValues { lhs + $0 })
     }
 
     public static func == (lhs: Word, rhs: Word) -> Bool {
-        return lhs.words == rhs.words
+        lhs.words == rhs.words
     }
 }

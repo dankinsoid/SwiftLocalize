@@ -1,26 +1,24 @@
-import XCTest
 @testable import SwiftLocalize
+import XCTest
 
 final class SwiftLocalizeTests: XCTestCase {
-    
     func testExample() {
-        
-        let tree = Word("tree", [
+        let tree = Word([
             .ru: [
                 [.neuter, .singular]: "дерево",
-                .plural: "деревья"
-            ]
+                .plural: "деревья",
+            ],
         ])
-        
-        let beautiful = Word("beautiful", [
+
+        let beautiful = Word([
             .ru: [
                 .plural: "красивые",
-                .singular: [.masculine: "красивый", .feminine: "красивая", .neuter: "красивое"]
-            ]
+                .singular: [.masculine: "красивый", .feminine: "красивая", .neuter: "красивое"],
+            ],
         ])
-        
+
         let phrase = beautiful + " " + tree
-        
+
         print(phrase.string(language: .ru, .singular))
     }
 

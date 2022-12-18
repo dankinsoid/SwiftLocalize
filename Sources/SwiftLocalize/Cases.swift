@@ -1,24 +1,16 @@
-//
-//  Cases.swift
-//  SwiftLocalize
-//
-//  Created by Данил Войдилов on 05.08.2019.
-//  Copyright © 2019 voidilov. All rights reserved.
-//
-
 import Foundation
 
 public protocol LanguageCaseProtocol: RawRepresentable where RawValue == UInt16 {
     var forms: Word.FormType { get }
 }
 
-extension LanguageCaseProtocol {
-    public var forms: Word.FormType { return .none }
+public extension LanguageCaseProtocol {
+    var forms: Word.FormType { return .none }
 }
 
 public enum NumberCase: UInt16, LanguageCaseProtocol {
     case singular, genitive, accusative
-    
+
     public init(for number: Int) {
         let twenty = number % 100
         if twenty > 10, twenty < 20 {
@@ -28,16 +20,16 @@ public enum NumberCase: UInt16, LanguageCaseProtocol {
         let last = number % 10
         switch last {
         case 1: self = .singular
-        case 2...4: self = .accusative
+        case 2 ... 4: self = .accusative
         default: self = .genitive
         }
     }
-    
+
     public var forms: Word.FormType {
         switch self {
-        case .singular:     return .singular
-        case .genitive:     return .plural
-        case .accusative:   return .plural
+        case .singular: return .singular
+        case .genitive: return .plural
+        case .accusative: return .plural
         }
     }
 }
