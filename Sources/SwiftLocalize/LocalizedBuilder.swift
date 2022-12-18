@@ -1,7 +1,7 @@
 import Foundation
 
 @resultBuilder
-public enum LocalizedBuilder {
+public enum Localized {
     @inlinable
     public static func buildBlock(_ components: Word...) -> Word {
         buildArray(components)
