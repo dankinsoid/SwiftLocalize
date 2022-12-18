@@ -1,6 +1,10 @@
 import Foundation
 
-public struct Word: ExpressibleByDictionaryLiteral, Hashable, Codable, ExpressibleByStringInterpolation {
+@available(*, deprecated, message: "Word is deprecated, use Localized")
+public typealias Word = Localized
+
+@resultBuilder
+public struct Localized: ExpressibleByDictionaryLiteral, Hashable, Codable, ExpressibleByStringInterpolation {
     private var words: [Language: Forms] = [:]
 
     public var localized: String {
@@ -10,9 +14,9 @@ public struct Word: ExpressibleByDictionaryLiteral, Hashable, Codable, Expressib
         }
     }
 
-    @available(*, deprecated, message: "Word key is deprecated, use Word.init([:]) instead")
+    @available(*, deprecated, message: "Localized key is deprecated, use Localized.init([:]) instead")
     public init(_: String, _ variants: [Language: Forms]) {
-        self = Word(variants)
+        self = Localized(variants)
     }
 
     public init(_ word: some StringProtocol) {
@@ -33,15 +37,15 @@ public struct Word: ExpressibleByDictionaryLiteral, Hashable, Codable, Expressib
     }
 
     public init(dictionaryLiteral elements: (Language, Forms)...) {
-        self = Word(Dictionary(elements) { _, s in s })
+        self = Localized(Dictionary(elements) { _, s in s })
     }
 
     public init(stringInterpolation: DefaultStringInterpolation) {
-        self = Word(String(stringInterpolation: stringInterpolation))
+        self = Localized(String(stringInterpolation: stringInterpolation))
     }
 
     public init(stringLiteral value: String.StringLiteralType) {
-        self = Word(value)
+        self = Localized(value)
     }
 
     public func string(language: Language = .current, _ form: FormType = .default) -> String {
@@ -51,27 +55,27 @@ public struct Word: ExpressibleByDictionaryLiteral, Hashable, Codable, Expressib
         return (words[language] ?? words[.default] ?? words[.en] ?? words.first?.value)?[form] ?? ""
     }
 
-    public static func + (_ lhs: Word, _ rhs: Word) -> Word {
-        Word(Swift.Dictionary(Array(lhs.words) + Array(rhs.words), uniquingKeysWith: +))
+    public static func + (_ lhs: Localized, _ rhs: Localized) -> Localized {
+        Localized(Swift.Dictionary(Array(lhs.words) + Array(rhs.words), uniquingKeysWith: +))
     }
 
-    public static func += (_ lhs: inout Word, _ rhs: Word) {
+    public static func += (_ lhs: inout Localized, _ rhs: Localized) {
         lhs = lhs + rhs
     }
 
-    public static func += (_ lhs: inout Word, _ rhs: some StringProtocol) {
+    public static func += (_ lhs: inout Localized, _ rhs: some StringProtocol) {
         lhs = lhs + rhs
     }
 
-    public static func + (_ lhs: Word, _ rhs: some StringProtocol) -> Word {
-        Word(lhs.words.mapValues { $0 + rhs })
+    public static func + (_ lhs: Localized, _ rhs: some StringProtocol) -> Localized {
+        Localized(lhs.words.mapValues { $0 + rhs })
     }
 
-    public static func + (_ lhs: some StringProtocol, _ rhs: Word) -> Word {
-        Word(rhs.words.mapValues { lhs + $0 })
+    public static func + (_ lhs: some StringProtocol, _ rhs: Localized) -> Localized {
+        Localized(rhs.words.mapValues { lhs + $0 })
     }
 
-    public static func == (lhs: Word, rhs: Word) -> Bool {
+    public static func == (lhs: Localized, rhs: Localized) -> Bool {
         lhs.words == rhs.words
     }
 }

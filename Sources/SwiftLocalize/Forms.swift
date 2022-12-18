@@ -1,14 +1,7 @@
-//
-//  Word.swift
-//  SwiftLocalize
-//
-//  Created by Данил Войдилов on 05.08.2019.
-//  Copyright © 2019 danil.voidilov. All rights reserved.
-//
-
 import Foundation
 
-public extension Word {
+public extension Localized {
+    
     enum CountForm {
         case plural, singular
     }
@@ -61,15 +54,15 @@ public extension Word {
             rawValue = value
         }
 
-        public mutating func formUnion(_ other: __owned Word.FormType) {
+        public mutating func formUnion(_ other: __owned Localized.FormType) {
             rawValue = rawValue | other.rawValue
         }
 
-        public mutating func formIntersection(_ other: Word.FormType) {
+        public mutating func formIntersection(_ other: Localized.FormType) {
             rawValue = rawValue & other.rawValue
         }
 
-        public mutating func formSymmetricDifference(_ other: __owned Word.FormType) {
+        public mutating func formSymmetricDifference(_ other: __owned Localized.FormType) {
             rawValue = rawValue ^ other.rawValue
         }
     }

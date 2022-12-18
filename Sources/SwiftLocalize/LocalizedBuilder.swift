@@ -1,54 +1,54 @@
 import Foundation
 
-@resultBuilder
-public enum Localized {
+public extension Localized {
+    
     @inlinable
-    public static func buildBlock(_ components: Word...) -> Word {
+    static func buildBlock(_ components: Localized...) -> Localized {
         buildArray(components)
     }
 
     @inlinable
-    public static func buildOptional(_ component: Word?) -> Word {
+    static func buildOptional(_ component: Localized?) -> Localized {
         component ?? ""
     }
 
     @inlinable
-    public static func buildEither(first component: Word) -> Word {
+    static func buildEither(first component: Localized) -> Localized {
         component
     }
 
     @inlinable
-    public static func buildEither(second component: Word) -> Word {
+    static func buildEither(second component: Localized) -> Localized {
         component
     }
 
     @inlinable
-    public static func buildArray(_ components: [Word]) -> Word {
+    static func buildArray(_ components: [Localized]) -> Localized {
         components.reduce(into: "", +=)
     }
 
     @inlinable
-    public static func buildLimitedAvailability(_ component: Word) -> Word {
+    static func buildLimitedAvailability(_ component: Localized) -> Localized {
         component
     }
 
     @inlinable
-    public static func buildExpression(_ expression: Word) -> Word {
+    static func buildExpression(_ expression: Localized) -> Localized {
         expression
     }
 
     @inlinable
-    public static func buildExpression(_ expression: Any) -> Word {
+    static func buildExpression(_ expression: Any) -> Localized {
         "\(expression)"
     }
 
     @inlinable
-    public static func buildExpression(_ expression: some StringProtocol) -> Word {
-        Word(expression)
+    static func buildExpression(_ expression: some StringProtocol) -> Localized {
+        Localized(expression)
     }
 
     @inlinable
-    public static func buildFinalResult(_ component: Word) -> String {
+    static func buildFinalResult(_ component: Localized) -> String {
         component.localized
     }
 }

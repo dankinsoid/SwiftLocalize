@@ -1,6 +1,7 @@
 import Foundation
 
-extension Word: StringProtocol, CustomStringConvertible, LosslessStringConvertible {
+extension Localized: StringProtocol, CustomStringConvertible, LosslessStringConvertible {
+    
     public typealias UTF8View = String.UTF8View
     public typealias UTF16View = String.UTF16View
     public typealias UnicodeScalarView = String.UnicodeScalarView
@@ -13,15 +14,15 @@ extension Word: StringProtocol, CustomStringConvertible, LosslessStringConvertib
     public var description: String { localized }
 
     public init<C, Encoding>(decoding codeUnits: C, as sourceEncoding: Encoding.Type) where C: Collection, Encoding: _UnicodeEncoding, C.Element == Encoding.CodeUnit {
-        self = Word(String(decoding: codeUnits, as: sourceEncoding))
+        self = Localized(String(decoding: codeUnits, as: sourceEncoding))
     }
 
     public init(cString nullTerminatedUTF8: UnsafePointer<CChar>) {
-        self = Word(String(cString: nullTerminatedUTF8))
+        self = Localized(String(cString: nullTerminatedUTF8))
     }
 
     public init<Encoding>(decodingCString nullTerminatedCodeUnits: UnsafePointer<Encoding.CodeUnit>, as sourceEncoding: Encoding.Type) where Encoding: _UnicodeEncoding {
-        self = Word(String(decodingCString: nullTerminatedCodeUnits, as: sourceEncoding))
+        self = Localized(String(decodingCString: nullTerminatedCodeUnits, as: sourceEncoding))
     }
 
     public subscript(bounds: Range<String.Index>) -> String.SubSequence {
