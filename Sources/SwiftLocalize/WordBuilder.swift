@@ -25,7 +25,8 @@ public enum LocalizedBuilder {
 
     @inlinable
     public static func buildArray(_ components: [Localized]) -> Localized {
-        components.reduce(into: "", +=)
+        guard !components.isEmpty else { return "" }
+        return components.dropFirst().reduce(into: components[0], +=)
     }
 
     @inlinable
@@ -36,11 +37,6 @@ public enum LocalizedBuilder {
     @inlinable
     public static func buildExpression(_ expression: Localized) -> Localized {
         expression
-    }
-
-    @inlinable
-    public static func buildExpression(_ expression: Any) -> Localized {
-        "\(expression)"
     }
 
     @inlinable
