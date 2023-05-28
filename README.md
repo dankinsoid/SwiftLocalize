@@ -10,38 +10,49 @@ Library for native Swift localization of your projects.
 import Foundation
 import SwiftLocalize
 
-public enum Strings {
+public extension String {
 
-	public static let ok = Word("Ok", [.ru: "Да"]).localized
-	public static let never = Word("Never", [.ru: "Никогда"]).localized
-	public static let later = Word("Later", [.ru: "Позже"]).localized
-	public static let error = Word("Error",  [.ru: "Ошибка"]).localized
+	@Localized public var ok: String {
+		[.ru: "Да",
+		 .en: "Ok"]
+	}
+	@Localized public var cancel: String {
+		[.ru: "Отмена",
+		 .en: "Cancel"]
+	}
+	@Localized public var never: String {
+		[.ru: "Никогда",
+		 .en: "Never"]
+	}
+	@Localized public var later: String {
+		[.ru: "Позже",
+		 .en: "Later"]
+	}
 
-	public static let coins = Word(
-	"coins", [
-	.ru: [
-		.cases(NumberCase.accusative): "монеты",
-		.cases(NumberCase.singular): "монета",
-		.cases(NumberCase.genitive): "монет"
-		]
-	])
-	//Strings.coins.string(.cases(NumberCase(for: someInt)))
+	public static func coins(for count: Int) -> String {
+		 Localized([
+			.ru: [
+				.cases(NumberCase.accusative): "монеты",
+				.cases(NumberCase.singular): "монета",
+				.cases(NumberCase.genitive): "монет"
+			]
+		]).string(.cases(NumberCase(for: count)))
+	}
 	
-	public static let errors: Word.Dictionary = [
+	public static let errors: Localized.Dictionary = [
 		"unknown": [.ru: "Неизвестная ошибка", .en: "Unknown error"],
 		"server": [.ru: "Ошибка сервера", .en: "Server error"]
 	]
-
 }
 ```
 ## Usage
-To get a localized string create `Word` object:
+To get a localized string create `Localized` object:
 ```swift 
-let word = Word(string, formsDictionary)
+let word = Localized(formsDictionary)
 ```
 where
 	`string: String` - default value,
-	`formsDictionary: [Language: Word.Forms]` - dictionary of forms
+	`formsDictionary: [Language: Localized.Forms]` - dictionary of forms
 
 To get a string for current language use `word.localized`
 To get for a custom language or form call
@@ -56,13 +67,13 @@ Supported forms: none, singular, plural, masculine, feminine, neuter, common and
 
 You can create your own form type (for language cases as example) via `LanguageCaseProtocol` and use it:
 ```swift
-let formType = Word.FormType.cases(customFormEnum)
+let formType = Localized.FormType.cases(customFormEnum)
 ```
 The repo contains one custom `LanguageCaseProtocol` type `NumberCase` for Russian language as example of usage.
 
 Examples of word with several forms:
 ```swift
-let manWord = Word("man", [
+let manWord = Localized([
 	.ru: [.singular: "человек", .plural: "люди"],
 	.en: [
 		[.singular, .masculine]: "man", 
@@ -75,14 +86,14 @@ let manWord = Word("man", [
 ```
 You can combine words to get phrases:
 ```swift
-let tree = Word("tree", [
+let tree = Localized([
     .ru: [
         [.neuter, .singular]: "дерево",
         .plural: "деревья"
     ]
 ])
        
-let beautiful = Word("beautiful", [
+let beautiful = Localized([
     .ru: [
         .plural: "красивые",
         .singular: [.masculine: "красивый", .feminine: "красивая", .neuter: "красивое"]
@@ -99,15 +110,7 @@ print(phrase.string(language: .ru, .singular))
 
 ## Installation
 
-1.  [CocoaPods](https://cocoapods.org)
-
-Add the following line to your Podfile:
-```ruby
-pod 'SwiftLocalize'
-```
-and run `pod update` from the podfile directory first.
-	
-2. [Swift Package Manager](https://github.com/apple/swift-package-manager)
+1. [Swift Package Manager](https://github.com/apple/swift-package-manager)
 
 Create a `Package.swift` file.
 
@@ -129,6 +132,15 @@ let package = Package(
 ```ruby
 $ swift build
 ```
+
+2.  [CocoaPods](https://cocoapods.org)
+
+Add the following line to your Podfile:
+```ruby
+pod 'SwiftLocalize'
+```
+and run `pod update` from the podfile directory first.
+	
 ## Author
 
 Voidilov, voidilov@gmail.com

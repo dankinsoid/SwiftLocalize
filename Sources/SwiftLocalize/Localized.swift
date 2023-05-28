@@ -5,6 +5,7 @@ public typealias Word = Localized
 
 @resultBuilder
 public struct Localized: ExpressibleByDictionaryLiteral, Hashable, Codable, ExpressibleByStringInterpolation {
+
 	private var words: [Language: Forms] = [:]
 
 	public var localized: String {
