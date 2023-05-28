@@ -1,14 +1,17 @@
 import Foundation
 
 public protocol LanguageCaseProtocol: RawRepresentable where RawValue == UInt16 {
-	var forms: Localized.FormType { get }
+	
+	var forms: FormType { get }
 }
 
 public extension LanguageCaseProtocol {
-	var forms: Localized.FormType { .none }
+	
+	var forms: FormType { .none }
 }
 
 public enum NumberCase: UInt16, LanguageCaseProtocol {
+	
 	case singular, genitive, accusative
 
 	public init(for number: Int) {
@@ -25,7 +28,7 @@ public enum NumberCase: UInt16, LanguageCaseProtocol {
 		}
 	}
 
-	public var forms: Localized.FormType {
+	public var forms: FormType {
 		switch self {
 		case .singular: return .singular
 		case .genitive: return .plural

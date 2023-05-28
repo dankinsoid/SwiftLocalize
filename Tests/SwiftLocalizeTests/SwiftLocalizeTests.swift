@@ -2,15 +2,16 @@
 import XCTest
 
 final class SwiftLocalizeTests: XCTestCase {
+	
 	func testExample() {
-		let tree = Localized([
+		let tree = Word([
 			.ru: [
 				[.neuter, .singular]: "дерево",
 				.plural: "деревья",
 			],
 		])
 
-		let beautiful = Localized([
+		let beautiful = Word([
 			.ru: [
 				.plural: "красивые",
 				.singular: [.masculine: "красивый", .feminine: "красивая", .neuter: "красивое"],
@@ -25,4 +26,12 @@ final class SwiftLocalizeTests: XCTestCase {
 	static var allTests = [
 		("testExample", testExample),
 	]
+}
+
+extension String {
+	
+	@Localized<String> static var ok: String {
+		[.en: "Ok",
+		 .ru: "Ок"]
+	}
 }

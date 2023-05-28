@@ -3,13 +3,8 @@ import Foundation
 public extension Localized {
 
 	@inlinable
-	static func buildBlock(_ components: Localized...) -> Localized {
-		buildArray(components)
-	}
-
-	@inlinable
 	static func buildOptional(_ component: Localized?) -> Localized {
-		component ?? ""
+		component ?? [:]
 	}
 
 	@inlinable
@@ -23,12 +18,6 @@ public extension Localized {
 	}
 
 	@inlinable
-	static func buildArray(_ components: [Localized]) -> Localized {
-		guard !components.isEmpty else { return "" }
-		return components.dropFirst().reduce(into: components[0], +=)
-	}
-
-	@inlinable
 	static func buildLimitedAvailability(_ component: Localized) -> Localized {
 		component
 	}
@@ -39,12 +28,34 @@ public extension Localized {
 	}
 
 	@inlinable
-	static func buildExpression(_ expression: some StringProtocol) -> Localized {
+	static func buildExpression(_ expression: T) -> Localized {
 		Localized(expression)
 	}
+}
 
+public extension Localized<String> {
+	
 	@inlinable
-	static func buildFinalResult(_ component: Localized) -> String {
-		component.localized
+	static func buildBlock(_ components: Localized...) -> Localized {
+		buildArray(components)
+	}
+	
+	@inlinable
+	static func buildExpression(_ expression: some StringProtocol) -> Localized {
+		Localized(String(expression))
+	}
+	
+	@inlinable
+	static func buildArray(_ components: [Localized]) -> Localized {
+		guard !components.isEmpty else { return "" }
+		return components.dropFirst().reduce(into: components[0], +=)
+	}
+}
+
+public extension Localized where T: RangeReplaceableCollection {
+	
+	@inlinable
+	static func buildFinalResult(_ component: Localized) -> T {
+		component.localized ?? T()
 	}
 }
