@@ -1,10 +1,9 @@
 import Foundation
 
-@available(*, deprecated, message: "Word is deprecated, use Localized")
-public typealias Word = Localized
+public typealias Word = Localized<String>
 
 @resultBuilder
-public struct Localized: ExpressibleByDictionaryLiteral, Hashable, Codable, ExpressibleByStringInterpolation {
+public struct Localized<Value>: ExpressibleByDictionaryLiteral, Hashable, Codable, ExpressibleByStringInterpolation {
 
 	private var words: [Language: Forms] = [:]
 
