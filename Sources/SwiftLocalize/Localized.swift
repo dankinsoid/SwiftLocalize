@@ -1,7 +1,5 @@
 import Foundation
 
-public typealias Word = Localized<String>
-
 @resultBuilder
 public struct Localized<T>: ExpressibleByDictionaryLiteral {
 
