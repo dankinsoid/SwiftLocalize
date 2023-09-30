@@ -12,25 +12,25 @@ import SwiftLocalize
 
 public extension String {
 
-	@Localized public var ok: String {
+	@Localized<String> public var ok: String {
 		[.ru: "Да",
 		 .en: "Ok"]
 	}
-	@Localized public var cancel: String {
+	@Localized<String> public var cancel: String {
 		[.ru: "Отмена",
 		 .en: "Cancel"]
 	}
-	@Localized public var never: String {
+	@Localized<String> public var never: String {
 		[.ru: "Никогда",
 		 .en: "Never"]
 	}
-	@Localized public var later: String {
+	@Localized<String> public var later: String {
 		[.ru: "Позже",
 		 .en: "Later"]
 	}
 
 	public static func coins(for count: Int) -> String {
-		 Localized([
+		 Localized<String>([
 			.ru: [
 				.cases(NumberCase.accusative): "монеты",
 				.cases(NumberCase.singular): "монета",
@@ -39,7 +39,7 @@ public extension String {
 		]).string(.cases(NumberCase(for: count)))
 	}
 	
-	public static let errors: Localized.Dictionary = [
+	public static let errors: Localized<String>.Dictionary = [
 		"unknown": [.ru: "Неизвестная ошибка", .en: "Unknown error"],
 		"server": [.ru: "Ошибка сервера", .en: "Server error"]
 	]
@@ -73,7 +73,7 @@ The repo contains one custom `LanguageCaseProtocol` type `NumberCase` for Russia
 
 Examples of word with several forms:
 ```swift
-let manWord = Localized([
+let manWord = Localized<String>([
 	.ru: [.singular: "человек", .plural: "люди"],
 	.en: [
 		[.singular, .masculine]: "man", 
@@ -86,14 +86,14 @@ let manWord = Localized([
 ```
 You can combine words to get phrases:
 ```swift
-let tree = Localized([
+let tree = Localized<String>([
     .ru: [
         [.neuter, .singular]: "дерево",
         .plural: "деревья"
     ]
 ])
        
-let beautiful = Localized([
+let beautiful = Localized<String>([
     .ru: [
         .plural: "красивые",
         .singular: [.masculine: "красивый", .feminine: "красивая", .neuter: "красивое"]
