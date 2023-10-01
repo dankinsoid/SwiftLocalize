@@ -12,7 +12,7 @@ public struct Localized<T>: ExpressibleByDictionaryLiteral {
 				forms[.current] = nil
 				return
 			}
-			forms[.current, default: Forms(newValue)][.default] = newValue
+			forms[.current, default: Forms(newValue)][.any] = newValue
 		}
 	}
 
@@ -33,11 +33,11 @@ public struct Localized<T>: ExpressibleByDictionaryLiteral {
 		self = Localized(Dictionary(elements) { _, s in s })
 	}
 
-	public func localized(language: Language = .current, _ form: FormType = .default) -> T? {
-		if form == .none, let forms = forms[language] ?? forms[.default] ?? forms[.en] ?? forms.first?.value {
+	public func localized(language: Language = .current, _ grammaticalSet: GrammaticalSet = .any) -> T? {
+		if grammaticalSet == .any, let forms = forms[language] ?? forms[.default] ?? forms[.en] ?? forms.first?.value {
 			return forms.word
 		}
-		return (forms[language] ?? forms[.default] ?? forms[.en] ?? forms.first?.value)?[form]
+		return (forms[language] ?? forms[.default] ?? forms[.en] ?? forms.first?.value)?[grammaticalSet]
 	}
 }
 
@@ -49,6 +49,3 @@ extension Localized: Equatable where T: Equatable {
 }
 
 extension Localized: Hashable where T: Hashable {}
-
-extension Localized: Encodable where T: Encodable {}
-extension Localized: Decodable where T: Decodable {}

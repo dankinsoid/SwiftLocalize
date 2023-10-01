@@ -10,3 +10,10 @@ public enum Language: String, Codable, CaseIterable, Hashable {
 		) ?? .en
 	}
 }
+
+extension Language: CustomStringConvertible {
+    
+    public var description: String {
+        rawValue
+    }
+}

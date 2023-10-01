@@ -6,8 +6,8 @@ public extension Localized where T: StringProtocol {
 		string()
 	}
 
-	func string(language: Language = .current, _ form: FormType = .default) -> T {
-		localized(language: language, form) ?? ""
+	func string(language: Language = .current, _ grammaticalSet: GrammaticalSet = .any) -> T {
+		localized(language: language, grammaticalSet) ?? ""
 	}
 }
 
