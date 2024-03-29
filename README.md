@@ -12,37 +12,37 @@ import SwiftLocalize
 
 public extension String {
 
-	@Localized public var ok: String {
-		[.ru: "Да",
-		 .en: "Ok"]
-	}
-	@Localized public var cancel: String {
-		[.ru: "Отмена",
-		 .en: "Cancel"]
-	}
-	@Localized public var never: String {
-		[.ru: "Никогда",
-		 .en: "Never"]
-	}
-	@Localized public var later: String {
-		[.ru: "Позже",
-		 .en: "Later"]
-	}
+   @Localized public var ok: String {
+     [.ru: "Да",
+      .en: "Ok"]
+   }
+   @Localized public var cancel: String {
+     [.ru: "Отмена",
+      .en: "Cancel"]
+   }
+   @Localized public var never: String {
+     [.ru: "Никогда",
+      .en: "Never"]
+   }
+   @Localized public var later: String {
+     [.ru: "Позже",
+      .en: "Later"]
+   }
 
-	public static func coins(for count: Int) -> String {
-		 Localized([
-			.ru: [
-				.cases(NumberCase.accusative): "монеты",
-				.cases(NumberCase.singular): "монета",
-				.cases(NumberCase.genitive): "монет"
-			]
-		]).string(.cases(NumberCase(for: count)))
-	}
+   public static func coins(for count: Int) -> String {
+      Localized([
+        .ru: [
+          .cases(NumberCase.accusative): "монеты",
+          .cases(NumberCase.singular): "монета",
+          .cases(NumberCase.genitive): "монет"
+        ]
+     ]).string(.cases(NumberCase(for: count)))
+   }
 	
-	public static let errors: Localized.Dictionary = [
-		"unknown": [.ru: "Неизвестная ошибка", .en: "Unknown error"],
-		"server": [.ru: "Ошибка сервера", .en: "Server error"]
-	]
+   public static let errors: Localized.Dictionary = [
+      "unknown": [.ru: "Неизвестная ошибка", .en: "Unknown error"],
+      "server": [.ru: "Ошибка сервера", .en: "Server error"]
+   ]
 }
 ```
 ## Usage
@@ -51,8 +51,8 @@ To get a localized string create `Localized` object:
 let word = Localized(formsDictionary)
 ```
 where
-	`string: String` - default value,
-	`formsDictionary: [Language: Localized.Forms]` - dictionary of forms
+`string: String` - default value,
+`formsDictionary: [Language: Localized.Forms]` - dictionary of forms
 
 To get a string for current language use `word.localized`
 To get for a custom language or form call
@@ -60,8 +60,8 @@ To get for a custom language or form call
 word.string(language, form)
 ```
 where
-	`language: Language` - language, default value is Language.current,
-	`form: FormType` - word form (`OptionSet`)
+`language: Language` - language, default value is Language.current,
+`form: FormType` - word form (`OptionSet`)
 	
 Supported forms: none, singular, plural, masculine, feminine, neuter, common and any combination of them.
 
