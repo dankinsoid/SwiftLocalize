@@ -81,7 +81,9 @@ public extension Localized {
 			get {
 				forms[form] ??
 					forms.filter { form.contains($0.key) }.values.first ??
-					forms.filter { $0.key.intersection(form) != .none }.values.first
+					forms.filter { $0.key.intersection(form) != .none }.values.first ??
+                    forms[.default] ??
+                    (forms.count == 1 ? forms.first?.value : nil)
 			}
 			set {
 				forms[form] = newValue
