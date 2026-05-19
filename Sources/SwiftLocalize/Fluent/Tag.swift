@@ -7,7 +7,7 @@ public extension Fluent {
 	///
 	/// Replaces the legacy closed `Language` enum so that bn/ta/sw/cy/fa or regional
 	/// variants (en-GB, pt-BR, zh-Hans) can be expressed without modifying the library.
-	struct Tag: Hashable, Codable, Sendable, RawRepresentable, ExpressibleByStringLiteral, CustomStringConvertible {
+	struct Tag: Hashable, Codable, Sendable, RawRepresentable, ExpressibleByStringLiteral, CustomStringConvertible, LosslessStringConvertible {
 
 		public let rawValue: String
 
@@ -15,11 +15,23 @@ public extension Fluent {
 			self.rawValue = Self.normalize(rawValue)
 		}
 
+		public init(_ raw: String) {
+			self.rawValue = Self.normalize(raw)
+		}
+
 		public init(stringLiteral value: String) {
 			self.init(rawValue: value)
 		}
 
 		public var description: String { rawValue }
+
+		public init(from decoder: Decoder) throws {
+			try self.init(rawValue: String(from: decoder))
+		}
+
+		public func encode(to encoder: Encoder) throws {
+			try rawValue.encode(to: encoder)
+		}
 
 		/// Primary subtag, lower-cased (e.g. "en" from "en-US").
 		public var language: String {
@@ -52,6 +64,16 @@ public extension Fluent {
 			}
 			return out
 		}
+	}
+}
+
+@available(macOS 12.3, iOS 15.4, tvOS 15.4, watchOS 8.5, *)
+extension Fluent.Tag: CodingKeyRepresentable {
+
+	public var codingKey: CodingKey { rawValue.codingKey }
+
+	public init<T: CodingKey>(codingKey: T) {
+		self.init(rawValue: codingKey.stringValue)
 	}
 }
 

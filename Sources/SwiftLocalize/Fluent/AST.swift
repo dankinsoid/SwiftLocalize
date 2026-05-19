@@ -7,7 +7,7 @@ public extension Fluent {
 
 	/// Identifier for messages, terms, attributes, variables, and functions.
 	/// Term identifiers in FTL source carry a leading `-`; we strip it and use `isTerm` instead at lookup time.
-	struct Identifier: Hashable, Codable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible, RawRepresentable {
+	struct Identifier: Hashable, Codable, Sendable, ExpressibleByStringLiteral, LosslessStringConvertible, RawRepresentable {
 
 		public let rawValue: String
 
@@ -15,6 +15,22 @@ public extension Fluent {
 		public init(_ name: String) { rawValue = name }
 		public init(stringLiteral value: String) { rawValue = value }
 		public var description: String { rawValue }
+		public init(from decoder: Decoder) throws {
+			try self.init(String(from: decoder))
+		}
+		public func encode(to encoder: Encoder) throws {
+			try rawValue.encode(to: encoder)
+		}
+	}
+}
+
+@available(macOS 12.3, iOS 15.4, tvOS 15.4, watchOS 8.5, *)
+extension Fluent.Identifier: CodingKeyRepresentable {
+
+	public var codingKey: CodingKey { rawValue.codingKey }
+
+	public init<T: CodingKey>(codingKey: T) {
+		self.init(codingKey.stringValue)
 	}
 }
 
