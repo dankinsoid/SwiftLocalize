@@ -17,7 +17,7 @@ public extension Fluent {
 	}
 }
 
-public extension Fluent.PluralCategory {
+extension Fluent.PluralCategory {
 
 	/// Maps a number to its CLDR plural category for the given language tag and rule type.
 	///
@@ -27,14 +27,14 @@ public extension Fluent.PluralCategory {
 	///
 	/// TODO: replace with full CLDR-generated tables for production. Each language's rule set is
 	/// mechanically derivable from `cldr-core/supplemental/{plurals,ordinals}.json`.
-	static func of(_ n: Double, locale: Fluent.Tag, type: Fluent.PluralType = .cardinal) -> Fluent.PluralCategory {
+	public static func of(_ n: Double, locale: Fluent.Tag, type: Fluent.PluralType = .cardinal) -> Fluent.PluralCategory {
 		switch type {
 		case .cardinal: return cardinal(n, language: locale.language)
 		case .ordinal: return ordinal(n, language: locale.language)
 		}
 	}
 
-	internal static func cardinal(_ n: Double, language: String) -> Fluent.PluralCategory {
+	static func cardinal(_ n: Double, language: String) -> Fluent.PluralCategory {
 		let absN = abs(n)
 		let i = Int(absN.rounded(.down))
 		let isInteger = absN == Double(i)
@@ -106,7 +106,7 @@ public extension Fluent.PluralCategory {
 	/// CLDR ordinal plural rules. Most languages only use `.other` for ordinals;
 	/// those listed here have meaningful distinctions ("1st/2nd/3rd/4th" in English,
 	/// "1er/2e/3e" in French, etc.).
-	internal static func ordinal(_ n: Double, language: String) -> Fluent.PluralCategory {
+  static func ordinal(_ n: Double, language: String) -> Fluent.PluralCategory {
 		let absN = abs(n)
 		let i = Int(absN.rounded(.down))
 		// Ordinals only meaningful for non-negative integers; non-integers fall through to .other.
