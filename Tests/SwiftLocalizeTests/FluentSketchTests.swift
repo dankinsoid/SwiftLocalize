@@ -217,6 +217,95 @@ final class FluentSketchTests: XCTestCase {
 		XCTAssertEqual(bundle.format("coins", args: ["count": 1], language: .ja), "coin")
 	}
 
+	// MARK: Ordinals
+
+	func testOrdinalEnglishCategories() {
+		// en: 1→one(1st), 2→two(2nd), 3→few(3rd), other for the rest (including 11/12/13).
+		XCTAssertEqual(Fluent.PluralCategory.of(1, locale: .en, type: .ordinal), .one)
+		XCTAssertEqual(Fluent.PluralCategory.of(2, locale: .en, type: .ordinal), .two)
+		XCTAssertEqual(Fluent.PluralCategory.of(3, locale: .en, type: .ordinal), .few)
+		XCTAssertEqual(Fluent.PluralCategory.of(4, locale: .en, type: .ordinal), .other)
+		XCTAssertEqual(Fluent.PluralCategory.of(11, locale: .en, type: .ordinal), .other)
+		XCTAssertEqual(Fluent.PluralCategory.of(12, locale: .en, type: .ordinal), .other)
+		XCTAssertEqual(Fluent.PluralCategory.of(13, locale: .en, type: .ordinal), .other)
+		XCTAssertEqual(Fluent.PluralCategory.of(21, locale: .en, type: .ordinal), .one)
+		XCTAssertEqual(Fluent.PluralCategory.of(22, locale: .en, type: .ordinal), .two)
+		XCTAssertEqual(Fluent.PluralCategory.of(23, locale: .en, type: .ordinal), .few)
+		XCTAssertEqual(Fluent.PluralCategory.of(101, locale: .en, type: .ordinal), .one)
+	}
+
+	func testOrdinalCardinalAreIndependent() {
+		// Sanity: cardinal "2 books" → other, but ordinal "2nd" → two.
+		XCTAssertEqual(Fluent.PluralCategory.of(2, locale: .en, type: .cardinal), .other)
+		XCTAssertEqual(Fluent.PluralCategory.of(2, locale: .en, type: .ordinal), .two)
+	}
+
+	func testOrdinalWelshCategories() {
+		// Welsh ordinal: 0,7,8,9→zero; 1→one; 2→two; 3,4→few; 5,6→many; else→other.
+		XCTAssertEqual(Fluent.PluralCategory.of(0, locale: .cy, type: .ordinal), .zero)
+		XCTAssertEqual(Fluent.PluralCategory.of(1, locale: .cy, type: .ordinal), .one)
+		XCTAssertEqual(Fluent.PluralCategory.of(2, locale: .cy, type: .ordinal), .two)
+		XCTAssertEqual(Fluent.PluralCategory.of(3, locale: .cy, type: .ordinal), .few)
+		XCTAssertEqual(Fluent.PluralCategory.of(5, locale: .cy, type: .ordinal), .many)
+		XCTAssertEqual(Fluent.PluralCategory.of(7, locale: .cy, type: .ordinal), .zero)
+		XCTAssertEqual(Fluent.PluralCategory.of(10, locale: .cy, type: .ordinal), .other)
+	}
+
+	func testOrdinalSelectorViaNUMBER() {
+		// FTL equivalent of the canonical Fluent ordinal example:
+		// your-rank = { NUMBER($pos, type: "ordinal") ->
+		//     [one] You finished {$pos}st
+		//     [two] You finished {$pos}nd
+		//     [few] You finished {$pos}rd
+		//    *[other] You finished {$pos}th
+		// }
+		let bundle = Fluent.Bundle(locale: .en)
+		bundle.add(Fluent.Message(
+			id: "your-rank",
+			value: Fluent.Pattern([
+				.placeable(.select(Fluent.SelectExpression(
+					selector: .functionReference(
+						"NUMBER",
+						arguments: Fluent.CallArguments(
+							positional: [.variableReference("pos")],
+							named: ["type": .stringLiteral("ordinal")]
+						)
+					),
+					variants: [
+						Fluent.Variant(key: .identifier("one"), value: Fluent.Pattern([
+							.text("You finished "), .placeable(.variableReference("pos")), .text("st"),
+						])),
+						Fluent.Variant(key: .identifier("two"), value: Fluent.Pattern([
+							.text("You finished "), .placeable(.variableReference("pos")), .text("nd"),
+						])),
+						Fluent.Variant(key: .identifier("few"), value: Fluent.Pattern([
+							.text("You finished "), .placeable(.variableReference("pos")), .text("rd"),
+						])),
+						Fluent.Variant(key: .identifier("other"), value: Fluent.Pattern([
+							.text("You finished "), .placeable(.variableReference("pos")), .text("th"),
+						])),
+					],
+					defaultIndex: 3
+				))),
+			])
+		))
+		XCTAssertEqual(bundle.format("your-rank", args: ["pos": 1]), "You finished 1st")
+		XCTAssertEqual(bundle.format("your-rank", args: ["pos": 2]), "You finished 2nd")
+		XCTAssertEqual(bundle.format("your-rank", args: ["pos": 3]), "You finished 3rd")
+		XCTAssertEqual(bundle.format("your-rank", args: ["pos": 4]), "You finished 4th")
+		XCTAssertEqual(bundle.format("your-rank", args: ["pos": 11]), "You finished 11th")
+		XCTAssertEqual(bundle.format("your-rank", args: ["pos": 21]), "You finished 21st")
+		XCTAssertEqual(bundle.format("your-rank", args: ["pos": 22]), "You finished 22nd")
+	}
+
+	func testOrdinalDoesNotAffectCardinalSelectors() {
+		// A plain $count selector (cardinal) must keep cardinal behaviour even when the test
+		// passes an integer that would shift category under ordinal rules.
+		let bundle = coinsBundle(locale: .en)
+		// 2 → cardinal "other" → "coins". (Under ordinal rules en would say "two".)
+		XCTAssertEqual(bundle.format("coins", args: ["count": 2]), "coins")
+	}
+
 	func testLanguageTagNormalization() {
 		XCTAssertEqual(Fluent.Tag("EN-us").rawValue, "en-US")
 		XCTAssertEqual(Fluent.Tag("en-US").languageOnly, .en)

@@ -194,9 +194,9 @@ internal extension Fluent {
 			case let (.identifier(id), .string(s)):
 				return id.rawValue == s
 			case let (.identifier(id), .number(n)):
-				// Number → plural-category match.
+				// Number → plural-category match. `n.options.type` selects cardinal vs ordinal rule set.
 				guard let cat = Fluent.PluralCategory(rawValue: id.rawValue) else { return false }
-				return Fluent.PluralCategory.of(n.value, locale: locale) == cat
+				return Fluent.PluralCategory.of(n.value, locale: locale, type: n.options.type) == cat
 			case let (.number(a), .number(b)):
 				return a.value == b.value
 			case let (.number(a), .string(s)):

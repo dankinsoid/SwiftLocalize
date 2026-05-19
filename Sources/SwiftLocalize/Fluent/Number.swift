@@ -31,6 +31,9 @@ public extension Fluent {
 			public var maximumFractionDigits: Int?
 			public var minimumSignificantDigits: Int?
 			public var maximumSignificantDigits: Int?
+			/// Which CLDR plural rule set this number selects against. Fluent's
+			/// `NUMBER($n, type: "ordinal")` sets this to `.ordinal`.
+			public var type: PluralType
 
 			public init(
 				style: Style = .decimal,
@@ -41,7 +44,8 @@ public extension Fluent {
 				minimumFractionDigits: Int? = nil,
 				maximumFractionDigits: Int? = nil,
 				minimumSignificantDigits: Int? = nil,
-				maximumSignificantDigits: Int? = nil
+				maximumSignificantDigits: Int? = nil,
+				type: PluralType = .cardinal
 			) {
 				self.style = style
 				self.currency = currency
@@ -52,6 +56,7 @@ public extension Fluent {
 				self.maximumFractionDigits = maximumFractionDigits
 				self.minimumSignificantDigits = minimumSignificantDigits
 				self.maximumSignificantDigits = maximumSignificantDigits
+				self.type = type
 			}
 
 			public enum Style: String, Hashable, Codable, Sendable {

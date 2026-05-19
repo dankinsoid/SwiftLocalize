@@ -23,6 +23,7 @@ public extension Fluent {
 			if case let .string(c) = named["currency"] { options.currency = c }
 			if case let .number(min) = named["minimumFractionDigits"] { options.minimumFractionDigits = Int(min.value) }
 			if case let .number(max) = named["maximumFractionDigits"] { options.maximumFractionDigits = Int(max.value) }
+			if case let .string(t) = named["type"], let pt = PluralType(rawValue: t) { options.type = pt }
 			return .number(Number(value, options: options))
 		}
 
