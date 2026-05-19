@@ -15,6 +15,12 @@ public extension Fluent {
 		public private(set) var terms: [Identifier: Term] = [:]
 		public private(set) var functions: [Identifier: Function]
 
+		/// Plural rule for this bundle's language. Resolved once at init from
+		/// `PluralRule.default(for: locale.language)` or a caller override, then stored
+		/// immutably — so per-message plural lookups are direct closure calls with no
+		/// language switch and no synchronization.
+		public let pluralRule: PluralRule
+
 		/// Maximum allowed resolution depth before bailing out — prevents runaway cycles
 		/// even when the user has constructed terms that reference each other.
 		public var maxResolutionDepth: Int = 32
@@ -28,11 +34,13 @@ public extension Fluent {
 		public init(
 			locale: Tag,
 			useIsolating: Bool = true,
-			functions: [Identifier: Function] = BuiltinFunctions.all
+			functions: [Identifier: Function] = BuiltinFunctions.all,
+			pluralRule: PluralRule? = nil
 		) {
 			self.locale = locale
 			self.useIsolating = useIsolating
 			self.functions = functions
+			self.pluralRule = pluralRule ?? .default(for: locale.language)
 		}
 
 		// MARK: Registration
@@ -210,7 +218,10 @@ internal extension Fluent {
 			case let (.identifier(id), .number(n)):
 				// Number → plural-category match. `n.options.type` selects cardinal vs ordinal rule set.
 				guard let cat = Fluent.PluralCategory(rawValue: id.rawValue) else { return false }
-				return Fluent.PluralCategory.of(n.value, locale: locale, type: n.options.type) == cat
+				let resolved: Fluent.PluralCategory = n.options.type == .cardinal
+					? bundle.pluralRule.cardinal(n.value)
+					: bundle.pluralRule.ordinal(n.value)
+				return resolved == cat
 			case let (.number(a), .number(b)):
 				return a.value == b.value
 			case let (.number(a), .string(s)):

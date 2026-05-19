@@ -27,5 +27,11 @@ let package = Package(
 			name: "SwiftLocalizeTests",
 			dependencies: ["SwiftLocalize"]
 		),
+		// Dev-only generator. Not exposed as a product — consumers of the library never build it.
+		// Run: `swift run GeneratePluralRules <plurals.json> [<ordinals.json>] [<output.swift>]`.
+		.executableTarget(
+			name: "GeneratePluralRules",
+			path: "Scripts/GeneratePluralRules"
+		),
 	]
 )
