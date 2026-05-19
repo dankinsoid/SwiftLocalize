@@ -81,7 +81,10 @@ public extension Fluent {
 	/// Typical usage: load FTL resources into bundles keyed by locale, then call
 	/// `localizedBundle.format("coins-count", args: ["count": 5])` and let it pick the
 	/// bundle for the current language.
-	final class LocalizedBundle: @unchecked Sendable {
+	///
+	/// Value type: holds a snapshot of `[Tag: Bundle]`. Free `Sendable`, safe to pass across
+	/// threads. For runtime updates, wrap in a snapshot store that publishes replacement values.
+	struct LocalizedBundle: Sendable {
 
 		public private(set) var bundles: [Tag: Bundle] = [:]
 		public var fallbackChain: [Tag]
@@ -90,12 +93,16 @@ public extension Fluent {
 			self.fallbackChain = fallbackChain
 		}
 
-		public func add(bundle: Bundle) {
+		public mutating func add(bundle: Bundle) {
 			bundles[bundle.locale] = bundle
 		}
 
 		/// Returns or creates the bundle for the given locale.
-		public func bundle(for locale: Tag) -> Bundle {
+		///
+		/// Lazy-insert: with value semantics, the returned bundle is a copy of the stored one.
+		/// Mutating the result does **not** propagate back to this `LocalizedBundle` — use
+		/// `add(bundle:)` to publish updates.
+		public mutating func bundle(for locale: Tag) -> Bundle {
 			if let b = bundles[locale] { return b }
 			let new = Bundle(locale: locale)
 			bundles[locale] = new

@@ -165,13 +165,13 @@ final class FluentLocaleNegotiationTests: XCTestCase {
 	// MARK: LocalizedBundle integration
 
 	func test_localizedBundle_falls_back_through_negotiation() {
-		let lb = Fluent.LocalizedBundle(fallbackChain: ["en"])
+		var lb = Fluent.LocalizedBundle(fallbackChain: ["en"])
 
-		let en = Fluent.Bundle(locale: "en", useIsolating: false)
+		var en = Fluent.Bundle(locale: "en", useIsolating: false)
 		en.add(Fluent.Message(id: "hi", value: Fluent.Pattern([.text("Hello")])))
 		lb.add(bundle: en)
 
-		let zhHant = Fluent.Bundle(locale: "zh-Hant", useIsolating: false)
+		var zhHant = Fluent.Bundle(locale: "zh-Hant", useIsolating: false)
 		zhHant.add(Fluent.Message(id: "hi", value: Fluent.Pattern([.text("你好")])))
 		lb.add(bundle: zhHant)
 

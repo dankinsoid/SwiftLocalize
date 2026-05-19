@@ -8,7 +8,12 @@ public extension Fluent {
 	/// Mirrors Fluent's `FluentBundle`. Holds messages, terms, and functions; resolves placeables,
 	/// references, and selectors per the Fluent spec. One bundle = one locale; for multi-locale apps
 	/// wrap with `Fluent.LocalizedBundle`.
-	final class Bundle: @unchecked Sendable {
+	///
+	/// Value type: a `Bundle` is an immutable snapshot from the consumer's perspective. Cheap to
+	/// copy (dictionaries are COW), and free `Sendable` makes it safe to pass across threads.
+	/// Mutating methods are intended for the build phase; if you need runtime updates, wrap one
+	/// in your own snapshot store and publish replacement values.
+	struct Bundle: Sendable {
 
 		public let locale: Tag
 		public private(set) var messages: [Identifier: Message] = [:]
@@ -45,7 +50,7 @@ public extension Fluent {
 
 		// MARK: Registration
 
-		public func add(_ entry: Entry) {
+		public mutating func add(_ entry: Entry) {
 			switch entry {
 			case let .message(m): messages[m.id] = m
 			case let .term(t): terms[t.id] = t
@@ -53,13 +58,13 @@ public extension Fluent {
 			}
 		}
 
-		public func add(_ resource: Resource) {
-			resource.entries.forEach(add)
+		public mutating func add(_ resource: Resource) {
+			resource.entries.forEach { add($0) }
 		}
 
-		public func add(_ message: Message) { messages[message.id] = message }
-		public func add(_ term: Term) { terms[term.id] = term }
-		public func add(function: @escaping Function, name: Identifier) { functions[name] = function }
+		public mutating func add(_ message: Message) { messages[message.id] = message }
+		public mutating func add(_ term: Term) { terms[term.id] = term }
+		public mutating func add(function: @escaping Function, name: Identifier) { functions[name] = function }
 
 		// MARK: Formatting
 

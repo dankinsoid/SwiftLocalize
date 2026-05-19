@@ -14,7 +14,7 @@ final class FluentExamplesTests: XCTestCase {
 	//     .greeting = Hi {$name}
 
 	func testExample1_helloWithAttribute() {
-		let bundle = Fluent.Bundle(locale: .en, useIsolating: false)
+		var bundle = Fluent.Bundle(locale: .en, useIsolating: false)
 		bundle.add(Fluent.Message(
 			id: "hello",
 			value: Fluent.Pattern([
@@ -46,7 +46,7 @@ final class FluentExamplesTests: XCTestCase {
 	// }
 
 	func testExample2_unreadEmails() {
-		let bundle = Fluent.Bundle(locale: .en, useIsolating: false)
+		var bundle = Fluent.Bundle(locale: .en, useIsolating: false)
 		bundle.add(Fluent.Message(
 			id: "unread-emails",
 			value: Fluent.Pattern([
@@ -108,7 +108,7 @@ final class FluentExamplesTests: XCTestCase {
 	//     } в свой профиль.
 
 	private func sharedPhotosEN() -> Fluent.Bundle {
-		let bundle = Fluent.Bundle(locale: .en, useIsolating: false)
+		var bundle = Fluent.Bundle(locale: .en, useIsolating: false)
 		bundle.add(Fluent.Message(
 			id: "shared-photos",
 			value: Fluent.Pattern([
@@ -143,7 +143,7 @@ final class FluentExamplesTests: XCTestCase {
 	}
 
 	private func sharedPhotosRU() -> Fluent.Bundle {
-		let bundle = Fluent.Bundle(locale: .ru, useIsolating: false)
+		var bundle = Fluent.Bundle(locale: .ru, useIsolating: false)
 		bundle.add(Fluent.Message(
 			id: "shared-photos",
 			value: Fluent.Pattern([

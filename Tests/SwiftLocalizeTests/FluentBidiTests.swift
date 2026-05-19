@@ -11,7 +11,7 @@ final class FluentBidiTests: XCTestCase {
 	private static let pdi = "\u{2069}"
 
 	private func helloBundle(useIsolating: Bool) -> Fluent.Bundle {
-		let bundle = Fluent.Bundle(locale: .en, useIsolating: useIsolating)
+		var bundle = Fluent.Bundle(locale: .en, useIsolating: useIsolating)
 		// FTL: hello = Hello, {$name}!
 		bundle.add(Fluent.Message(
 			id: "hello",
@@ -59,7 +59,7 @@ final class FluentBidiTests: XCTestCase {
 	func testNestedPlaceablesGetNestedIsolates() {
 		// {-brand}'s value contains another placeable {$owner}. Both layers wrap,
 		// matching fluent.js / fluent-rs behavior — each placeable is its own scope.
-		let bundle = Fluent.Bundle(locale: .en, useIsolating: true)
+		var bundle = Fluent.Bundle(locale: .en, useIsolating: true)
 		bundle.add(Fluent.Term(
 			id: "brand",
 			value: Fluent.Pattern([
@@ -86,7 +86,7 @@ final class FluentBidiTests: XCTestCase {
 	func testEmptyPlaceableIsNotWrapped() {
 		// An unresolved/empty value shouldn't introduce a phantom FSI/PDI pair —
 		// matches fluent-rs which short-circuits when the formatted value is empty.
-		let bundle = Fluent.Bundle(locale: .en, useIsolating: true)
+		var bundle = Fluent.Bundle(locale: .en, useIsolating: true)
 		bundle.add(Fluent.Term(id: "empty", value: Fluent.Pattern([.text("")])))
 		bundle.add(Fluent.Message(
 			id: "msg",
