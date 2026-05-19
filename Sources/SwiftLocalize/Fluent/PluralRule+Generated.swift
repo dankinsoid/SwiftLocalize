@@ -6,9 +6,9 @@
 // Source: https://github.com/unicode-org/cldr-json (cldr-core/supplemental/)
 import Foundation
 
-public extension Fluent.PluralRule {
+private extension Fluent.PluralRule {
 
-	fileprivate static let _af: Self = .init(
+	static let _af: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -16,8 +16,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ak: Self = .init(
+	
+	static let _ak: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (0.0 ... 1.0).contains(absN) { return .one }
@@ -25,8 +25,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _am: Self = .init(
+	
+	static let _am: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -35,8 +35,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _an: Self = .init(
+	
+	static let _an: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -44,21 +44,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ar: Self = .init(
-		cardinal: { n in
-			let absN = abs(n)
-			if absN == 0 { return .zero }
-			if absN == 1 { return .one }
-			if absN == 2 { return .two }
-			if (3.0 ... 10.0).contains(absN.truncatingRemainder(dividingBy: 100)) { return .few }
-			if (11.0 ... 99.0).contains(absN.truncatingRemainder(dividingBy: 100)) { return .many }
-			return .other
-		},
-		ordinal:  { _ in .other }
-	)
-
-	fileprivate static let _ars: Self = .init(
+	
+	static let _ar: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 0 { return .zero }
@@ -70,8 +57,21 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _as: Self = .init(
+	
+	static let _ars: Self = .init(
+		cardinal: { n in
+			let absN = abs(n)
+			if absN == 0 { return .zero }
+			if absN == 1 { return .one }
+			if absN == 2 { return .two }
+			if (3.0 ... 10.0).contains(absN.truncatingRemainder(dividingBy: 100)) { return .few }
+			if (11.0 ... 99.0).contains(absN.truncatingRemainder(dividingBy: 100)) { return .many }
+			return .other
+		},
+		ordinal:  { _ in .other }
+	)
+	
+	static let _as: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -87,8 +87,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _asa: Self = .init(
+	
+	static let _asa: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -96,8 +96,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ast: Self = .init(
+	
+	static let _ast: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -107,8 +107,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _az: Self = .init(
+	
+	static let _az: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -123,8 +123,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _be: Self = .init(
+	
+	static let _be: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (absN.truncatingRemainder(dividingBy: 10) == 1) && (absN.truncatingRemainder(dividingBy: 100) != 11) { return .one }
@@ -138,8 +138,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _bem: Self = .init(
+	
+	static let _bem: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -147,8 +147,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _bez: Self = .init(
+	
+	static let _bez: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -156,8 +156,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _bg: Self = .init(
+	
+	static let _bg: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -165,8 +165,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _bho: Self = .init(
+	
+	static let _bho: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (0.0 ... 1.0).contains(absN) { return .one }
@@ -174,13 +174,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _bm: Self = .init(
+	
+	static let _bm: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _bn: Self = .init(
+	
+	static let _bn: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -196,13 +196,13 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _bo: Self = .init(
+	
+	static let _bo: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _br: Self = .init(
+	
+	static let _br: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (absN.truncatingRemainder(dividingBy: 10) == 1) && (!(absN.truncatingRemainder(dividingBy: 100) == 11 || absN.truncatingRemainder(dividingBy: 100) == 71 || absN.truncatingRemainder(dividingBy: 100) == 91)) { return .one }
@@ -213,8 +213,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _brx: Self = .init(
+	
+	static let _brx: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -222,8 +222,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _bs: Self = .init(
+	
+	static let _bs: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -234,8 +234,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ca: Self = .init(
+	
+	static let _ca: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -251,8 +251,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _ce: Self = .init(
+	
+	static let _ce: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -260,8 +260,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ceb: Self = .init(
+	
+	static let _ceb: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -271,8 +271,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _cgg: Self = .init(
+	
+	static let _cgg: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -280,8 +280,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _chr: Self = .init(
+	
+	static let _chr: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -289,8 +289,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ckb: Self = .init(
+	
+	static let _ckb: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -298,8 +298,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _cs: Self = .init(
+	
+	static let _cs: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -311,8 +311,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _cy: Self = .init(
+	
+	static let _cy: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 0 { return .zero }
@@ -332,8 +332,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _da: Self = .init(
+	
+	static let _da: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -341,8 +341,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _de: Self = .init(
+	
+	static let _de: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -352,8 +352,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _dsb: Self = .init(
+	
+	static let _dsb: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -365,8 +365,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _dv: Self = .init(
+	
+	static let _dv: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -374,13 +374,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _dz: Self = .init(
+	
+	static let _dz: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ee: Self = .init(
+	
+	static let _ee: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -388,8 +388,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _el: Self = .init(
+	
+	static let _el: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -397,8 +397,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _en: Self = .init(
+	
+	static let _en: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -414,8 +414,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _eo: Self = .init(
+	
+	static let _eo: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -423,8 +423,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _es: Self = .init(
+	
+	static let _es: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -432,8 +432,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _et: Self = .init(
+	
+	static let _et: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -443,8 +443,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _eu: Self = .init(
+	
+	static let _eu: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -452,8 +452,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _fa: Self = .init(
+	
+	static let _fa: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -462,8 +462,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ff: Self = .init(
+	
+	static let _ff: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -472,8 +472,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _fi: Self = .init(
+	
+	static let _fi: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -483,8 +483,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _fil: Self = .init(
+	
+	static let _fil: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -498,8 +498,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _fo: Self = .init(
+	
+	static let _fo: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -507,8 +507,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _fr: Self = .init(
+	
+	static let _fr: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -521,8 +521,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _fur: Self = .init(
+	
+	static let _fur: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -530,8 +530,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _fy: Self = .init(
+	
+	static let _fy: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -541,8 +541,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ga: Self = .init(
+	
+	static let _ga: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -557,8 +557,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _gd: Self = .init(
+	
+	static let _gd: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (absN == 1 || absN == 11) { return .one }
@@ -574,8 +574,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _gl: Self = .init(
+	
+	static let _gl: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -585,8 +585,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _gsw: Self = .init(
+	
+	static let _gsw: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -594,8 +594,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _gu: Self = .init(
+	
+	static let _gu: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -611,8 +611,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _guw: Self = .init(
+	
+	static let _guw: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (0.0 ... 1.0).contains(absN) { return .one }
@@ -620,8 +620,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _gv: Self = .init(
+	
+	static let _gv: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -634,8 +634,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ha: Self = .init(
+	
+	static let _ha: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -643,8 +643,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _haw: Self = .init(
+	
+	static let _haw: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -652,8 +652,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _he: Self = .init(
+	
+	static let _he: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -665,8 +665,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _hi: Self = .init(
+	
+	static let _hi: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -682,8 +682,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _hr: Self = .init(
+	
+	static let _hr: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -694,8 +694,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _hsb: Self = .init(
+	
+	static let _hsb: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -707,8 +707,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _hu: Self = .init(
+	
+	static let _hu: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -720,8 +720,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _hy: Self = .init(
+	
+	static let _hy: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -734,8 +734,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _ia: Self = .init(
+	
+	static let _ia: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -745,28 +745,28 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _id: Self = .init(
+	
+	static let _id: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ig: Self = .init(
+	
+	static let _ig: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ii: Self = .init(
+	
+	static let _ii: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _in: Self = .init(
+	
+	static let _in: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _io: Self = .init(
+	
+	static let _io: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -776,8 +776,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _is: Self = .init(
+	
+	static let _is: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -786,8 +786,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _it: Self = .init(
+	
+	static let _it: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -801,8 +801,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _iu: Self = .init(
+	
+	static let _iu: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -811,8 +811,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _iw: Self = .init(
+	
+	static let _iw: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -824,18 +824,18 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ja: Self = .init(
+	
+	static let _ja: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _jbo: Self = .init(
+	
+	static let _jbo: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _jgo: Self = .init(
+	
+	static let _jgo: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -843,8 +843,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ji: Self = .init(
+	
+	static let _ji: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -854,8 +854,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _jmc: Self = .init(
+	
+	static let _jmc: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -863,18 +863,18 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _jv: Self = .init(
+	
+	static let _jv: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _jw: Self = .init(
+	
+	static let _jw: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ka: Self = .init(
+	
+	static let _ka: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -888,8 +888,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _kab: Self = .init(
+	
+	static let _kab: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -898,8 +898,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _kaj: Self = .init(
+	
+	static let _kaj: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -907,8 +907,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _kcg: Self = .init(
+	
+	static let _kcg: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -916,18 +916,18 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _kde: Self = .init(
+	
+	static let _kde: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _kea: Self = .init(
+	
+	static let _kea: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _kk: Self = .init(
+	
+	static let _kk: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -939,8 +939,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _kkj: Self = .init(
+	
+	static let _kkj: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -948,8 +948,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _kl: Self = .init(
+	
+	static let _kl: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -957,13 +957,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _km: Self = .init(
+	
+	static let _km: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _kn: Self = .init(
+	
+	static let _kn: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -972,13 +972,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ko: Self = .init(
+	
+	static let _ko: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ks: Self = .init(
+	
+	static let _ks: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -986,8 +986,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ksb: Self = .init(
+	
+	static let _ksb: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -995,8 +995,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ksh: Self = .init(
+	
+	static let _ksh: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 0 { return .zero }
@@ -1005,8 +1005,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ku: Self = .init(
+	
+	static let _ku: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1014,8 +1014,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _kw: Self = .init(
+	
+	static let _kw: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 0 { return .zero }
@@ -1032,8 +1032,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _ky: Self = .init(
+	
+	static let _ky: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1041,8 +1041,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _lag: Self = .init(
+	
+	static let _lag: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1052,8 +1052,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _lb: Self = .init(
+	
+	static let _lb: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1061,8 +1061,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _lg: Self = .init(
+	
+	static let _lg: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1070,13 +1070,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _lkt: Self = .init(
+	
+	static let _lkt: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ln: Self = .init(
+	
+	static let _ln: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (0.0 ... 1.0).contains(absN) { return .one }
@@ -1084,8 +1084,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _lo: Self = .init(
+	
+	static let _lo: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { n in
 			let absN = abs(n)
@@ -1093,8 +1093,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _lt: Self = .init(
+	
+	static let _lt: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (absN.truncatingRemainder(dividingBy: 10) == 1) && (!(11.0 ... 19.0).contains(absN.truncatingRemainder(dividingBy: 100))) { return .one }
@@ -1103,8 +1103,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _lv: Self = .init(
+	
+	static let _lv: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (absN.truncatingRemainder(dividingBy: 10) == 0) || ((11.0 ... 19.0).contains(absN.truncatingRemainder(dividingBy: 100))) { return .zero }
@@ -1113,8 +1113,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _mas: Self = .init(
+	
+	static let _mas: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1122,8 +1122,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _mg: Self = .init(
+	
+	static let _mg: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (0.0 ... 1.0).contains(absN) { return .one }
@@ -1131,8 +1131,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _mgo: Self = .init(
+	
+	static let _mgo: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1140,8 +1140,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _mk: Self = .init(
+	
+	static let _mk: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1158,8 +1158,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _ml: Self = .init(
+	
+	static let _ml: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1167,8 +1167,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _mn: Self = .init(
+	
+	static let _mn: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1176,8 +1176,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _mo: Self = .init(
+	
+	static let _mo: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1192,8 +1192,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _mr: Self = .init(
+	
+	static let _mr: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1207,8 +1207,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _ms: Self = .init(
+	
+	static let _ms: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { n in
 			let absN = abs(n)
@@ -1216,8 +1216,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _mt: Self = .init(
+	
+	static let _mt: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1227,13 +1227,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _my: Self = .init(
+	
+	static let _my: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _nah: Self = .init(
+	
+	static let _nah: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1241,8 +1241,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _naq: Self = .init(
+	
+	static let _naq: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1251,8 +1251,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _nb: Self = .init(
+	
+	static let _nb: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1260,8 +1260,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _nd: Self = .init(
+	
+	static let _nd: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1269,8 +1269,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ne: Self = .init(
+	
+	static let _ne: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1282,8 +1282,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _nl: Self = .init(
+	
+	static let _nl: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1293,8 +1293,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _nn: Self = .init(
+	
+	static let _nn: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1302,8 +1302,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _nnh: Self = .init(
+	
+	static let _nnh: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1311,8 +1311,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _no: Self = .init(
+	
+	static let _no: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1320,13 +1320,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _nqo: Self = .init(
+	
+	static let _nqo: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _nr: Self = .init(
+	
+	static let _nr: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1334,8 +1334,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _nso: Self = .init(
+	
+	static let _nso: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (0.0 ... 1.0).contains(absN) { return .one }
@@ -1343,8 +1343,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ny: Self = .init(
+	
+	static let _ny: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1352,8 +1352,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _nyn: Self = .init(
+	
+	static let _nyn: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1361,8 +1361,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _om: Self = .init(
+	
+	static let _om: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1370,8 +1370,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _or: Self = .init(
+	
+	static let _or: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1386,8 +1386,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _os: Self = .init(
+	
+	static let _os: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1395,13 +1395,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _osa: Self = .init(
+	
+	static let _osa: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _pa: Self = .init(
+	
+	static let _pa: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (0.0 ... 1.0).contains(absN) { return .one }
@@ -1409,8 +1409,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _pap: Self = .init(
+	
+	static let _pap: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1418,8 +1418,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _pcm: Self = .init(
+	
+	static let _pcm: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1428,8 +1428,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _pl: Self = .init(
+	
+	static let _pl: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1441,8 +1441,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _prg: Self = .init(
+	
+	static let _prg: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (absN.truncatingRemainder(dividingBy: 10) == 0) || ((11.0 ... 19.0).contains(absN.truncatingRemainder(dividingBy: 100))) { return .zero }
@@ -1451,8 +1451,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ps: Self = .init(
+	
+	static let _ps: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1460,8 +1460,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _pt: Self = .init(
+	
+	static let _pt: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1470,8 +1470,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _pt_PT: Self = .init(
+	
+	static let _pt_PT: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1481,8 +1481,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _rm: Self = .init(
+	
+	static let _rm: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1490,8 +1490,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ro: Self = .init(
+	
+	static let _ro: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1506,8 +1506,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _rof: Self = .init(
+	
+	static let _rof: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1515,13 +1515,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _root: Self = .init(
+	
+	static let _root: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ru: Self = .init(
+	
+	static let _ru: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1533,8 +1533,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _rwk: Self = .init(
+	
+	static let _rwk: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1542,13 +1542,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sah: Self = .init(
+	
+	static let _sah: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _saq: Self = .init(
+	
+	static let _saq: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1556,8 +1556,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sat: Self = .init(
+	
+	static let _sat: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1566,8 +1566,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sc: Self = .init(
+	
+	static let _sc: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1581,8 +1581,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _scn: Self = .init(
+	
+	static let _scn: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1596,8 +1596,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _sd: Self = .init(
+	
+	static let _sd: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1605,8 +1605,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sdh: Self = .init(
+	
+	static let _sdh: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1614,8 +1614,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _se: Self = .init(
+	
+	static let _se: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1624,8 +1624,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _seh: Self = .init(
+	
+	static let _seh: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1633,18 +1633,18 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ses: Self = .init(
+	
+	static let _ses: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sg: Self = .init(
+	
+	static let _sg: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sh: Self = .init(
+	
+	static let _sh: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1655,8 +1655,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _shi: Self = .init(
+	
+	static let _shi: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1666,8 +1666,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _si: Self = .init(
+	
+	static let _si: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (absN == 0 || absN == 1) { return .one }
@@ -1675,8 +1675,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sk: Self = .init(
+	
+	static let _sk: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1688,8 +1688,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sl: Self = .init(
+	
+	static let _sl: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1701,8 +1701,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sma: Self = .init(
+	
+	static let _sma: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1711,8 +1711,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _smi: Self = .init(
+	
+	static let _smi: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1721,8 +1721,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _smj: Self = .init(
+	
+	static let _smj: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1731,8 +1731,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _smn: Self = .init(
+	
+	static let _smn: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1741,8 +1741,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sms: Self = .init(
+	
+	static let _sms: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1751,8 +1751,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sn: Self = .init(
+	
+	static let _sn: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1760,8 +1760,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _so: Self = .init(
+	
+	static let _so: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1769,8 +1769,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sq: Self = .init(
+	
+	static let _sq: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1783,8 +1783,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _sr: Self = .init(
+	
+	static let _sr: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1795,8 +1795,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ss: Self = .init(
+	
+	static let _ss: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1804,8 +1804,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ssy: Self = .init(
+	
+	static let _ssy: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1813,8 +1813,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _st: Self = .init(
+	
+	static let _st: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1822,13 +1822,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _su: Self = .init(
+	
+	static let _su: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _sv: Self = .init(
+	
+	static let _sv: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1842,8 +1842,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _sw: Self = .init(
+	
+	static let _sw: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1853,8 +1853,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _syr: Self = .init(
+	
+	static let _syr: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1862,8 +1862,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ta: Self = .init(
+	
+	static let _ta: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1871,8 +1871,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _te: Self = .init(
+	
+	static let _te: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1880,8 +1880,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _teo: Self = .init(
+	
+	static let _teo: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1889,13 +1889,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _th: Self = .init(
+	
+	static let _th: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ti: Self = .init(
+	
+	static let _ti: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (0.0 ... 1.0).contains(absN) { return .one }
@@ -1903,8 +1903,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _tig: Self = .init(
+	
+	static let _tig: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1912,8 +1912,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _tk: Self = .init(
+	
+	static let _tk: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1925,8 +1925,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _tl: Self = .init(
+	
+	static let _tl: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -1940,8 +1940,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _tn: Self = .init(
+	
+	static let _tn: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1949,13 +1949,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _to: Self = .init(
+	
+	static let _to: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _tr: Self = .init(
+	
+	static let _tr: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1963,8 +1963,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ts: Self = .init(
+	
+	static let _ts: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1972,8 +1972,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _tzm: Self = .init(
+	
+	static let _tzm: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if ((0.0 ... 1.0).contains(absN)) || ((11.0 ... 99.0).contains(absN)) { return .one }
@@ -1981,8 +1981,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ug: Self = .init(
+	
+	static let _ug: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -1990,8 +1990,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _uk: Self = .init(
+	
+	static let _uk: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -2007,8 +2007,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _ur: Self = .init(
+	
+	static let _ur: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -2018,8 +2018,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _uz: Self = .init(
+	
+	static let _uz: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -2027,8 +2027,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _ve: Self = .init(
+	
+	static let _ve: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -2036,8 +2036,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _vi: Self = .init(
+	
+	static let _vi: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { n in
 			let absN = abs(n)
@@ -2045,8 +2045,8 @@ public extension Fluent.PluralRule {
 			return .other
 		}
 	)
-
-	fileprivate static let _vo: Self = .init(
+	
+	static let _vo: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -2054,8 +2054,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _vun: Self = .init(
+	
+	static let _vun: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -2063,8 +2063,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _wa: Self = .init(
+	
+	static let _wa: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if (0.0 ... 1.0).contains(absN) { return .one }
@@ -2072,8 +2072,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _wae: Self = .init(
+	
+	static let _wae: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -2081,13 +2081,13 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _wo: Self = .init(
+	
+	static let _wo: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _xh: Self = .init(
+	
+	static let _xh: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -2095,8 +2095,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _xog: Self = .init(
+	
+	static let _xog: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			if absN == 1 { return .one }
@@ -2104,8 +2104,8 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _yi: Self = .init(
+	
+	static let _yi: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -2115,23 +2115,23 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _yo: Self = .init(
+	
+	static let _yo: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _yue: Self = .init(
+	
+	static let _yue: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _zh: Self = .init(
+	
+	static let _zh: Self = .init(
 		cardinal: { _ in .other },
 		ordinal:  { _ in .other }
 	)
-
-	fileprivate static let _zu: Self = .init(
+	
+	static let _zu: Self = .init(
 		cardinal: { n in
 			let absN = abs(n)
 			let i = Int(absN.rounded(.down))
@@ -2140,7 +2140,9 @@ public extension Fluent.PluralRule {
 		},
 		ordinal:  { _ in .other }
 	)
+}
 
+public extension Fluent.PluralRule {
 	/// CLDR plural rule mapping by BCP-47 language tag.
 	/// Keys cover both primary subtags (e.g. "en") and region variants (e.g. "pt-PT")
 	/// when CLDR distinguishes them; `Bundle` looks up by primary subtag via `default(for:)`.
