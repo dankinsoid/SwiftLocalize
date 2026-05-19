@@ -39,13 +39,18 @@ public extension Fluent {
 		}
 
 		/// Resolve to a `Value` for the requested language.
-		/// Lookup order: requested → languageOnly(requested) → fallbackChain → first variant.
+		///
+		/// Lookup order: full CLDR-aware negotiation against `variants.keys` (canonicalizes
+		/// aliases, maximizes via likely subtags, walks `parentLocales`), then the explicit
+		/// `fallbackChain`, then the first available variant. Returns `nil` only when
+		/// `variants` is empty.
 		public func callAsFunction(language: Tag = .current) -> Value? {
-			if let v = variants[language] { return v }
-			let base = language.languageOnly
-			if base != language, let v = variants[base] { return v }
-			for fb in fallbackChain {
-				if let v = variants[fb] { return v }
+			let chain = Fluent.LocaleNegotiation.matching(
+				requested: [language] + fallbackChain,
+				available: Array(variants.keys)
+			)
+			for tag in chain {
+				if let v = variants[tag] { return v }
 			}
 			return variants.first?.value
 		}
@@ -103,14 +108,24 @@ public extension Fluent {
 			args: Arguments = [:],
 			language: Tag = .current
 		) -> String {
-			let chain = [language, language.languageOnly] + fallbackChain
+			let chain = Fluent.LocaleNegotiation.matching(
+				requested: [language] + fallbackChain,
+				available: Array(bundles.keys)
+			)
+			// First bundle in the chain that defines this message wins. Missing-message
+			// fallthrough is what makes asymmetric translations work — a string only
+			// translated in `en` still renders for `ru` users.
 			for candidate in chain {
 				if let bundle = bundles[candidate], bundle.messages[id] != nil {
 					return bundle.format(id, attribute: attribute, args: args)
 				}
 			}
-			return bundles[language]?.format(id, attribute: attribute, args: args)
-				?? "{" + id.rawValue + (attribute.map { "." + $0.rawValue } ?? "") + "}"
+			// Nothing in the chain has the message. Fall through to the most-preferred bundle
+			// so it can emit the standard `{message-id}` placeholder marker.
+			if let preferred = chain.first.flatMap({ bundles[$0] }) {
+				return preferred.format(id, attribute: attribute, args: args)
+			}
+			return "{" + id.rawValue + (attribute.map { "." + $0.rawValue } ?? "") + "}"
 		}
 	}
 }

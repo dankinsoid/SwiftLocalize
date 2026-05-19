@@ -34,20 +34,67 @@ public extension Fluent {
 		}
 
 		/// Primary subtag, lower-cased (e.g. "en" from "en-US").
-		public var language: String {
-			rawValue.split(separator: "-", maxSplits: 1).first.map(String.init) ?? rawValue
-		}
+		public var language: String { components.language }
 
-		/// Region subtag if present (e.g. "US" from "en-US").
-		public var region: String? {
-			let parts = rawValue.split(separator: "-")
-			guard parts.count > 1 else { return nil }
-			let candidate = String(parts[1])
-			return candidate.count == 2 ? candidate.uppercased() : nil
-		}
+		/// 4-letter script subtag if present, title-cased (e.g. "Hant" from "zh-Hant-TW").
+		public var script: String? { components.script }
+
+		/// Region subtag if present (e.g. "US" from "en-US", "TW" from "zh-Hant-TW", "419" from "es-419").
+		/// Searches all subtag positions — not limited to position 1.
+		public var region: String? { components.region }
 
 		/// Returns `self` minus region/script — useful for plural-rules lookup.
 		public var languageOnly: Tag { Tag(rawValue: language) }
+
+		/// Parsed subtags. Computed on every access — cache at the call site for hot paths.
+		internal var components: Components {
+			Components(rawValue)
+		}
+
+		/// Parsed BCP-47 subtags. Internal — public surface is via the named accessors.
+		///
+		/// Heuristic: first subtag is language; among the rest, 4 letters → script (title-cased),
+		/// 2 letters or 3 digits → region, anything else → variant/extension.
+		internal struct Components: Hashable {
+
+			let language: String
+			let script: String?
+			let region: String?
+			let trailing: [String]
+
+			init(_ raw: String) {
+				let parts = raw.split(separator: "-", omittingEmptySubsequences: true).map(String.init)
+				guard let first = parts.first else {
+					language = ""; script = nil; region = nil; trailing = []
+					return
+				}
+				language = first.lowercased()
+				var s: String?
+				var r: String?
+				var rest: [String] = []
+				for sub in parts.dropFirst() {
+					if s == nil && sub.count == 4 && sub.allSatisfy(\.isLetter) {
+						s = sub.prefix(1).uppercased() + sub.dropFirst().lowercased()
+					} else if r == nil && (sub.count == 2 && sub.allSatisfy(\.isLetter)) {
+						r = sub.uppercased()
+					} else if r == nil && (sub.count == 3 && sub.allSatisfy(\.isNumber)) {
+						r = sub
+					} else {
+						rest.append(sub.lowercased())
+					}
+				}
+				script = s; region = r; trailing = rest
+			}
+
+			/// Re-assemble subtags into a canonical BCP-47 string.
+			var bcp47: String {
+				var out = language
+				if let s = script { out += "-" + s }
+				if let r = region { out += "-" + r }
+				for v in trailing { out += "-" + v }
+				return out
+			}
+		}
 
 		private static func normalize(_ raw: String) -> String {
 			let parts = raw.split(separator: "-", omittingEmptySubsequences: true)

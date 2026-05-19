@@ -33,5 +33,11 @@ let package = Package(
 			name: "GeneratePluralRules",
 			path: "Scripts/GeneratePluralRules"
 		),
+		// Dev-only generator for locale-negotiation tables (likely subtags, parent locales, aliases).
+		// Run: `swift run GenerateLocaleData <likelySubtags.json> <parentLocales.json> <aliases.json> [<output.swift>]`.
+		.executableTarget(
+			name: "GenerateLocaleData",
+			path: "Scripts/GenerateLocaleData"
+		),
 	]
 )
