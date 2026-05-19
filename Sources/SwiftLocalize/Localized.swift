@@ -57,7 +57,22 @@ public struct Localized: ExpressibleByDictionaryLiteral, Hashable, Codable, Expr
 	}
 
 	public static func + (_ lhs: Localized, _ rhs: Localized) -> Localized {
-		Localized(Swift.Dictionary(Array(lhs.words) + Array(rhs.words), uniquingKeysWith: +))
+		// For each language in the union of keys, concatenate using the same
+		// fallback chain as `string(language:)` so missing translations on one
+		// side don't drop the other side's contribution for that language.
+		let keys = Set(lhs.words.keys).union(rhs.words.keys)
+		var merged: [Language: Forms] = [:]
+		for key in keys {
+			let l = lhs.words[key] ?? lhs.words[.default] ?? lhs.words[.en] ?? lhs.words.first?.value
+			let r = rhs.words[key] ?? rhs.words[.default] ?? rhs.words[.en] ?? rhs.words.first?.value
+			switch (l, r) {
+			case let (l?, r?): merged[key] = l + r
+			case let (l?, nil): merged[key] = l
+			case let (nil, r?): merged[key] = r
+			case (nil, nil): break
+			}
+		}
+		return Localized(merged)
 	}
 
 	public static func += (_ lhs: inout Localized, _ rhs: Localized) {

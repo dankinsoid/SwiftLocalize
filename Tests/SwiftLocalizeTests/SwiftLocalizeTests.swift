@@ -46,7 +46,61 @@ final class SwiftLocalizeTests: XCTestCase {
         "."
     }
 
+	func testConcatFallbackForMissingLanguage() {
+		// lhs has many languages; rhs has only .en. For .ru the result must
+		// fall back to rhs's English instead of dropping rhs entirely.
+		let lhs: Localized = [
+			.en: "Transferred from ",
+			.ru: "Перенесено из ",
+			.de: "Übertragen aus ",
+		]
+		let rhs: Localized = [.en: "Apple Music"]
+
+		let combined = lhs + rhs
+
+		XCTAssertEqual(combined.string(language: .en), "Transferred from Apple Music")
+		XCTAssertEqual(combined.string(language: .ru), "Перенесено из Apple Music")
+		XCTAssertEqual(combined.string(language: .de), "Übertragen aus Apple Music")
+	}
+
+	func testConcatFallbackWhenRhsHasNonEnglishOnly() {
+		// rhs has only .zh (e.g. QQ Music). lhs's English/Russian translations
+		// should still get the service name appended via rhs's fallback.
+		let lhs: Localized = [
+			.en: "Transferred from ",
+			.ru: "Перенесено из ",
+		]
+		let rhs: Localized = [.zh: "QQ音乐"]
+
+		let combined = lhs + rhs
+
+		XCTAssertEqual(combined.string(language: .en), "Transferred from QQ音乐")
+		XCTAssertEqual(combined.string(language: .ru), "Перенесено из QQ音乐")
+		XCTAssertEqual(combined.string(language: .zh), "Transferred from QQ音乐")
+	}
+
+	func testConcatBuilderPreservesAllLanguages() {
+		// Mirrors the real-world `playlistDescription(from:)` shape: builder
+		// concatenation of a multi-language prefix and a single-language name.
+		@LocalizedBuilder
+		func description(name: Localized) -> Localized {
+			[.en: "from ",
+			 .ru: "из ",
+			 .fr: "de "]
+			name
+		}
+
+		let result = description(name: [.en: "Spotify"])
+
+		XCTAssertEqual(result.string(language: .en), "from Spotify")
+		XCTAssertEqual(result.string(language: .ru), "из Spotify")
+		XCTAssertEqual(result.string(language: .fr), "de Spotify")
+	}
+
 	static var allTests = [
 		("testExample", testExample),
+		("testConcatFallbackForMissingLanguage", testConcatFallbackForMissingLanguage),
+		("testConcatFallbackWhenRhsHasNonEnglishOnly", testConcatFallbackWhenRhsHasNonEnglishOnly),
+		("testConcatBuilderPreservesAllLanguages", testConcatBuilderPreservesAllLanguages),
 	]
 }
