@@ -9,7 +9,7 @@ final class FluentSketchTests: XCTestCase {
 	// MARK: Helpers
 
 	private func coinsBundle(locale: Fluent.Tag) -> Fluent.Bundle {
-		let bundle = Fluent.Bundle(locale: locale)
+		let bundle = Fluent.Bundle(locale: locale, useIsolating: false)
 
 		// FTL equivalent:
 		// coins = { $count ->
@@ -90,7 +90,7 @@ final class FluentSketchTests: XCTestCase {
 	}
 
 	func testVariablePlaceable() {
-		let bundle = Fluent.Bundle(locale: .en)
+		let bundle = Fluent.Bundle(locale: .en, useIsolating: false)
 		// FTL: hello = Hello, {$name}!
 		bundle.add(Fluent.Message(
 			id: "hello",
@@ -106,7 +106,7 @@ final class FluentSketchTests: XCTestCase {
 	}
 
 	func testMessageReference() {
-		let bundle = Fluent.Bundle(locale: .en)
+		let bundle = Fluent.Bundle(locale: .en, useIsolating: false)
 		// FTL:
 		// brand-name = Foo
 		// greeting = Welcome to {brand-name}!
@@ -123,7 +123,7 @@ final class FluentSketchTests: XCTestCase {
 	}
 
 	func testTermWithLocalArgs() {
-		let bundle = Fluent.Bundle(locale: .en)
+		let bundle = Fluent.Bundle(locale: .en, useIsolating: false)
 		// FTL:
 		// -brand = { $case ->
 		//     [accusative] FooCorp
@@ -159,7 +159,7 @@ final class FluentSketchTests: XCTestCase {
 	}
 
 	func testNumberFunctionCurrency() {
-		let bundle = Fluent.Bundle(locale: .en)
+		let bundle = Fluent.Bundle(locale: .en, useIsolating: false)
 		// FTL: price = Total: {NUMBER($amount, style: "currency", currency: "USD")}
 		bundle.add(Fluent.Message(
 			id: "price",
@@ -259,7 +259,7 @@ final class FluentSketchTests: XCTestCase {
 		//     [few] You finished {$pos}rd
 		//    *[other] You finished {$pos}th
 		// }
-		let bundle = Fluent.Bundle(locale: .en)
+		let bundle = Fluent.Bundle(locale: .en, useIsolating: false)
 		bundle.add(Fluent.Message(
 			id: "your-rank",
 			value: Fluent.Pattern([

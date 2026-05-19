@@ -19,11 +19,19 @@ public extension Fluent {
 		/// even when the user has constructed terms that reference each other.
 		public var maxResolutionDepth: Int = 32
 
+		/// Wrap each placeable's resolved value in Unicode FSI (`U+2068`) / PDI (`U+2069`)
+		/// isolates so the Bidi algorithm can't reorder placeable content with surrounding text.
+		/// Default matches fluent.js / fluent-rs (`true`). Disable in tests where invisible
+		/// isolate marks make string comparisons unreadable.
+		public var useIsolating: Bool
+
 		public init(
 			locale: Tag,
+			useIsolating: Bool = true,
 			functions: [Identifier: Function] = BuiltinFunctions.all
 		) {
 			self.locale = locale
+			self.useIsolating = useIsolating
 			self.functions = functions
 		}
 
@@ -96,8 +104,14 @@ internal extension Fluent {
 				case let .text(s):
 					out += s
 				case let .placeable(expr):
-					let v = resolve(expr)
-					out += v.formatted(locale: locale)
+					let formatted = resolve(expr).formatted(locale: locale)
+					if bundle.useIsolating && !formatted.isEmpty {
+						out += "\u{2068}"
+						out += formatted
+						out += "\u{2069}"
+					} else {
+						out += formatted
+					}
 				}
 			}
 			return out
