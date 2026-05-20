@@ -54,5 +54,11 @@ let package = Package(
 			name: "GenerateDelimiters",
 			path: "Scripts/GenerateDelimiters"
 		),
+		// Dev-only generator for per-locale numeric range patterns ("{0}–{1}" etc).
+		// Run: `swift run GenerateRangePatterns [<cldr-numbers-main-dir>] [<output.swift>]`.
+		.executableTarget(
+			name: "GenerateRangePatterns",
+			path: "Scripts/GenerateRangePatterns"
+		),
 	]
 )
