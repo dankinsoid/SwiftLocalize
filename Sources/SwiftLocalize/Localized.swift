@@ -149,6 +149,17 @@ public struct Localized<Value> {
 		if let lang = baseLanguage { langs.insert(lang) }
 		return langs
 	}
+
+	/// Apply `transform` to the base value and every translation. Language
+	/// keys and the anchor (`base.language`) are preserved.
+	// @ai-generated(solo)
+	public func map<T>(_ transform: (Value) throws -> T) rethrows -> Localized<T> {
+		try Localized<T>(
+			baseLanguage,
+			transform(baseValue),
+			translations.mapValues(transform)
+		)
+	}
 }
 
 // MARK: - Concatenation
