@@ -9,7 +9,7 @@ public enum PluralCategory: String, CaseIterable, Hashable, Codable, Sendable, C
 }
 
 /// Which CLDR plural rule set applies. Cardinal = "5 books"; ordinal = "5th place".
-public enum PluralType: String, Hashable, Codable, Sendable, CodingKeyRepresentable {
+public enum PluralType: String, Hashable, Codable, Sendable, CodingKeyRepresentable, CaseIterable {
 	case cardinal, ordinal
 }
 

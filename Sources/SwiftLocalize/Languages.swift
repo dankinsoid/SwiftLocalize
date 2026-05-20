@@ -130,6 +130,19 @@ public extension Language {
 		let raw = Locale.preferredLanguages.first ?? Locale.current.identifier
 		return Self(rawValue: raw)
 	}
+
+	/// BCP-47 "multiple languages" tag — content includes text in more than
+	/// one language (e.g. a bilingual phrasebook, or a `Localized` produced
+	/// by concatenating anchored values whose languages don't share
+	/// coverage).
+	///
+	/// Distinct from `nil`-anchored ("language-agnostic by design": numbers,
+	/// brand names, emoji) and from `Language("zxx")` ("no linguistic
+	/// content"). `LocaleNegotiation` doesn't match user locales against
+	/// `mul`, so a `mul`-tagged value still falls through to its `baseValue`
+	/// on resolution — but `availableLanguages` honestly reports the mixed
+	/// nature instead of pretending the result belongs to one language.
+	static let mul: Language = "mul"
 }
 
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
