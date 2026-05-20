@@ -21,6 +21,23 @@ public struct Localized<Value> {
 		self.base = (baseLanguage, baseValue)
 	}
 
+	/// Same value with CLDR-canonical language keys: deprecated aliases collapsed
+	/// (`iw`↔`he`, `in`↔`id`, `BU`↔`MM`, `Qaai`↔`Zinh`).
+	///
+	/// Likely-subtag pairs (`zh-TW`↔`zh-Hant`) are intentionally out of scope —
+	/// expanding them would discard region-specific translations. `resolved`
+	/// handles those at lookup time via `LocaleNegotiation`.
+	///
+	/// On alias collisions (e.g. both `iw` and `he` present), one value wins —
+	/// order is unspecified. Holding both forms is a caller-side bug.
+	public var canonical: Localized {
+		Localized(
+			base.language?.canonical,
+			base.value,
+			Dictionary(translations.map { ($0.key.canonical, $0.value) }, uniquingKeysWith: { first, _ in first })
+		)
+	}
+
 	/// Resolve to a value, preferring `languages` in priority order.
 	///
 	/// Walks the chain and returns the value for the first language that

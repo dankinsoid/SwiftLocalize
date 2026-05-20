@@ -94,7 +94,10 @@ public struct Language: Hashable, Codable, Sendable, RawRepresentable, Expressib
 	}
 	
 	private static func normalize(_ raw: String) -> String {
-		let parts = raw.split(separator: "-", omittingEmptySubsequences: true)
+		// Accept both BCP-47 (`en-US`) and POSIX (`en_US`) separators. Foundation's
+		// `Locale.identifier` returns the underscore form on some platforms, so callers
+		// can pass either without surprise; output is always BCP-47 with `-`.
+		let parts = raw.split(omittingEmptySubsequences: true, whereSeparator: { $0 == "-" || $0 == "_" })
 		guard let first = parts.first else { return "" }
 		var out = first.lowercased()
 		for sub in parts.dropFirst() {
