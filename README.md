@@ -8,7 +8,7 @@ A CLDR-backed localization toolkit for Swift. Carry translations alongside the c
 
 ## Highlights
 
-- **`Localized<Value>`** — a generic container of per-language values (not just strings: works for any `Codable`/`Equatable` payload, and adds `+` for any `RangeReplaceableCollection`).
+- **`Localized<Value>`** — a generic container of per-language values (not just strings — also images, attributed strings, or any custom type; adds `+` for any `RangeReplaceableCollection`).
 - **Open `Language` type** — any BCP-47 tag (`en`, `zh-Hant-TW`, `es-419`, …) plus 180+ generated named constants (`.en`, `.ru`, `.ja`, …).
 - **CLDR plural rules** — `n.plural(in:)` and `n.ordinal(in:)` dispatch through the language's own rule set (`one`/`few`/`many`/`other`/…); `(a...b).plural(in:)` resolves the 2D `pluralRanges` table.
 - **Grammatical gender** — `Language.grammaticalGenders` returns the language's CLDR-classified gender set (`[.animate, .inanimate, .feminine, .neuter]` for cs, `[.common, .neuter]` for da, `[]` for en/ja/zh, …).
