@@ -135,6 +135,7 @@ public extension Language {
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 public extension FormatStyle {
 
+	/// Sets the language (and thus locale) for this format style.
 	func language(_ language: Language) -> Self {
 		locale(Locale(identifier: language.rawValue))
 	}
