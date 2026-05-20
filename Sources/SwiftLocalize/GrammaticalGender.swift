@@ -18,55 +18,6 @@ public enum GrammaticalGender: String, CaseIterable, Hashable, Codable, Sendable
 	case masculine, feminine, neuter, common, animate, inanimate, personal
 }
 
-/// A grammatical gender paired with a language — what `inflect(in:)` hands
-/// to its closure. Mirrors `PluralCategorized`'s role on the plural side.
-///
-/// The pattern-match overload below lets `switch` cases stay terse:
-/// `case .feminine:` matches `GenderCategorized` whose `gender == .feminine`.
-public struct GenderCategorized: Hashable, Codable, Sendable {
-
-	public var gender: GrammaticalGender
-	public var language: Language
-
-	public init(gender: GrammaticalGender, language: Language) {
-		self.gender = gender
-		self.language = language
-	}
-}
-
-/// Lets `switch gc { case .feminine: … }` work without naming `.gender`.
-public func ~= (category: GrammaticalGender, pattern: GenderCategorized) -> Bool {
-	pattern.gender == category
-}
-
-public extension GrammaticalGender {
-
-	/// Pick a form based on grammatical gender in `language`.
-	///
-	/// The closure receives a `GenderCategorized` that pattern-matches
-	/// against `GrammaticalGender` cases. For languages without a
-	/// grammatical gender system (en, ja, zh, …) supply a `default` branch —
-	/// the gender is still passed through, but the caller should treat all
-	/// branches as equivalent.
-	///
-	/// ```swift
-	/// user.gender.inflect(in: .ru) {
-	///     switch $0 {
-	///     case .feminine: "Ты пришла"
-	///     default:        "Ты пришёл"
-	///     }
-	/// }
-	/// ```
-	///
-	/// Cross-language fallback (`fr` asked about `.neuter`, which fr lacks)
-	/// is the caller's responsibility — typically the `default` branch
-	/// covers it, but `Language.grammaticalGenders` is available for an
-	/// explicit `contains` check when needed.
-	func inflect<T>(in language: Language, _ body: (GenderCategorized) -> T) -> T {
-		body(GenderCategorized(gender: self, language: language))
-	}
-}
-
 public extension Language {
 
 	/// Grammatical genders this language distinguishes per CLDR
