@@ -50,38 +50,3 @@ public extension Localized {
 		self = builder()
 	}
 }
-
-
-public struct Message<Value> {
-	
-	public typealias Pattern = @Sendable (Language) -> Value
-	
-	private var words: [Language: Pattern] = [:]
-}
-
-extension String {
-	
-	public enum TransferMusic {
-		
-		public enum Profile {
-			
-			public static let title = "Transfer Music"
-			
-			public static func description(count: Int) -> String {
-				"\(count) songs will be transferred."
-			}
-		}
-	}
-}
-
-public enum Pattern<Value> {
-	
-	case value(Value)
-	case placeable(Placeable<Value>)
-}
-
-public enum Placeable<Value> {
-	
-	
-}
-
