@@ -1,97 +1,167 @@
 import Foundation
 
-@available(*, deprecated, message: "Word is deprecated, use Localized")
-public typealias Word = Localized
-
 @resultBuilder
-public struct Localized: ExpressibleByDictionaryLiteral, Hashable, Codable, ExpressibleByStringInterpolation {
+public struct Localized<Value> {
 
-	private var words: [Language: Forms] = [:]
+	private let translations: [Language: Value]
+	private let any: Value?
+	private let fallback: Value
 
-	public var localized: String {
-		get { string() }
-		set {
-			words[.current, default: Forms(newValue)][.default] = newValue
-		}
+	public init(
+		_ translations: [Language: Value] = [:],
+		any: Value? = nil,
+		default fallback: Value
+	) {
+		self.translations = translations
+		self.any = any
+		self.fallback = fallback
 	}
 
-	@available(*, deprecated, message: "Localized key is deprecated, use Localized.init([:]) instead")
-	public init(_: String, _ variants: [Language: Forms]) {
-		self = Localized(variants)
+	/// Wrap a single value as a `Localized` with no per-language translations.
+	/// The same value is returned for every language.
+	public init(_ value: Value) {
+		self.init(default: value)
 	}
 
-	public init(_ word: some StringProtocol) {
-		self = [.default: Forms(word)]
+	/// Resolve to a value for `language`.
+	///
+	/// Lookup order:
+	///   1. Exact tag (`en-US`).
+	///   2. Same-family negotiation (`en-US` → `en`).
+	///   3. Explicit `any:` slot, if provided.
+	///   4. `default:` fallback.
+	///
+	/// Cross-language mixing only via the explicit `any:` / `default:` slots —
+	/// never silently through another language's translation.
+	public func resolve(_ language: Language = .current) -> Value {
+		if let v = translations[language] { return v }
+		let bare = language.languageOnly
+		if bare != language, let v = translations[bare] { return v }
+		if let v = any { return v }
+		return fallback
+	}
+	
+	/// Resolve to a value for `language`.
+	///
+	/// Lookup order:
+	///   1. Exact tag (`en-US`).
+	///   2. Same-family negotiation (`en-US` → `en`).
+	///   3. Explicit `any:` slot, if provided.
+	///   4. `default:` fallback.
+	///
+	/// Cross-language mixing only via the explicit `any:` / `default:` slots —
+	/// never silently through another language's translation.
+	public func callAsFunction(_ language: Language = .current) -> Value {
+		resolve(language)
 	}
 
-	public init(_ variants: [Language: Forms]) {
-		if variants.isEmpty {
-			words = [.default: ""]
-		} else {
-			words = variants
-		}
-	}
+	public var localized: Value { callAsFunction() }
 
-	public subscript(_ language: Language) -> Forms? {
-		get { words[language] }
-		set { words[language] = newValue }
-	}
+	/// Languages with an explicit translation — does not include those reached
+	/// only via `any:` / `default:`.
+	public var explicitLanguages: Set<Language> { Set(translations.keys) }
+}
 
-	public init(dictionaryLiteral elements: (Language, Forms)...) {
-		self = Localized(Dictionary(elements) { _, s in s })
-	}
+// MARK: - Concatenation
+//
+// Composition along the value axis: `Localized<String> + Localized<String>`
+// concatenates per language. Only available where `Value` supports
+// `append(contentsOf:)` — strings, arrays, attributed strings.
 
-	public init(stringInterpolation: DefaultStringInterpolation) {
-		self = Localized(String(stringInterpolation: stringInterpolation))
-	}
-
-	public init(stringLiteral value: String.StringLiteralType) {
-		self = Localized(value)
-	}
-
-	public func string(language: Language = .current, _ form: FormType = .default) -> String {
-		if form == .none, let forms = words[language] ?? words[.default] ?? words[.en] ?? words.first?.value {
-			return forms.word ?? ""
-		}
-		return (words[language] ?? words[.default] ?? words[.en] ?? words.first?.value)?[form] ?? ""
-	}
+extension Localized where Value: RangeReplaceableCollection {
 
 	public static func + (_ lhs: Localized, _ rhs: Localized) -> Localized {
-		// For each language in the union of keys, concatenate using the same
-		// fallback chain as `string(language:)` so missing translations on one
-		// side don't drop the other side's contribution for that language.
-		let keys = Set(lhs.words.keys).union(rhs.words.keys)
-		var merged: [Language: Forms] = [:]
+		// Resolve each side at every language present in either, so a side
+		// without that language contributes via its own fallback chain rather
+		// than dropping its half.
+		let keys = lhs.explicitLanguages.union(rhs.explicitLanguages)
+		var merged: [Language: Value] = [:]
 		for key in keys {
-			let l = lhs.words[key] ?? lhs.words[.default] ?? lhs.words[.en] ?? lhs.words.first?.value
-			let r = rhs.words[key] ?? rhs.words[.default] ?? rhs.words[.en] ?? rhs.words.first?.value
-			switch (l, r) {
-			case let (l?, r?): merged[key] = l + r
-			case let (l?, nil): merged[key] = l
-			case let (nil, r?): merged[key] = r
-			case (nil, nil): break
-			}
+			merged[key] = lhs(key) + rhs(key)
 		}
-		return Localized(merged)
+		// `any` is preserved only when both sides explicitly opted in —
+		// combining a "fits any language" with a regular fallback would
+		// silently promote the fallback to an `any`.
+		let combinedAny: Value? = {
+			guard let l = lhs.any, let r = rhs.any else { return nil }
+			return l + r
+		}()
+		return Localized(merged, any: combinedAny, default: lhs.fallback + rhs.fallback)
+	}
+
+	public static func + (_ lhs: Localized, _ rhs: Value) -> Localized {
+		var merged: [Language: Value] = [:]
+		for (lang, v) in lhs.translations {
+			merged[lang] = v + rhs
+		}
+		return Localized(
+			merged,
+			any: lhs.any.map { $0 + rhs },
+			default: lhs.fallback + rhs
+		)
+	}
+
+	public static func + (_ lhs: Value, _ rhs: Localized) -> Localized {
+		var merged: [Language: Value] = [:]
+		for (lang, v) in rhs.translations {
+			merged[lang] = lhs + v
+		}
+		return Localized(
+			merged,
+			any: rhs.any.map { lhs + $0 },
+			default: lhs + rhs.fallback
+		)
 	}
 
 	public static func += (_ lhs: inout Localized, _ rhs: Localized) {
 		lhs = lhs + rhs
 	}
 
-	public static func += (_ lhs: inout Localized, _ rhs: some StringProtocol) {
+	public static func += (_ lhs: inout Localized, _ rhs: Value) {
 		lhs = lhs + rhs
 	}
+}
 
-	public static func + (_ lhs: Localized, _ rhs: some StringProtocol) -> Localized {
-		Localized(lhs.words.mapValues { $0 + rhs })
+// MARK: - Description (deprecated to flush silent `.current` resolution)
+//
+// Conforming to `CustomStringConvertible` is what makes `"\(localized)"` —
+// or any `String(describing:)` / `print` — produce a localized string at
+// `.current`. That's the silent path we want callers to notice. Keep the
+// conformance for visibility in debugging, but warn on use so the implicit
+// path doesn't sneak into UI strings unobserved.
+
+extension Localized: CustomStringConvertible where Value: CustomStringConvertible {
+
+	@available(*, deprecated, message: "Implicit `.current` resolution. Use `localized.localized` for the current locale, or `localized(.en)` for an explicit language.")
+	public var description: String { callAsFunction().description }
+}
+
+// MARK: - Literal conformances
+
+extension Localized: ExpressibleByExtendedGraphemeClusterLiteral where Value: ExpressibleByStringLiteral {
+
+	public init(extendedGraphemeClusterLiteral value: Value.ExtendedGraphemeClusterLiteralType) {
+		self.init(default: Value(extendedGraphemeClusterLiteral: value))
 	}
+}
 
-	public static func + (_ lhs: some StringProtocol, _ rhs: Localized) -> Localized {
-		Localized(rhs.words.mapValues { lhs + $0 })
+extension Localized: ExpressibleByStringLiteral where Value: ExpressibleByStringLiteral {
+
+	public init(stringLiteral value: Value.StringLiteralType) {
+		self.init(default: Value(stringLiteral: value))
 	}
+}
 
-	public static func == (lhs: Localized, rhs: Localized) -> Bool {
-		lhs.words == rhs.words
+extension Localized: ExpressibleByUnicodeScalarLiteral where Value: ExpressibleByStringLiteral {
+
+	public init(unicodeScalarLiteral value: Value.UnicodeScalarLiteralType) {
+		self.init(default: Value(unicodeScalarLiteral: value))
+	}
+}
+
+extension Localized: ExpressibleByStringInterpolation where Value: ExpressibleByStringInterpolation {
+
+	public init(stringInterpolation: Value.StringInterpolation) {
+		self.init(default: Value(stringInterpolation: stringInterpolation))
 	}
 }
