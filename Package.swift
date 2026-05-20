@@ -39,5 +39,11 @@ let package = Package(
 			name: "GenerateLocaleData",
 			path: "Scripts/GenerateLocaleData"
 		),
+		// Dev-only generator for `Language` static constants (one per ISO 639-1 code).
+		// Run: `swift run GenerateLanguageConstants <likelySubtags.json> [<output.swift>]`.
+		.executableTarget(
+			name: "GenerateLanguageConstants",
+			path: "Scripts/GenerateLanguageConstants"
+		),
 	]
 )
