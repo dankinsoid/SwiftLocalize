@@ -113,6 +113,10 @@ loc.tryResolved(.ru)        // nil if nothing in the ru family matches (no ancho
 // callAsFunction is sugar for `.resolved(_:)` / `.resolved()`:
 loc(.ru)                    // == loc.resolved(.ru)
 loc()                       // == loc.resolved()
+
+// Transform the value across all languages (anchor + every translation,
+// language keys preserved). Useful for e.g. Localized<String> -> Localized<AttributedString>.
+loc.map { $0.uppercased() }
 ```
 
 `Localized` is `Sendable`, `Hashable`, `Codable`, and `Equatable` whenever `Value` is.
@@ -327,6 +331,21 @@ static func title(_ name: Localized<String>) -> Localized<String> {
 static func currentTitle(_ name: Localized<String>) -> String {
     "Playlist: "
     name
+}
+```
+
+When the builder's `Value` is `NSAttributedString` or `AttributedString`, related types are accepted transparently — no manual wrapping at the call site:
+
+- `String` and `Localized<String>` — wrapped as plain attributed text.
+- `NSAttributedString` ↔ `AttributedString`, raw or `Localized<…>` (iOS 15+, macOS 12+).
+- `UIImage` / `Localized<UIImage>` on UIKit and `NSImage` / `Localized<NSImage>` on macOS — wrapped via `NSTextAttachment`.
+
+```swift
+@Localized<NSAttributedString>
+static func priceRow(_ icon: UIImage, _ price: Localized<String>) -> NSAttributedString {
+    icon
+    " "
+    price
 }
 ```
 
