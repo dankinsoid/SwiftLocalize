@@ -5,6 +5,12 @@ public struct Localized<Value> {
 
 	public let base: (language: Language?, value: Value)
 	public let translations: [Language: Value]
+	
+	var asDict: [Language: Value] {
+		var dict = translations
+		if let lang = base.language, dict[lang] == nil { dict[lang] = base.value }
+		return dict
+	}
 
 	public init(
 		_ baseLanguage: Language?,
@@ -30,10 +36,7 @@ public struct Localized<Value> {
 	/// `resolved(_:)` and `resolved()` are thin wrappers over this.
 	public func resolved(preferring languages: [Language]) -> Value {
 		guard !languages.isEmpty, !translations.isEmpty else { return base.value }
-		var translations = self.translations
-		if let baseLanguage = base.language, translations[baseLanguage] == nil {
-			translations[baseLanguage] = base.value
-		}
+		var translations = asDict
 		if languages.count == 1, let v = translations[languages[0]] { return v }
 		if !translations.isEmpty {
 			let chain = LocaleNegotiation.matching(
@@ -105,30 +108,61 @@ extension Localized where Value: RangeReplaceableCollection {
 	/// Concatenate two localized values.
 	///
 	/// Result is universal (`base.language == nil`) iff both sides are universal;
-	/// otherwise it's anchored to the first non-nil `base.language` of the two,
-	/// left-biased on conflict. For every language explicitly covered by either
+	/// otherwise it's anchored to whichever side has a non-nil `base.language`,
+	/// left-biased when both do. For every language explicitly covered by either
 	/// side, the result holds `lhs.resolved(lang) + rhs.resolved(lang)` — so a
 	/// universal side contributes its base value to every language slot of the
 	/// other, and a localized side's missing translation falls back through its
 	/// own negotiation chain (never silently through the other side's language).
+	///
+	/// Sides can disagree on `base.language` and still combine correctly when
+	/// they cover the same languages through different anchors (e.g. one
+	/// anchored to `.en` with a `.fr` translation + one anchored to `.fr` with
+	/// an `.en` translation).
 	public static func + (_ lhs: Localized, _ rhs: Localized) -> Localized {
-		// Two non-nil base languages should agree — otherwise `base.value` of the
-		// result mixes scripts (lhs.base.value in lhs's language + rhs.base.value
-		// in rhs's language, tagged as one of them). Caller bug worth surfacing.
-		if let l = lhs.base.language, let r = rhs.base.language, l != r {
-			assertionFailure("Localized + Localized: base languages disagree (\(l) vs \(r)); concatenated base mixes scripts.")
+		var lTranslations = lhs.asDict
+		var rTranslations = rhs.asDict
+	
+		let lAnyValue: Value? = lhs.base.language == nil ? lhs.base.value : nil
+		let rAnyValue: Value? = rhs.base.language == nil ? rhs.base.value : nil
+
+		let languages = Set(lhs.translations.keys).union(rTranslations.keys)
+		
+		var mergedTranslations: [Language: Value] = [:]
+		mergedTranslations.reserveCapacity(lTranslations.count + rTranslations.count)
+
+		for lang in languages {
+			if let lValue = lTranslations[lang] ?? lAnyValue, let rValue = rTranslations[lang] ?? rAnyValue {
+				mergedTranslations[lang] = lValue + rValue
+			}
+		}
+		
+		let baseLanguage: Language?
+		let baseValue: Value
+		if lhs.base.language == rhs.base.language {
+			baseLanguage = lhs.base.language
+			baseValue = lhs.base.value + rhs.base.value
+		} else if lhs.base.language == nil {
+			baseLanguage = rhs.base.language
+			baseValue = lhs.resolved(rhs.base.language!) + rhs.base.value
+		} else if rhs.base.language == nil {
+			baseLanguage = lhs.base.language
+			baseValue = lhs.base.value + rhs.resolved(lhs.base.language!)
+		} else {
+			var preffered = Set(mergedTranslations.keys).intersection([lhs.base.language!, rhs.base.language!])
+			if preffered.isEmpty {
+				preffered = Set(mergedTranslations.keys)
+			}
+			let lanugage = preffered.sorted(by: { $0.rawValue < $1.rawValue }).first
+			if lanugage == nil {
+				// assert in debug
+			}
+			
+			baseLanguage = lanugage ?? lhs.base.language!
+			baseValue = lhs.resolved(baseLanguage!) + rhs.resolved(baseLanguage!)
 		}
 
-		var languages = Set(lhs.translations.keys).union(rhs.translations.keys)
-		if let lang = lhs.base.language { languages.insert(lang) }
-		if let lang = rhs.base.language { languages.insert(lang) }
-
-		let resultLanguage = lhs.base.language ?? rhs.base.language
-		var translations: [Language: Value] = [:]
-		for lang in languages where lang != resultLanguage {
-			translations[lang] = lhs.resolved(lang) + rhs.resolved(lang)
-		}
-		return Localized(resultLanguage, lhs.base.value + rhs.base.value, translations)
+		return Localized(baseLanguage, baseValue, mergedTranslations)
 	}
 
 	public static func + (_ lhs: Localized, _ rhs: Value) -> Localized {
