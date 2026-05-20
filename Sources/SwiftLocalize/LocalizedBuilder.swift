@@ -9,7 +9,7 @@ public extension Localized {
 
 	@inlinable
 	static func buildOptional(_ component: Localized?) -> Localized where Value: RangeReplaceableCollection {
-		component ?? Localized(default: Value.init())
+		component ?? Localized(nil, Value.init())
 	}
 
 	@inlinable
@@ -24,7 +24,7 @@ public extension Localized {
 
 	@inlinable
 	static func buildArray(_ components: [Localized]) -> Localized where Value: RangeReplaceableCollection {
-		guard !components.isEmpty else { return Localized(default: Value.init()) }
+		guard !components.isEmpty else { return Localized(nil, Value.init()) }
 		return components.dropFirst().reduce(into: components[0], +=)
 	}
 
@@ -40,7 +40,7 @@ public extension Localized {
 
 	@inlinable
 	static func buildExpression(_ expression: Value) -> Localized {
-		Localized(default: expression)
+		Localized(nil, expression)
 	}
 
 	@inlinable
