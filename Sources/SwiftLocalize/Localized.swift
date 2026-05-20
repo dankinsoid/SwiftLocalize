@@ -107,18 +107,36 @@ extension Localized where Value: RangeReplaceableCollection {
 
 	/// Concatenate two localized values.
 	///
-	/// Result is universal (`base.language == nil`) iff both sides are universal;
-	/// otherwise it's anchored to whichever side has a non-nil `base.language`,
-	/// left-biased when both do. For every language explicitly covered by either
-	/// side, the result holds `lhs.resolved(lang) + rhs.resolved(lang)` — so a
-	/// universal side contributes its base value to every language slot of the
-	/// other, and a localized side's missing translation falls back through its
-	/// own negotiation chain (never silently through the other side's language).
+	/// **Anchor (`base.language`)**:
+	/// - Both sides universal (`base.language == nil`) → result is universal.
+	/// - Exactly one side is anchored → that anchor.
+	/// - Both sides anchored — picked from the merged per-language map by the
+	///   first match in this priority chain: `lhs.base.language`,
+	///   `rhs.base.language`, then `Locale.preferredLanguages` in order. If
+	///   none of those land in the merged map, falls back to the alphabetically
+	///   first language present; if the map is empty, falls back to
+	///   `lhs.base.language` and debug-asserts — the base value here silently
+	///   mixes anchors.
 	///
-	/// Sides can disagree on `base.language` and still combine correctly when
-	/// they cover the same languages through different anchors (e.g. one
-	/// anchored to `.en` with a `.fr` translation + one anchored to `.fr` with
-	/// an `.en` translation).
+	/// **Base value**: `lhs.resolved(baseLanguage) + rhs.resolved(baseLanguage)` —
+	/// each side contributes its own best resolution for the chosen anchor via
+	/// its own negotiation chain. A universal side resolves to its base value
+	/// for any language; an anchored side only resolves through its own
+	/// translations.
+	///
+	/// **Per-language translations**: for every language explicitly covered by
+	/// either side, the result holds `lhs_lang + rhs_lang` — but only when both
+	/// sides can produce a value for that language *without* silently falling
+	/// through another anchor. A universal side contributes its base value to
+	/// every slot of the other; an anchored side with no entry for `lang` and
+	/// `base.language != lang` contributes nothing, and the slot is dropped
+	/// rather than mixing languages. The entry for the chosen `baseLanguage` is
+	/// stored in `base.value` and removed from `translations` to avoid duplication.
+	///
+	/// **Disagreeing anchors**: sides with different `base.language` still combine
+	/// correctly when they cover the same languages through different anchors
+	/// (e.g. `.en`-anchored with a `.fr` translation + `.fr`-anchored with an
+	/// `.en` translation yields both `.en` and `.fr` slots).
 	public static func + (_ lhs: Localized, _ rhs: Localized) -> Localized {
 		let lTranslations = lhs.asDict
 		let rTranslations = rhs.asDict
@@ -159,9 +177,9 @@ extension Localized where Value: RangeReplaceableCollection {
 			}
 		
 			if language == nil {
-				// assert in debug
+				assertionFailure("Localized + Localized: no shared coverage between anchors \(lhs.base.language!) and \(rhs.base.language!); base value will silently mix anchors.")
 			}
-			
+
 			baseLanguage = language ?? lhs.base.language!
 			baseValue = lhs.resolved(baseLanguage!) + rhs.resolved(baseLanguage!)
 		}
