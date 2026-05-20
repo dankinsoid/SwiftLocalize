@@ -157,3 +157,11 @@ extension DefaultStringInterpolation {
 			appendLiteral(value.description)
 		}
 }
+
+extension Localized: CustomDebugStringConvertible {
+
+	public var debugDescription: String {
+		let langs = translations.keys.map(\.description).joined(separator: ", ")
+		return "Localized([\(langs)], default: \(fallback))"
+	}
+}
