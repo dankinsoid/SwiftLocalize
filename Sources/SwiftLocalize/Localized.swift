@@ -112,7 +112,7 @@ public struct Localized<Value> {
 	public func tryResolved(preferring languages: [Language]) -> Value? {
 		let translations = asDict
 		guard !languages.isEmpty else { return nil }
-		guard !translations.isEmpty else { return baseValue }
+		guard !translations.isEmpty else { return baseValue } // asDict may be empty only if base is universal
 		if languages.count == 1, let v = translations[languages[0]] { return v }
 		let chain = LocaleNegotiation.matching(
 			requested: languages,
