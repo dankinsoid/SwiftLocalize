@@ -120,16 +120,16 @@ extension Localized where Value: RangeReplaceableCollection {
 	/// anchored to `.en` with a `.fr` translation + one anchored to `.fr` with
 	/// an `.en` translation).
 	public static func + (_ lhs: Localized, _ rhs: Localized) -> Localized {
-		var lTranslations = lhs.asDict
-		var rTranslations = rhs.asDict
+		let lTranslations = lhs.asDict
+		let rTranslations = rhs.asDict
 	
 		let lAnyValue: Value? = lhs.base.language == nil ? lhs.base.value : nil
 		let rAnyValue: Value? = rhs.base.language == nil ? rhs.base.value : nil
 
-		let languages = Set(lhs.translations.keys).union(rTranslations.keys)
+		let languages = Set(lTranslations.keys).union(rTranslations.keys)
 		
 		var mergedTranslations: [Language: Value] = [:]
-		mergedTranslations.reserveCapacity(lTranslations.count + rTranslations.count)
+		mergedTranslations.reserveCapacity(languages.count)
 
 		for lang in languages {
 			if let lValue = lTranslations[lang] ?? lAnyValue, let rValue = rTranslations[lang] ?? rAnyValue {
@@ -150,17 +150,21 @@ extension Localized where Value: RangeReplaceableCollection {
 			baseValue = lhs.base.value + rhs.resolved(lhs.base.language!)
 		} else {
 			var translationsKeys = Set(mergedTranslations.keys)
-			var preffered = translationsKeys.intersection([lhs.base.language!, rhs.base.language!])
-			if preffered.isEmpty {
-				preffered = translationsKeys
+			var preferred = translationsKeys.intersection([lhs.base.language!, rhs.base.language!])
+			if preferred.isEmpty {
+				preferred = translationsKeys
 			}
-			let lanugage = preffered.sorted(by: { $0.rawValue < $1.rawValue }).first
-			if lanugage == nil {
+			let language = preferred.sorted(by: { $0.rawValue < $1.rawValue }).first
+			if language == nil {
 				// assert in debug
 			}
 			
-			baseLanguage = lanugage ?? lhs.base.language!
+			baseLanguage = language ?? lhs.base.language!
 			baseValue = lhs.resolved(baseLanguage!) + rhs.resolved(baseLanguage!)
+		}
+		
+		if let baseLanguage {
+			mergedTranslations.removeValue(forKey: baseLanguage)
 		}
 
 		return Localized(baseLanguage, baseValue, mergedTranslations)
