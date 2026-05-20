@@ -3,17 +3,14 @@ import Foundation
 @resultBuilder
 public struct Localized<Value> {
 
-	private let translations: [Language: Value]
-	private let any: Value?
-	private let fallback: Value
+	public let translations: [Language: Value]
+	public let fallback: Value
 
 	public init(
 		_ translations: [Language: Value] = [:],
-		any: Value? = nil,
 		default fallback: Value
 	) {
 		self.translations = translations
-		self.any = any
 		self.fallback = fallback
 	}
 
@@ -37,7 +34,6 @@ public struct Localized<Value> {
 		if let v = translations[language] { return v }
 		let bare = language.languageOnly
 		if bare != language, let v = translations[bare] { return v }
-		if let v = any { return v }
 		return fallback
 	}
 	
@@ -79,14 +75,7 @@ extension Localized where Value: RangeReplaceableCollection {
 		for key in keys {
 			merged[key] = lhs(key) + rhs(key)
 		}
-		// `any` is preserved only when both sides explicitly opted in —
-		// combining a "fits any language" with a regular fallback would
-		// silently promote the fallback to an `any`.
-		let combinedAny: Value? = {
-			guard let l = lhs.any, let r = rhs.any else { return nil }
-			return l + r
-		}()
-		return Localized(merged, any: combinedAny, default: lhs.fallback + rhs.fallback)
+		return Localized(merged, default: lhs.fallback + rhs.fallback)
 	}
 
 	public static func + (_ lhs: Localized, _ rhs: Value) -> Localized {
@@ -96,7 +85,6 @@ extension Localized where Value: RangeReplaceableCollection {
 		}
 		return Localized(
 			merged,
-			any: lhs.any.map { $0 + rhs },
 			default: lhs.fallback + rhs
 		)
 	}
@@ -108,7 +96,6 @@ extension Localized where Value: RangeReplaceableCollection {
 		}
 		return Localized(
 			merged,
-			any: rhs.any.map { lhs + $0 },
 			default: lhs + rhs.fallback
 		)
 	}

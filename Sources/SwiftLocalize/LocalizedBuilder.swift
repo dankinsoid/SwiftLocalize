@@ -39,7 +39,7 @@ public extension Localized {
 	}
 
 	@inlinable
-	static func buildExpression(_ expression: some StringProtocol) -> Localized {
+	static func buildExpression<T>(_ expression: T) -> Localized {
 		Localized(expression)
 	}
 
