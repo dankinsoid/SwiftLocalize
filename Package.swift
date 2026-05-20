@@ -27,23 +27,32 @@ let package = Package(
 			name: "SwiftLocalizeTests",
 			dependencies: ["SwiftLocalize"]
 		),
-		// Dev-only generator. Not exposed as a product — consumers of the library never build it.
-		// Run: `swift run GeneratePluralRules <plurals.json> [<ordinals.json>] [<output.swift>]`.
+		// Dev-only generators. Not exposed as products — consumers of the library never build them.
+		// Each defaults to fetching CLDR data live from https://github.com/unicode-org/cldr-json
+		// (branch `main`, override via `CLDR_BRANCH`); pass paths/URLs to use a pinned snapshot.
+		//
+		// Run: `swift run GeneratePluralRules [<plurals.json|URL> [<ordinals.json|URL>]] [<output.swift>]`.
 		.executableTarget(
 			name: "GeneratePluralRules",
 			path: "Scripts/GeneratePluralRules"
 		),
 		// Dev-only generator for locale-negotiation tables (likely subtags, parent locales, aliases).
-		// Run: `swift run GenerateLocaleData <likelySubtags.json> <parentLocales.json> <aliases.json> [<output.swift>]`.
+		// Run: `swift run GenerateLocaleData [<likelySubtags.json|URL> <parentLocales.json|URL> <aliases.json|URL>] [<output.swift>]`.
 		.executableTarget(
 			name: "GenerateLocaleData",
 			path: "Scripts/GenerateLocaleData"
 		),
 		// Dev-only generator for `Language` static constants (one per ISO 639-1 code).
-		// Run: `swift run GenerateLanguageConstants <likelySubtags.json> [<output.swift>]`.
+		// Run: `swift run GenerateLanguageConstants [<likelySubtags.json|URL>] [<output.swift>]`.
 		.executableTarget(
 			name: "GenerateLanguageConstants",
 			path: "Scripts/GenerateLanguageConstants"
+		),
+		// Dev-only generator for per-locale quotation marks (primary + alternate).
+		// Run: `swift run GenerateDelimiters [<cldr-misc-main-dir>] [<output.swift>]`.
+		.executableTarget(
+			name: "GenerateDelimiters",
+			path: "Scripts/GenerateDelimiters"
 		),
 	]
 )

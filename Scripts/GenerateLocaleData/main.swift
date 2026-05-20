@@ -3,12 +3,16 @@
 // Generate Sources/SwiftLocalize/LocaleData+Generated.swift from CLDR JSON.
 //
 // Usage:
-//   swift run GenerateLocaleData <likelySubtags.json> <parentLocales.json> <aliases.json> [<output.swift>]
+//   swift run GenerateLocaleData [<likelySubtags.json|URL> <parentLocales.json|URL> <aliases.json|URL>] [<output.swift>]
 //
 // Source data: https://github.com/unicode-org/cldr-json
 //   cldr-core/supplemental/likelySubtags.json
 //   cldr-core/supplemental/parentLocales.json
 //   cldr-core/supplemental/aliases.json
+//
+// With no source paths, the three files are fetched live from the CLDR JSON
+// repo (branch defaults to `main`; override via `CLDR_BRANCH`). Either supply
+// all three sources or none — partial overrides are rejected.
 //
 // Output tables drive locale negotiation (see LocaleNegotiation):
 //   - likelySubtags: maximal-form expansion, so `zh` matches `zh-Hans-CN` and `zh-TW` matches `zh-Hant`.
@@ -20,29 +24,67 @@
 
 import Foundation
 
+// MARK: - CLDR source
+
+let cldrBranch = ProcessInfo.processInfo.environment["CLDR_BRANCH"] ?? "main"
+let cldrBase = "https://raw.githubusercontent.com/unicode-org/cldr-json/\(cldrBranch)/cldr-json"
+
+/// Read a JSON source as `Data`. Accepts either a local filesystem path or
+/// an `http(s)://` URL.
+func loadData(_ source: String) throws -> Data {
+	if source.hasPrefix("http://") || source.hasPrefix("https://") {
+		guard let url = URL(string: source) else {
+			throw NSError(domain: "load", code: 1, userInfo: [NSLocalizedDescriptionKey: "bad URL: \(source)"])
+		}
+		FileHandle.standardError.write(Data("fetching \(source)\n".utf8))
+		return try Data(contentsOf: url)
+	}
+	return try Data(contentsOf: URL(fileURLWithPath: source))
+}
+
 // MARK: - Args
 
 let argv = CommandLine.arguments
+let positional = Array(argv.dropFirst()).filter { !$0.hasPrefix("-") }
 
-guard argv.count >= 4 else {
+// All-or-nothing for source paths: mixing local + default-remote would be
+// confusing (e.g. local likelySubtags but remote parentLocales pinning
+// different CLDR versions). The output path remains independently optional.
+let likelySource: String
+let parentsSource: String
+let aliasesSource: String
+let outputPath: String
+
+switch positional.count {
+case 0:
+	likelySource = "\(cldrBase)/cldr-core/supplemental/likelySubtags.json"
+	parentsSource = "\(cldrBase)/cldr-core/supplemental/parentLocales.json"
+	aliasesSource = "\(cldrBase)/cldr-core/supplemental/aliases.json"
+	outputPath = "Sources/SwiftLocalize/LocaleData+Generated.swift"
+case 1:
+	likelySource = "\(cldrBase)/cldr-core/supplemental/likelySubtags.json"
+	parentsSource = "\(cldrBase)/cldr-core/supplemental/parentLocales.json"
+	aliasesSource = "\(cldrBase)/cldr-core/supplemental/aliases.json"
+	outputPath = positional[0]
+case 3, 4:
+	likelySource = positional[0]
+	parentsSource = positional[1]
+	aliasesSource = positional[2]
+	outputPath = positional.count == 4 ? positional[3] : "Sources/SwiftLocalize/LocaleData+Generated.swift"
+default:
 	FileHandle.standardError.write(Data(
-		"usage: swift run GenerateLocaleData <likelySubtags.json> <parentLocales.json> <aliases.json> [<output.swift>]\n".utf8
+		"usage: swift run GenerateLocaleData [<likelySubtags.json|URL> <parentLocales.json|URL> <aliases.json|URL>] [<output.swift>]\n".utf8
 	))
 	exit(2)
 }
 
-let likelyPath = argv[1]
-let parentsPath = argv[2]
-let aliasesPath = argv[3]
-let outputPath = argv.count >= 5 ? argv[4] : "Sources/SwiftLocalize/LocaleData+Generated.swift"
-
 // MARK: - JSON helpers
 
-func loadJSON(_ path: String) throws -> [String: Any] {
-	let data = try Data(contentsOf: URL(fileURLWithPath: path))
+func loadJSON(_ source: String) throws -> [String: Any] {
+	let data = try loadData(source)
 	guard let obj = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
 		throw NSError(domain: "GenerateLocaleData", code: 1, userInfo: [
-			NSLocalizedDescriptionKey: "Not a JSON object: \(path)",
+			NSLocalizedDescriptionKey: "Not a JSON object: \(source)",
 		])
 	}
 	return obj
@@ -62,7 +104,7 @@ func firstToken(_ s: String) -> String {
 
 // MARK: - likelySubtags
 
-let likelyRoot = try loadJSON(likelyPath)
+let likelyRoot = try loadJSON(likelySource)
 let likelyRaw = dict(dict(likelyRoot["supplemental"])["likelySubtags"])
 var likelyPairs: [(String, String)] = []
 for (k, v) in likelyRaw {
@@ -73,7 +115,7 @@ likelyPairs.sort { $0.0 < $1.0 }
 
 // MARK: - parentLocales
 
-let parentsRoot = try loadJSON(parentsPath)
+let parentsRoot = try loadJSON(parentsSource)
 let parentsRaw = dict(dict(dict(parentsRoot["supplemental"])["parentLocales"])["parentLocale"])
 var parentPairs: [(String, String)] = []
 for (k, v) in parentsRaw {
@@ -84,7 +126,7 @@ parentPairs.sort { $0.0 < $1.0 }
 
 // MARK: - aliases
 
-let aliasesRoot = try loadJSON(aliasesPath)
+let aliasesRoot = try loadJSON(aliasesSource)
 let aliasBlock = dict(dict(dict(aliasesRoot["supplemental"])["metadata"])["alias"])
 
 func collectAliases(_ key: String) -> [(String, String)] {
@@ -125,7 +167,7 @@ var output = ""
 output += "// @ai-generated(guided) — DO NOT EDIT BY HAND.\n"
 output += "// Generated by Scripts/GenerateLocaleData from CLDR data.\n"
 output += "// Regenerate after CLDR updates:\n"
-output += "//   swift run GenerateLocaleData <likelySubtags.json> <parentLocales.json> <aliases.json> [<output.swift>]\n"
+output += "//   swift run GenerateLocaleData [<likelySubtags.json|URL> <parentLocales.json|URL> <aliases.json|URL>] [<output.swift>]\n"
 output += "//\n"
 output += "// Source: https://github.com/unicode-org/cldr-json (cldr-core/supplemental/)\n"
 output += "import Foundation\n\n"
