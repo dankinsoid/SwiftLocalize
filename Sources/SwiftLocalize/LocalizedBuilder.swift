@@ -24,8 +24,7 @@ public extension Localized {
 
 	@inlinable
 	static func buildArray(_ components: [Localized]) -> Localized where Value: RangeReplaceableCollection {
-		guard !components.isEmpty else { return Localized(nil, Value.init()) }
-		return components.dropFirst().reduce(into: components[0], +=)
+		Localized.joined(components)
 	}
 
 	@inlinable

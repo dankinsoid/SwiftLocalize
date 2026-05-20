@@ -159,88 +159,12 @@ public struct Localized<Value> {
 
 extension Localized where Value: RangeReplaceableCollection {
 
-	/// Concatenate two localized values.
-	///
-	/// **Per-language translations**: for every language covered by either side,
-	/// the result holds `lhs.tryResolved(lang) + rhs.tryResolved(lang)` — that
-	/// is, CLDR-negotiated lookups on both sides (canonical aliases, likely
-	/// subtags, parent walks). A side that can't produce a value for `lang`
-	/// without falling through to its anchor contributes nothing, and the slot
-	/// is dropped rather than mixing languages. A universal side
-	/// (`base.language == nil`) contributes its base value to every slot.
-	///
-	/// **Anchor (`base.language`)**:
-	/// - Both sides universal → result is universal.
-	/// - Exactly one side anchored → that anchor.
-	/// - Both anchored — picked from the merged per-language map by the first
-	///   match in this priority chain: `lhs.base.language`, `rhs.base.language`,
-	///   then `Locale.preferredLanguages` in order. If none of those land in
-	///   the merged map, falls back to the alphabetically first language
-	///   present; if the map is empty (no shared coverage at all), falls back
-	///   to `lhs.base.language` and debug-asserts — the base value there
-	///   silently mixes anchors.
-	///
-	/// **Base value**: when the chosen anchor has a merged slot, that slot's
-	/// value is used (so translation overrides on either side are honored).
-	/// For a universal result, `lhs.base.value + rhs.base.value`. The slot for
-	/// the chosen `baseLanguage` is then removed from `translations` to avoid
-	/// duplication with `base.value`.
-	///
-	/// **Disagreeing anchors**: sides with different `base.language` still combine
-	/// correctly when they cover the same languages through different anchors
-	/// (e.g. `.en`-anchored with a `.fr` translation + `.fr`-anchored with an
-	/// `.en` translation yields both `.en` and `.fr` slots). Alias and
-	/// likely-subtag pairs (`iw`↔`he`, `zh-TW`↔`zh-Hant`) also pair correctly
-	/// — that's `tryResolved`'s job, not exact-key lookup.
+	/// Concatenate two localized values. Thin wrapper over
+	/// `Localized.joined(_:separator:)` — see there for per-language merging,
+	/// anchor selection, and the `mul`-demotion rule for compositions with
+	/// no shared coverage.
 	public static func + (_ lhs: Localized, _ rhs: Localized) -> Localized {
-		let languages = lhs.availableLanguages.union(rhs.availableLanguages)
-
-		var mergedTranslations: [Language: Value] = [:]
-		mergedTranslations.reserveCapacity(languages.count)
-
-		// `tryResolved` participates in CLDR negotiation (aliases, likely-subtags,
-		// parent walks) — same-language matches only. Cross-language mixing into
-		// a slot happens only via the universal `lAnyValue`/`rAnyValue`, which
-		// by definition carry no language commitment.
-		for lang in languages {
-			if let lValue = lhs.tryResolved(lang),
-			   let rValue = rhs.tryResolved(lang) {
-				mergedTranslations[lang] = lValue + rValue
-			}
-		}
-
-		let baseLanguage: Language?
-		if lhs.baseLanguage == rhs.baseLanguage {
-			baseLanguage = lhs.baseLanguage
-		} else if lhs.baseLanguage == nil {
-			baseLanguage = rhs.baseLanguage
-		} else if rhs.baseLanguage == nil {
-			baseLanguage = lhs.baseLanguage
-		} else {
-			let translationsKeys = Set(mergedTranslations.keys)
-			let priorityLanguages = [lhs.baseLanguage!, rhs.baseLanguage!] + Locale.preferredLanguages.map(Language.init(rawValue:))
-			baseLanguage = priorityLanguages.first(where: translationsKeys.contains)
-				?? translationsKeys.sorted(by: { $0.rawValue < $1.rawValue }).first
-			if baseLanguage == nil {
-				assertionFailure("Localized + Localized: no shared coverage between anchors \(lhs.baseLanguage!) and \(rhs.baseLanguage!); base value will silently mix anchors.")
-			}
-		}
-
-		let baseValue: Value
-		if let lang = baseLanguage {
-			// Anchored result — prefer the merged slot (catches translation overrides
-			// on either side). Falls back to raw `resolved` only on the asserted
-			// no-shared-coverage path above.
-			baseValue = mergedTranslations[lang] ?? (lhs.resolved(lang) + rhs.resolved(lang))
-		} else {
-			baseValue = lhs.baseValue + rhs.baseValue
-		}
-
-		if let baseLanguage {
-			mergedTranslations.removeValue(forKey: baseLanguage)
-		}
-
-		return Localized(baseLanguage, baseValue, mergedTranslations)
+		Localized.joined([lhs, rhs])
 	}
 
 	public static func + (_ lhs: Localized, _ rhs: Value) -> Localized {
@@ -271,15 +195,46 @@ extension Localized where Value: RangeReplaceableCollection {
 	/// adjacent parts.
 	///
 	/// One-pass equivalent of `parts[0] + sep + parts[1] + ... + sep + parts[n-1]`
-	/// — computes the union of languages once and resolves each operand exactly
+	/// — computes the language union once and resolves each operand exactly
 	/// once per language, avoiding the N−1 binary merges (and their repeated
-	/// CLDR negotiation) that chained `+` would do.
+	/// CLDR negotiation) that chained `+` would do. Binary `+` and the
+	/// `Localized` result builder both delegate here.
 	///
-	/// Per-language semantics, anchor selection, and base-value picking match
-	/// binary `+` (see above), generalized over N parts. The separator
-	/// participates like any other operand: a universal separator contributes
-	/// its base value to every slot; an anchored separator can drop a slot when
-	/// it has no translation for that language, exactly as an anchored part can.
+	/// **Per-language translations.** For every language covered by any
+	/// operand, the result holds the concatenation of all operands'
+	/// `tryResolved(lang)` values, with `separator` interleaved. CLDR
+	/// negotiation participates on each lookup (canonical aliases, likely
+	/// subtags, parent walks). An operand that can't produce a value for
+	/// `lang` without falling through to its anchor drops the slot rather
+	/// than silently mixing languages. A universal operand (`base.language
+	/// == nil`) contributes its base value to every slot. The separator
+	/// participates as a regular operand on both counts.
+	///
+	/// **Anchor (`base.language`).**
+	/// - All operands universal → result is universal (`nil`).
+	/// - Exactly one distinct anchor across operands → that anchor.
+	/// - Multiple anchors with shared coverage → picked from the merged
+	///   per-language map in this priority chain: each operand's anchor in
+	///   caller order, then `Locale.preferredLanguages`; falls back to the
+	///   alphabetically first covered language.
+	/// - Multiple anchors with **no shared coverage** → the result tags as
+	///   `Language.mul` (BCP-47 "multiple languages") and asserts in debug.
+	///   The base value is the operand-by-operand concatenation of base
+	///   values — content the caller asked for, with an honest tag that
+	///   marks it distinguishable from intentional universal values.
+	///
+	/// **Base value.** When the chosen anchor has a merged slot, that slot's
+	/// value is used (translation overrides on either side are honored). For
+	/// universal or `mul` results, base values are concatenated directly.
+	/// The slot for the chosen anchor is then removed from `translations` to
+	/// avoid duplication with `base.value`.
+	///
+	/// **Disagreeing anchors.** Operands with different `base.language` still
+	/// combine correctly when they cover the same languages through different
+	/// anchors (e.g. `.en`-anchored with a `.fr` translation + `.fr`-anchored
+	/// with an `.en` translation yields both `.en` and `.fr` slots). Alias
+	/// and likely-subtag pairs (`iw`↔`he`, `zh-TW`↔`zh-Hant`) also pair
+	/// correctly — that's `tryResolved`'s job, not exact-key lookup.
 	///
 	/// Edge cases: empty `parts` returns an empty universal value; a single
 	/// part is returned unchanged (separator ignored).
@@ -328,11 +283,14 @@ extension Localized where Value: RangeReplaceableCollection {
 			anchors.append(lang)
 		}
 
-		func fold(_ lang: Language) -> Value {
-			var v = parts[0].resolved(lang)
+		// Concat of base values (operand-by-operand, with separator). Used
+		// when the result is universal *or* when no anchor has full coverage
+		// and we tag `mul`.
+		func mixedBaseValue() -> Value {
+			var v = parts[0].base.value
 			for i in 1..<parts.count {
-				if let separator { v.append(contentsOf: separator.resolved(lang)) }
-				v.append(contentsOf: parts[i].resolved(lang))
+				if let separator { v.append(contentsOf: separator.base.value) }
+				v.append(contentsOf: parts[i].base.value)
 			}
 			return v
 		}
@@ -342,30 +300,26 @@ extension Localized where Value: RangeReplaceableCollection {
 
 		if anchors.isEmpty {
 			baseLanguage = nil
-			var v = parts[0].base.value
-			for i in 1..<parts.count {
-				if let separator { v.append(contentsOf: separator.base.value) }
-				v.append(contentsOf: parts[i].base.value)
-			}
-			baseValue = v
+			baseValue = mixedBaseValue()
 		} else if anchors.count == 1 {
+			// Every operand either shares this anchor or is universal — both
+			// always resolve under it, so `merged[anchor]` is populated.
 			baseLanguage = anchors[0]
-			// Single anchor means every operand either shares that anchor or is
-			// universal — both always resolve in it, so `merged[anchor]` is
-			// populated. `fold` is a defensive fallback for that "can't happen".
-			baseValue = merged[anchors[0]] ?? fold(anchors[0])
+			baseValue = merged[anchors[0]]!
 		} else {
 			let mergedKeys = Set(merged.keys)
 			let priority = anchors + Locale.preferredLanguages.map(Language.init(rawValue:))
-			let picked = priority.first(where: mergedKeys.contains)
-				?? mergedKeys.sorted(by: { $0.rawValue < $1.rawValue }).first
-				?? anchors[0]
-			baseLanguage = picked
-			if let v = merged[picked] {
-				baseValue = v
+			if let picked = priority.first(where: mergedKeys.contains)
+				?? mergedKeys.sorted(by: { $0.rawValue < $1.rawValue }).first {
+				baseLanguage = picked
+				baseValue = merged[picked]!
 			} else {
-				assertionFailure("Localized.joined: no shared coverage among anchors \(anchors); base value will silently mix anchors.")
-				baseValue = fold(picked)
+				// No language covers all operands. The result necessarily
+				// mixes languages; tag `mul` so callers can distinguish it
+				// from `nil`-anchored "universal by design" values.
+				assertionFailure("Localized.joined: no shared coverage among anchors \(anchors); result tagged `mul`.")
+				baseLanguage = .mul
+				baseValue = mixedBaseValue()
 			}
 		}
 
