@@ -150,11 +150,10 @@ extension Localized where Value: RangeReplaceableCollection {
 			baseValue = lhs.base.value + rhs.resolved(lhs.base.language!)
 		} else {
 			var translationsKeys = Set(mergedTranslations.keys)
+			let priorityLanguages = [lhs.base.language!, rhs.base.language!] + Locale.preferredLanguages.map(Language.init(rawValue:))
 			let language: Language?
-			if translationsKeys.contains(lhs.base.language!) {
-				language = lhs.base.language
-			} else if translationsKeys.contains(rhs.base.language!) {
-				language = rhs.base.language
+			if let lang = priorityLanguages.first(where: translationsKeys.contains) {
+				language = lang
 			} else {
 				language = translationsKeys.sorted(by: { $0.rawValue < $1.rawValue }).first
 			}
