@@ -11,48 +11,6 @@
 @testable import SwiftLocalize
 import XCTest
 
-// MARK: - Domain gender (separate type from `GrammaticalGender`)
-//
-// `GrammaticalGender` is a language property — the small fixed CLDR set used
-// for inflection. The app's user gender is a data property whose vocabulary
-// can drift (`nonBinary`, `unspecified`, …) without polluting the
-// grammatical taxonomy. Keep them as separate types and map at the edge of
-// each localized string — that's what `grammatical(in:)` below does.
-
-enum UserGender {
-	case male, female
-}
-
-extension UserGender {
-
-	/// Map a person's gender to the slot the target language actually uses
-	/// for human masculine / feminine.
-	///
-	///   - Polish has `.personal` for male humans (distinct from `.animate`
-	///     used for male non-human animals).
-	///   - Czech / Croatian / Slovak / Serbian / Malayalam split masculine
-	///     into `.animate` / `.inanimate`; humans take `.animate`.
-	///   - Common-gender languages (Danish / Dutch / Swedish) collapse both
-	///     into `.common`.
-	///   - Languages with no gender (en, ja, zh, …) get the raw masculine /
-	///     feminine back — caller's `default` branch will ignore it.
-	func grammatical(in language: Language) -> GrammaticalGender {
-		let supported = language.grammaticalGenders
-		switch self {
-		case .female:
-			return supported.contains(.feminine) ? .feminine
-				 : supported.contains(.common)   ? .common
-				 : .feminine
-		case .male:
-			return supported.contains(.personal)  ? .personal
-				 : supported.contains(.animate)   ? .animate
-				 : supported.contains(.masculine) ? .masculine
-				 : supported.contains(.common)    ? .common
-				 : .masculine
-		}
-	}
-}
-
 // MARK: - App strings catalog
 
 enum AppStrings {
@@ -199,16 +157,16 @@ enum AppStrings {
 	// Polish past tense does too. `default` covers both the masculine slot
 	// for the language *and* the language-without-gender case (en) when this
 	// string is asked for a tag we didn't translate explicitly.
-	static func signedIn(name: String, gender: UserGender) -> Localized<String> {
-		let ru: String = switch gender.grammatical(in: .ru) {
+	static func signedIn(name: String, gender: GrammaticalGender) -> Localized<String> {
+		let ru: String = switch gender {
 			case .feminine: "\(name) вошла"
 			default:        "\(name) вошёл"
 		}
-		let fr: String = switch gender.grammatical(in: .fr) {
+		let fr: String = switch gender {
 			case .feminine: "\(name) s'est connectée"
 			default:        "\(name) s'est connecté"
 		}
-		let pl: String = switch gender.grammatical(in: .pl) {
+		let pl: String = switch gender {
 			case .feminine: "\(name) zalogowała się"
 			default:        "\(name) zalogował się"
 		}
@@ -386,53 +344,31 @@ final class AppStringsExampleTests: XCTestCase {
 
 	// MARK: Gender — domain mapping
 
-	func testUserGenderMapsToLanguageSpecificCategory() {
-		// Standard three-gender — direct masculine / feminine.
-		XCTAssertEqual(UserGender.male.grammatical(in: .ru),   .masculine)
-		XCTAssertEqual(UserGender.female.grammatical(in: .ru), .feminine)
-		XCTAssertEqual(UserGender.male.grammatical(in: .de),   .masculine)
-		XCTAssertEqual(UserGender.female.grammatical(in: .fr), .feminine)
-		// Slavic animacy split — male humans land on `.animate`, not `.masculine`.
-		XCTAssertEqual(UserGender.male.grammatical(in: .cs),   .animate)
-		XCTAssertEqual(UserGender.female.grammatical(in: .cs), .feminine)
-		// Polish prefers `.personal` over `.animate` for male humans.
-		XCTAssertEqual(UserGender.male.grammatical(in: .pl),   .personal)
-		XCTAssertEqual(UserGender.female.grammatical(in: .pl), .feminine)
-		// Common-gender languages collapse both.
-		XCTAssertEqual(UserGender.male.grammatical(in: .da),   .common)
-		XCTAssertEqual(UserGender.female.grammatical(in: .da), .common)
-		// No-gender language — mapping is irrelevant; caller's `default`
-		// branch will ignore the result. We return the literal masculine /
-		// feminine slot so equality is at least deterministic.
-		XCTAssertEqual(UserGender.male.grammatical(in: .en),   .masculine)
-		XCTAssertEqual(UserGender.female.grammatical(in: .en), .feminine)
-	}
-
 	// MARK: Gender — localized strings
 
 	func testSignedInRussianAgreesInGender() {
-		XCTAssertEqual(AppStrings.signedIn(name: "Анна",  gender: .female).resolved(.ru), "Анна вошла")
-		XCTAssertEqual(AppStrings.signedIn(name: "Иван",  gender: .male).resolved(.ru),   "Иван вошёл")
+		XCTAssertEqual(AppStrings.signedIn(name: "Анна",  gender: .feminine).resolved(.ru), "Анна вошла")
+		XCTAssertEqual(AppStrings.signedIn(name: "Иван",  gender: .masculine).resolved(.ru),   "Иван вошёл")
 	}
 
 	func testSignedInFrenchAgreesInGender() {
 		// Past participle with `être` agrees with the subject's gender.
-		XCTAssertEqual(AppStrings.signedIn(name: "Anna", gender: .female).resolved(.fr), "Anna s'est connectée")
-		XCTAssertEqual(AppStrings.signedIn(name: "Marc", gender: .male).resolved(.fr),   "Marc s'est connecté")
+		XCTAssertEqual(AppStrings.signedIn(name: "Anna", gender: .feminine).resolved(.fr), "Anna s'est connectée")
+		XCTAssertEqual(AppStrings.signedIn(name: "Marc", gender: .masculine).resolved(.fr),   "Marc s'est connecté")
 	}
 
 	func testSignedInPolishAgreesInGender() {
 		// Polish past tense agrees in gender; for the 2nd-person form here,
 		// male humans use the masculine-personal form (`.personal` via
 		// `UserGender.grammatical`), which switches our `default` branch.
-		XCTAssertEqual(AppStrings.signedIn(name: "Anna",  gender: .female).resolved(.pl), "Anna zalogowała się")
-		XCTAssertEqual(AppStrings.signedIn(name: "Marek", gender: .male).resolved(.pl),   "Marek zalogował się")
+		XCTAssertEqual(AppStrings.signedIn(name: "Anna",  gender: .feminine).resolved(.pl), "Anna zalogowała się")
+		XCTAssertEqual(AppStrings.signedIn(name: "Marek", gender: .masculine).resolved(.pl),   "Marek zalogował się")
 	}
 
 	func testSignedInEnglishIgnoresGender() {
 		// English doesn't agree in gender — both calls produce the same string.
-		XCTAssertEqual(AppStrings.signedIn(name: "Anna", gender: .female).resolved(.en), "Anna signed in")
-		XCTAssertEqual(AppStrings.signedIn(name: "Marc", gender: .male).resolved(.en),   "Marc signed in")
+		XCTAssertEqual(AppStrings.signedIn(name: "Anna", gender: .feminine).resolved(.en), "Anna signed in")
+		XCTAssertEqual(AppStrings.signedIn(name: "Marc", gender: .masculine).resolved(.en),   "Marc signed in")
 	}
 
 	// MARK: Builder composition
