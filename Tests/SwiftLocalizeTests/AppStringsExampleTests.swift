@@ -21,26 +21,26 @@ enum AppStrings {
 	// shape — a one-language constant reads as a plain string.
 	static let appName: Localized<String> = "Tunes"
 
-	// Multi-language constants need the explicit `Localized([...], default:)`
-	// initializer because there's no `ExpressibleByDictionaryLiteral`. The
-	// `default:` slot doubles as the canonical English source — that's a fine
-	// convention but worth being explicit about.
+	// Multi-language constants need the explicit
+	// `Localized(baseLanguage, baseValue, translations)` initializer because
+	// there's no `ExpressibleByDictionaryLiteral`. The base slot carries the
+	// canonical source (here English) without having to repeat it in the
+	// translations dictionary.
 	static let cancel = Localized<String>(
-		[.en: "Cancel", .ru: "Отмена", .de: "Abbrechen", .fr: "Annuler"],
-		default: "Cancel"
+		.en, "Cancel",
+		[.ru: "Отмена", .de: "Abbrechen", .fr: "Annuler"]
 	)
 
 	static let delete = Localized<String>(
-		[.en: "Delete", .ru: "Удалить", .de: "Löschen", .fr: "Supprimer"],
-		default: "Delete"
+		.en, "Delete",
+		[.ru: "Удалить", .de: "Löschen", .fr: "Supprimer"]
 	)
 
 	static let networkErrorTitle = Localized<String>(
-		[.en: "No internet connection",
-		 .ru: "Нет подключения к интернету",
+		.en, "No internet connection",
+		 [.ru: "Нет подключения к интернету",
 		 .de: "Keine Internetverbindung",
-		 .fr: "Pas de connexion internet"],
-		default: "No internet connection"
+		 .fr: "Pas de connexion internet"]
 	)
 
 	// MARK: Interpolation
@@ -50,11 +50,10 @@ enum AppStrings {
 	// fine for in-codebase strings, not great if these ever ship out to a TMS.
 	static func welcomeBack(name: String) -> Localized<String> {
 		Localized(
-			[.en: "Welcome back, \(name)!",
-			 .ru: "С возвращением, \(name)!",
+			.en, "Welcome back, \(name)!",
+			[.ru: "С возвращением, \(name)!",
 			 .de: "Willkommen zurück, \(name)!",
-			 .fr: "Bon retour, \(name) !"],
-			default: "Welcome back, \(name)!"
+			 .fr: "Bon retour, \(name) !"]
 		)
 	}
 
@@ -70,11 +69,11 @@ enum AppStrings {
 	// repetition is mechanical — but (1) is the actual translator burden.
 	static func songsCount(_ n: Int) -> Localized<String> {
 		Localized(
+			.en, plural(n, in: .en, [
+				.one:   "\(n) song",
+				.other: "\(n) songs",
+			]),
 			[
-				.en: plural(n, in: .en, [
-					.one:   "\(n) song",
-					.other: "\(n) songs",
-				]),
 				.ru: plural(n, in: .ru, [
 					.one:   "\(n) песня",
 					.few:   "\(n) песни",
@@ -89,26 +88,24 @@ enum AppStrings {
 					.one:   "\(n) chanson",
 					.other: "\(n) chansons",
 				]),
-			],
-			default: "\(n) songs"
+			]
 		)
 	}
 
 	static func minutesAgo(_ n: Int) -> Localized<String> {
 		Localized(
+			.en, plural(n, in: .en, [
+				.one:   "1 minute ago",
+				.other: "\(n) minutes ago",
+			]),
 			[
-				.en: plural(n, in: .en, [
-					.one:   "1 minute ago",
-					.other: "\(n) minutes ago",
-				]),
 				.ru: plural(n, in: .ru, [
 					.one:   "\(n) минуту назад",
 					.few:   "\(n) минуты назад",
 					.many:  "\(n) минут назад",
 					.other: "\(n) минут назад",
 				]),
-			],
-			default: "\(n) minutes ago"
+			]
 		)
 	}
 
@@ -119,21 +116,20 @@ enum AppStrings {
 	// teens collapsing to "th"). Russian/German/French use a single suffix.
 	static func placeNumber(_ n: Int) -> Localized<String> {
 		Localized(
+			.en, ordinal(n, in: .en, [
+				.one:   "\(n)st place",
+				.two:   "\(n)nd place",
+				.few:   "\(n)rd place",
+				.other: "\(n)th place",
+			]),
 			[
-				.en: ordinal(n, in: .en, [
-					.one:   "\(n)st place",
-					.two:   "\(n)nd place",
-					.few:   "\(n)rd place",
-					.other: "\(n)th place",
-				]),
 				.ru: "\(n)-е место",
 				.de: "\(n). Platz",
 				.fr: ordinal(n, in: .fr, [
 					.one:   "\(n)ᵉʳ place",
 					.other: "\(n)ᵉ place",
 				]),
-			],
-			default: "\(n)th place"
+			]
 		)
 	}
 
@@ -147,13 +143,13 @@ enum AppStrings {
 	@Localized<String>
 	static func playlistSummary(name: Localized<String>, count: Int) -> Localized<String> {
 		Localized<String>(
-			[.en: "Playlist “", .ru: "Плейлист «", .de: "Playlist „", .fr: "Liste « "],
-			default: "Playlist “"
+			.en, "Playlist “",
+			[.ru: "Плейлист «", .de: "Playlist „", .fr: "Liste « "]
 		)
 		name
 		Localized<String>(
-			[.en: "”, ", .ru: "», ", .de: "“, ", .fr: " », "],
-			default: "”, "
+			.en, "”, ",
+			[.ru: "», ", .de: "“, ", .fr: " », "]
 		)
 		songsCount(count)
 		"."
@@ -290,7 +286,10 @@ final class AppStringsExampleTests: XCTestCase {
 
 	func testPlaylistSummaryComposesFragmentsPerLanguage() {
 		let summary = AppStrings.playlistSummary(
-			name: Localized([.en: "Chill Vibes", .ru: "Чилл-плейлист"], default: "Chill Vibes"),
+			// `nil` anchor → `name` acts as a universal fallback in concat, so a
+			// language without its own translation (here `.de`) can still wrap the
+			// base value instead of dropping the whole slot.
+			name: Localized(nil, "Chill Vibes", [.ru: "Чилл-плейлист"]),
 			count: 3
 		)
 		XCTAssertEqual(summary.resolved(.en), "Playlist “Chill Vibes”, 3 songs.")
@@ -302,7 +301,7 @@ final class AppStringsExampleTests: XCTestCase {
 
 	func testPlaylistSummaryHandlesSingularInEnglish() {
 		let summary = AppStrings.playlistSummary(
-			name: Localized([.en: "Solo"], default: "Solo"),
+			name: Localized(.en, "Solo"),
 			count: 1
 		)
 		XCTAssertEqual(summary.resolved(.en), "Playlist “Solo”, 1 song.")
