@@ -14,7 +14,7 @@ A CLDR-backed localization toolkit for Swift. Carry translations alongside the c
 - **Grammatical gender** — `Language.grammaticalGenders` returns the language's CLDR-classified gender set (`[.animate, .inanimate, .feminine, .neuter]` for cs, `[.common, .neuter]` for da, `[]` for en/ja/zh, …).
 - **Locale negotiation** — `zh-TW` matches an available `zh-Hant`, `en-AU` walks to `en-001` then `en`, deprecated `iw` canonicalizes to `he` — all data-driven from CLDR.
 - **Typography helpers** — `"Hi".quoted(in: .ru)` → `«Hi»`; `"2020".rangeJoined(to: "2025", in: .ja)` → `2020～2025`.
-- **Composition** — `+` concatenates per-language with smart fallback; `@LocalizedBuilder` supports declarative composition with control flow.
+- **Composition** — `+` concatenates per-language with smart fallback; `Localized` itself is a `@resultBuilder` for declarative composition with control flow.
 
 ## Quick example
 
@@ -246,9 +246,9 @@ phrase.resolved(.ru)   // "красивое дерево"
 
 Concatenation does per-language CLDR-negotiated lookup on both sides. A side missing a translation contributes nothing rather than silently mixing languages; universal sides (`baseLanguage == nil`) contribute their base value to every slot.
 
-### `@LocalizedBuilder`
+### Result builder
 
-A result builder for declarative composition with full control flow:
+`Localized` itself is annotated `@resultBuilder`, so the type name doubles as the builder attribute. Use it for declarative composition with full control flow:
 
 ```swift
 @Localized<String>
