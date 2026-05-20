@@ -60,5 +60,11 @@ let package = Package(
 			name: "GenerateRangePatterns",
 			path: "Scripts/GenerateRangePatterns"
 		),
+		// Dev-only generator for per-language grammatical gender sets (masculine/feminine/…).
+		// Run: `swift run GenerateGrammaticalGender [<grammaticalFeatures.json|URL>] [<output.swift>]`.
+		.executableTarget(
+			name: "GenerateGrammaticalGender",
+			path: "Scripts/GenerateGrammaticalGender"
+		),
 	]
 )
