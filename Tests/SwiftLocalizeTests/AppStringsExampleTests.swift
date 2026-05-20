@@ -59,76 +59,87 @@ enum AppStrings {
 
 	// MARK: Plurals — cardinal
 	//
-	// Pain point: there is no `Localized`-level plural primitive, so the caller
-	// must dispatch per language. The `plural(_:in:_:)` helper below collapses
-	// that to a single line per language, but the developer still has to:
-	//   1. know which CLDR categories the language uses,
-	//   2. construct all forms eagerly (no laziness), and
-	//   3. repeat the number interpolation inside every form.
-	// In practice (2) and (3) are not real costs — formatting is cheap and the
-	// repetition is mechanical — but (1) is the actual translator burden.
+	// `n.plural(in:_:)` dispatches `n` through the language's CLDR cardinal rule
+	// and hands the category to the closure. The closure pattern-matches on
+	// either `PluralCategory` cases or the number itself — both are supported
+	// by `PluralCategorized`'s `~=` overloads.
 	static func songsCount(_ n: Int) -> Localized<String> {
 		Localized(
-			.en, plural(n, in: .en, [
-				.one:   "\(n) song",
-				.other: "\(n) songs",
-			]),
+			.en, n.plural(in: .en) {
+				switch $0 {
+				case .one: "\(n) song"
+				default:   "\(n) songs"
+				}
+			},
 			[
-				.ru: plural(n, in: .ru, [
-					.one:   "\(n) песня",
-					.few:   "\(n) песни",
-					.many:  "\(n) песен",
-					.other: "\(n) песни",
-				]),
-				.de: plural(n, in: .de, [
-					.one:   "\(n) Lied",
-					.other: "\(n) Lieder",
-				]),
-				.fr: plural(n, in: .fr, [
-					.one:   "\(n) chanson",
-					.other: "\(n) chansons",
-				]),
+				.ru: n.plural(in: .ru) {
+					switch $0 {
+					case .one: "\(n) песня"
+					case .few: "\(n) песни"
+					default:   "\(n) песен"
+					}
+				},
+				.de: n.plural(in: .de) {
+					switch $0 {
+					case .one: "\(n) Lied"
+					default:   "\(n) Lieder"
+					}
+				},
+				.fr: n.plural(in: .fr) {
+					switch $0 {
+					case .one: "\(n) chanson"
+					default:   "\(n) chansons"
+					}
+				},
 			]
 		)
 	}
 
 	static func minutesAgo(_ n: Int) -> Localized<String> {
 		Localized(
-			.en, plural(n, in: .en, [
-				.one:   "1 minute ago",
-				.other: "\(n) minutes ago",
-			]),
+			.en, n.plural(in: .en) {
+				switch $0 {
+				case .one: "1 minute ago"
+				default:   "\(n) minutes ago"
+				}
+			},
 			[
-				.ru: plural(n, in: .ru, [
-					.one:   "\(n) минуту назад",
-					.few:   "\(n) минуты назад",
-					.many:  "\(n) минут назад",
-					.other: "\(n) минут назад",
-				]),
+				.ru: n.plural(in: .ru) {
+					switch $0 {
+					case .one: "\(n) минуту назад"
+					case .few: "\(n) минуты назад"
+					default:   "\(n) минут назад"
+					}
+				},
 			]
 		)
 	}
 
 	// MARK: Plurals — ordinal
 	//
-	// Same shape as cardinal but routed through `PluralType.ordinal`. English
-	// ordinals are the canonical example (1st / 2nd / 3rd / 4th, with the
-	// teens collapsing to "th"). Russian/German/French use a single suffix.
+	// `n.ordinal(in:_:)` is the parallel to `.plural` but routed through CLDR's
+	// ordinal rule set. English needs four suffixes (st/nd/rd/th, with the
+	// teens collapsing to "th"); Russian/German/French use a single suffix and
+	// don't need the closure at all.
 	static func placeNumber(_ n: Int) -> Localized<String> {
 		Localized(
-			.en, ordinal(n, in: .en, [
-				.one:   "\(n)st place",
-				.two:   "\(n)nd place",
-				.few:   "\(n)rd place",
-				.other: "\(n)th place",
-			]),
+			.en, n.ordinal(in: .en) {
+				switch $0 {
+				case .one: "\(n)st place"
+				case .two: "\(n)nd place"
+				case .few: "\(n)rd place"
+				default:   "\(n)th place"
+				}
+			},
 			[
 				.ru: "\(n)-е место",
 				.de: "\(n). Platz",
-				.fr: ordinal(n, in: .fr, [
-					.one:   "\(n)ᵉʳ place",
-					.other: "\(n)ᵉ place",
-				]),
+				.fr: n.ordinal(in: .fr) {
+					switch $0 {
+					case .one: "\(n)ᵉʳ place"
+					default:   "\(n)ᵉ place"
+					}
+				},
 			]
 		)
 	}
@@ -153,25 +164,6 @@ enum AppStrings {
 		)
 		songsCount(count)
 		"."
-	}
-}
-
-// MARK: - Plural helpers
-//
-// These would live in the app, not the library — they bridge a per-language
-// `[PluralCategory: String]` table to a single resolved string. Falling back
-// to `.other` matches CLDR semantics (every language defines `.other`).
-
-private extension AppStrings {
-
-	static func plural(_ n: Int, in language: Language, _ forms: [PluralCategory: String]) -> String {
-		let category = PluralCategory.of(Double(n), locale: language, type: .cardinal)
-		return forms[category] ?? forms[.other] ?? ""
-	}
-
-	static func ordinal(_ n: Int, in language: Language, _ forms: [PluralCategory: String]) -> String {
-		let category = PluralCategory.of(Double(n), locale: language, type: .ordinal)
-		return forms[category] ?? forms[.other] ?? ""
 	}
 }
 

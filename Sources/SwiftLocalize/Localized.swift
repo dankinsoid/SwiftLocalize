@@ -3,8 +3,12 @@ import Foundation
 @resultBuilder
 public struct Localized<Value> {
 
-	public let base: (language: Language?, value: Value)
+	public var base: (language: Language?, value: Value) {
+		(baseLanguage, baseValue)
+	}
 	public let translations: [Language: Value]
+	private let baseLanguage: Language?
+	private let baseValue: Value
 	
 	var asDict: [Language: Value] {
 		var dict = translations
@@ -18,7 +22,8 @@ public struct Localized<Value> {
 		_ translations: [Language: Value] = [:]
 	) {
 		self.translations = translations
-		self.base = (baseLanguage, baseValue)
+		self.baseLanguage = baseLanguage
+		self.baseValue = baseValue
 	}
 
 	/// Same value with CLDR-canonical language keys: deprecated aliases collapsed
@@ -53,7 +58,7 @@ public struct Localized<Value> {
 	/// `resolved(_:)` and `resolved()` are thin wrappers over this.
 	public func resolved(preferring languages: [Language]) -> Value {
 		guard !languages.isEmpty, !translations.isEmpty else { return base.value }
-		var translations = asDict
+		let translations = asDict
 		if languages.count == 1, let v = translations[languages[0]] { return v }
 		if !translations.isEmpty {
 			let chain = LocaleNegotiation.matching(
@@ -106,7 +111,8 @@ public struct Localized<Value> {
 	/// language.
 	public func tryResolved(preferring languages: [Language]) -> Value? {
 		let translations = asDict
-		guard !languages.isEmpty, !translations.isEmpty else { return nil }
+		guard !languages.isEmpty else { return nil }
+		guard !translations.isEmpty else { return baseValue }
 		if languages.count == 1, let v = translations[languages[0]] { return v }
 		let chain = LocaleNegotiation.matching(
 			requested: languages,
@@ -115,6 +121,7 @@ public struct Localized<Value> {
 		for tag in chain {
 			if let v = translations[tag] { return v }
 		}
+		if baseLanguage == nil { return baseValue }
 		return nil
 	}
 
@@ -139,7 +146,7 @@ public struct Localized<Value> {
 	/// (e.g. `Localized(nil, 42)`) returns an empty set.
 	public var availableLanguages: Set<Language> {
 		var langs = Set(translations.keys)
-		if let lang = base.language { langs.insert(lang) }
+		if let lang = baseLanguage { langs.insert(lang) }
 		return langs
 	}
 }
@@ -186,9 +193,6 @@ extension Localized where Value: RangeReplaceableCollection {
 	/// likely-subtag pairs (`iw`↔`he`, `zh-TW`↔`zh-Hant`) also pair correctly
 	/// — that's `tryResolved`'s job, not exact-key lookup.
 	public static func + (_ lhs: Localized, _ rhs: Localized) -> Localized {
-		let lAnyValue: Value? = lhs.base.language == nil ? lhs.base.value : nil
-		let rAnyValue: Value? = rhs.base.language == nil ? rhs.base.value : nil
-
 		let languages = lhs.availableLanguages.union(rhs.availableLanguages)
 
 		var mergedTranslations: [Language: Value] = [:]
@@ -199,26 +203,26 @@ extension Localized where Value: RangeReplaceableCollection {
 		// a slot happens only via the universal `lAnyValue`/`rAnyValue`, which
 		// by definition carry no language commitment.
 		for lang in languages {
-			if let lValue = lhs.tryResolved(lang) ?? lAnyValue,
-			   let rValue = rhs.tryResolved(lang) ?? rAnyValue {
+			if let lValue = lhs.tryResolved(lang),
+			   let rValue = rhs.tryResolved(lang) {
 				mergedTranslations[lang] = lValue + rValue
 			}
 		}
 
 		let baseLanguage: Language?
-		if lhs.base.language == rhs.base.language {
-			baseLanguage = lhs.base.language
-		} else if lhs.base.language == nil {
-			baseLanguage = rhs.base.language
-		} else if rhs.base.language == nil {
-			baseLanguage = lhs.base.language
+		if lhs.baseLanguage == rhs.baseLanguage {
+			baseLanguage = lhs.baseLanguage
+		} else if lhs.baseLanguage == nil {
+			baseLanguage = rhs.baseLanguage
+		} else if rhs.baseLanguage == nil {
+			baseLanguage = lhs.baseLanguage
 		} else {
 			let translationsKeys = Set(mergedTranslations.keys)
-			let priorityLanguages = [lhs.base.language!, rhs.base.language!] + Locale.preferredLanguages.map(Language.init(rawValue:))
+			let priorityLanguages = [lhs.baseLanguage!, rhs.baseLanguage!] + Locale.preferredLanguages.map(Language.init(rawValue:))
 			baseLanguage = priorityLanguages.first(where: translationsKeys.contains)
 				?? translationsKeys.sorted(by: { $0.rawValue < $1.rawValue }).first
 			if baseLanguage == nil {
-				assertionFailure("Localized + Localized: no shared coverage between anchors \(lhs.base.language!) and \(rhs.base.language!); base value will silently mix anchors.")
+				assertionFailure("Localized + Localized: no shared coverage between anchors \(lhs.baseLanguage!) and \(rhs.baseLanguage!); base value will silently mix anchors.")
 			}
 		}
 
@@ -229,7 +233,7 @@ extension Localized where Value: RangeReplaceableCollection {
 			// no-shared-coverage path above.
 			baseValue = mergedTranslations[lang] ?? (lhs.resolved(lang) + rhs.resolved(lang))
 		} else {
-			baseValue = lhs.base.value + rhs.base.value
+			baseValue = lhs.baseValue + rhs.baseValue
 		}
 
 		if let baseLanguage {
@@ -244,7 +248,7 @@ extension Localized where Value: RangeReplaceableCollection {
 		for (lang, v) in lhs.translations {
 			translations[lang] = v + rhs
 		}
-		return Localized(lhs.base.language, lhs.base.value + rhs, translations)
+		return Localized(lhs.baseLanguage, lhs.baseValue + rhs, translations)
 	}
 
 	public static func + (_ lhs: Value, _ rhs: Localized) -> Localized {
@@ -252,7 +256,7 @@ extension Localized where Value: RangeReplaceableCollection {
 		for (lang, v) in rhs.translations {
 			translations[lang] = lhs + v
 		}
-		return Localized(rhs.base.language, lhs + rhs.base.value, translations)
+		return Localized(rhs.baseLanguage, lhs + rhs.baseValue, translations)
 	}
 
 	public static func += (_ lhs: inout Localized, _ rhs: Localized) {
@@ -320,7 +324,13 @@ extension Localized: CustomDebugStringConvertible {
 
 	public var debugDescription: String {
 		let langs = translations.keys.map(\.description).joined(separator: ", ")
-		let baseTag = base.language?.description ?? "any"
-		return "Localized(\(baseTag): \(base.value), translations: [\(langs)])"
+		let baseTag = baseLanguage?.description ?? "any"
+		return "Localized(\(baseTag): \(baseValue), translations: [\(langs)])"
 	}
 }
+
+extension Localized: Equatable where Value: Equatable {}
+extension Localized: Hashable where Value: Hashable {}
+extension Localized: Sendable where Value: Sendable {}
+extension Localized: Decodable where Value: Decodable {}
+extension Localized: Encodable where Value: Encodable {}
