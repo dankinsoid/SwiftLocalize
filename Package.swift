@@ -66,5 +66,12 @@ let package = Package(
 			name: "GenerateGrammaticalGender",
 			path: "Scripts/GenerateGrammaticalGender"
 		),
+		// Dev-only generator for per-language plural-range result tables
+		// ((start_cat, end_cat) → result_cat, e.g. ru: one+many → many).
+		// Run: `swift run GeneratePluralRanges [<pluralRanges.json|URL>] [<output.swift>]`.
+		.executableTarget(
+			name: "GeneratePluralRanges",
+			path: "Scripts/GeneratePluralRanges"
+		),
 	]
 )

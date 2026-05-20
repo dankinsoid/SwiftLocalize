@@ -115,6 +115,45 @@ enum AppStrings {
 		)
 	}
 
+	// MARK: Plurals — range
+	//
+	// `(a...b).plural(in:_:)` looks up the CLDR pluralRanges 2D table for
+	// `(start_category, end_category)` — different from dispatching on either
+	// endpoint. In Russian, `1...5` resolves to `.many` ("1–5 песен"), not
+	// `.one` (from 1) or `.many` (from 5 coincidentally); it's what CLDR
+	// explicitly says about the pair.
+	static func songsCountRange(_ range: ClosedRange<Int>) -> Localized<String> {
+		Localized(
+			.en, range.plural(in: .en) { r in
+				switch r {
+				case .one: "\(r) song"
+				default:   "\(r) songs"
+				}
+			},
+			[
+				.ru: range.plural(in: .ru) { r in
+					switch r {
+					case .one: "\(r) песня"
+					case .few: "\(r) песни"
+					default:   "\(r) песен"
+					}
+				},
+				.de: range.plural(in: .de) { r in
+					switch r {
+					case .one: "\(r) Lied"
+					default:   "\(r) Lieder"
+					}
+				},
+				.fr: range.plural(in: .fr) { r in
+					switch r {
+					case .one: "\(r) chanson"
+					default:   "\(r) chansons"
+					}
+				},
+			]
+		)
+	}
+
 	// MARK: Plurals — ordinal
 	//
 	// `n.ordinal(in:_:)` is the parallel to `.plural` but routed through CLDR's
@@ -281,6 +320,52 @@ final class AppStringsExampleTests: XCTestCase {
 		XCTAssertEqual(AppStrings.minutesAgo(5).resolved(.en), "5 minutes ago")
 		XCTAssertEqual(AppStrings.minutesAgo(1).resolved(.ru), "1 минуту назад")
 		XCTAssertEqual(AppStrings.minutesAgo(5).resolved(.ru), "5 минут назад")
+	}
+
+	// MARK: Plurals — range
+
+	func testSongsRangeEnglish() {
+		// English: any range with mixed bounds → .other (single endpoint paths
+		// also fold to .other for n != 1).
+		XCTAssertEqual(AppStrings.songsCountRange(1...5).resolved(.en), "1–5 songs")
+		XCTAssertEqual(AppStrings.songsCountRange(0...0).resolved(.en), "0 songs")
+		// Collapsed: start == end formats as a single value, no en-dash.
+		XCTAssertEqual(AppStrings.songsCountRange(1...1).resolved(.en), "1 song")
+	}
+
+	func testSongsRangeRussian() {
+		// CLDR pluralRanges: ru one+many → many. Picking by endpoint alone would
+		// land on either .one (from 1) or .many (from 5 by coincidence); the
+		// table says it's many for the *pair*.
+		XCTAssertEqual(AppStrings.songsCountRange(1...5).resolved(.ru), "1–5 песен")
+		// few+few → few: "2–4 песни", not "песен".
+		XCTAssertEqual(AppStrings.songsCountRange(2...4).resolved(.ru), "2–4 песни")
+		// one+one (e.g. 21…21 — both .one for ru): collapse to "21 песня".
+		XCTAssertEqual(AppStrings.songsCountRange(21...21).resolved(.ru), "21 песня")
+		// few+many → many: "2–7 песен".
+		XCTAssertEqual(AppStrings.songsCountRange(2...7).resolved(.ru), "2–7 песен")
+	}
+
+	func testSongsRangeFrenchAndGerman() {
+		// fr: one+other → other ("1–5 chansons"); both endpoints translated.
+		XCTAssertEqual(AppStrings.songsCountRange(1...5).resolved(.fr), "1–5 chansons")
+		// de: one+other → other ("1–5 Lieder").
+		XCTAssertEqual(AppStrings.songsCountRange(1...5).resolved(.de), "1–5 Lieder")
+		// de has the curious other+one → one rule (CLDR encodes it even though
+		// well-formed ranges go low-to-high). With start==end it collapses, so
+		// we exercise the asymmetric direction differently: start_other,
+		// end_other → other.
+		XCTAssertEqual(AppStrings.songsCountRange(2...7).resolved(.de), "2–7 Lieder")
+	}
+
+	func testPluralRangeFallsBackToEndCategoryForLanguagesWithoutData() {
+		// Maltese (mt) isn't in pluralRanges.json — UTS #35 says use end's own
+		// category in that case. mt cardinal: 5 → .few (in 3..10), 11 → .many
+		// (mod 100 in 11..19), 20 → .other, 1 → .one. The end picks the result.
+		XCTAssertEqual(PluralCategory.ofRange(1, 5, locale: .init("mt")), .few)
+		XCTAssertEqual(PluralCategory.ofRange(1, 11, locale: .init("mt")), .many)
+		XCTAssertEqual(PluralCategory.ofRange(1, 20, locale: .init("mt")), .other)
+		XCTAssertEqual(PluralCategory.ofRange(5, 1, locale: .init("mt")), .one)
 	}
 
 	// MARK: Plurals — ordinal
