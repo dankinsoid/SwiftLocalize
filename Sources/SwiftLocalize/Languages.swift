@@ -131,3 +131,11 @@ public extension Language {
 		return Self(rawValue: raw)
 	}
 }
+
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+public extension FormatStyle {
+
+	func language(_ language: Language) -> Self {
+		locale(Locale(identifier: language.rawValue))
+	}
+}

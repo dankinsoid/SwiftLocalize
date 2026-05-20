@@ -24,6 +24,13 @@ public struct PluralCategorized<Number> {
 	}
 }
 
+extension PluralCategorized: CustomStringConvertible {
+	
+	public var description: String {
+		"\(number)"
+	}
+}
+
 extension PluralCategorized: Hashable where Number: Hashable {}
 extension PluralCategorized: Equatable where Number: Equatable {}
 extension PluralCategorized: Decodable where Number: Decodable {}
@@ -61,15 +68,17 @@ public extension FixedWidthInteger {
 	/// `PluralCategorized<Self>` that pattern-matches against both `PluralCategory`
 	/// cases (`.one`, `.few`, …) and the number itself (`case 0:`, `case 11:`).
 	///
-	///     n.plural(in: .ru) {
-	///         switch $0 {
-	///         case .one:  "\(n) песня"
-	///         case .few:  "\(n) песни"
-	///         default:    "\(n) песен"
-	///         }
+	/// ```swift
+	/// n.plural(in: .ru) {
+	///     switch $0 {
+	///     case .one:  "\(n) песня"
+	///     case .few:  "\(n) песни"
+	///     default:    "\(n) песен"
 	///     }
-	func plural<T>(in language: Language, _ forms: (PluralCategorized<Self>) -> T) -> T {
-		forms(PluralCategorized(
+	/// }
+	/// ```
+	func plural<T>(in language: Language, _ body: (PluralCategorized<Self>) -> T) -> T {
+		body(PluralCategorized(
 			number: self,
 			category: .of(Double(self), locale: language, type: .cardinal)
 		))
@@ -80,17 +89,18 @@ public extension FixedWidthInteger {
 	/// For rank/position — "1st" / "2nd" / "21st" / "11th". Separate from `plural`
 	/// because the CLDR rules differ: English ordinal categorises 1, 21, 31 as `.one`
 	/// (matching the "-st" suffix), whereas cardinal collapses everything but 1 into `.other`.
-	///
-	///     n.ordinal(in: .en) {
-	///         switch $0 {
-	///         case .one:  "\(n)st"
-	///         case .two:  "\(n)nd"
-	///         case .few:  "\(n)rd"
-	///         default:    "\(n)th"
-	///         }
+	/// ```swift
+	/// n.ordinal(in: .en) {
+	///     switch $0 {
+	///     case .one:  "\(n)st"
+	///     case .two:  "\(n)nd"
+	///     case .few:  "\(n)rd"
+	///     default:    "\(n)th"
 	///     }
-	func ordinal<T>(in language: Language, _ forms: (PluralCategorized<Self>) -> T) -> T {
-		forms(PluralCategorized(
+	/// }
+	/// ```
+	func ordinal<T>(in language: Language, _ body: (PluralCategorized<Self>) -> T) -> T {
+		body(PluralCategorized(
 			number: self,
 			category: .of(Double(self), locale: language, type: .ordinal)
 		))

@@ -299,3 +299,34 @@ final class AppStringsExampleTests: XCTestCase {
 		XCTAssertEqual(summary.resolved(.en), "Playlist “Solo”, 1 song.")
 	}
 }
+
+extension Localized {
+	
+	struct Helper {
+
+	 let language: Language
+ }
+	
+	func with(_ language: Language, _ value: (Helper) -> Value) -> Localized<Value> {
+		let helper = Helper(language: language)
+		fatalError()
+	}
+}
+
+extension Localized.Helper {
+	
+	func plural<T, I: FixedWidthInteger>(for value: I, _ body: (PluralCategorized<I>) -> T) -> T {
+		value.plural(in: language, body)
+	}
+}
+
+let string = Localized<String>(.en, "You have \(5) new messages")
+	.with(.ru) { helper in
+		helper.plural(for: 5) { category in
+			switch category {
+			case .one: "У вас \(5) новое сообщение"
+			case .few: "У вас \(5) новых сообщения"
+			default:   "У вас \(5) новых сообщений"
+			}
+		}
+	}
