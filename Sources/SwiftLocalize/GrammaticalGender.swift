@@ -14,7 +14,7 @@ import Foundation
 /// feminine into `common`, leaving `common` / `neuter`. Slavic languages
 /// (cs, hr, sk, sr, ml) split masculine into `animate` / `inanimate`;
 /// Polish further adds `personal` for human-male nouns.
-public enum GrammaticalGender: String, CaseIterable, Hashable, Codable, Sendable {
+public enum GrammaticalGender: String, CaseIterable, Hashable, Codable, Sendable, CodingKeyRepresentable {
 	case masculine, feminine, neuter, common, animate, inanimate, personal
 }
 

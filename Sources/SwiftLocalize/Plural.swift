@@ -4,12 +4,12 @@ import Foundation
 /// Unicode CLDR plural categories. These are NOT grammatical cases — they classify
 /// numbers into buckets the language treats identically for plural agreement.
 /// See https://cldr.unicode.org/index/cldr-spec/plural-rules.
-public enum PluralCategory: String, CaseIterable, Hashable, Codable, Sendable {
+public enum PluralCategory: String, CaseIterable, Hashable, Codable, Sendable, CodingKeyRepresentable {
 	case zero, one, two, few, many, other
 }
 
 /// Which CLDR plural rule set applies. Cardinal = "5 books"; ordinal = "5th place".
-public enum PluralType: String, Hashable, Codable, Sendable {
+public enum PluralType: String, Hashable, Codable, Sendable, CodingKeyRepresentable {
 	case cardinal, ordinal
 }
 
