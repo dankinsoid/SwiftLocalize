@@ -4,13 +4,12 @@ import Foundation
 /// Plural rule for a single language: maps numbers to CLDR plural categories.
 ///
 /// A rule is a pair of pure functions (cardinal + ordinal) — no language state, no
-/// shared mutable registry. `Fluent.Bundle` picks its rule once at init (from
-/// `PluralRule.default(for:)` or a caller-supplied override) and stores it as a `let`,
-/// so lookups during formatting are direct closure calls with zero synchronization.
+/// shared mutable registry. Pick a rule once (from `PluralRule.default(for:)` or a
+/// caller-supplied override) and store it as a `let`, so lookups during formatting
+/// are direct closure calls with zero synchronization.
 ///
-/// To support a language not in `defaults`, construct your own value and pass it to
-/// `Fluent.Bundle(locale:, pluralRule:)`. The per-language defaults live in
-/// `PluralRule+Generated.swift`, regenerated from CLDR via
+/// To support a language not in `defaults`, construct your own value. The per-language
+/// defaults live in `PluralRule+Generated.swift`, regenerated from CLDR via
 /// `Scripts/GeneratePluralRules`.
 public struct PluralRule: Sendable {
 

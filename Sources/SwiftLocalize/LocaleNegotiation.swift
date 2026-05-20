@@ -100,7 +100,7 @@ public extension Language {
 ///
 /// Mirrors `fluent-langneg`'s `negotiateLanguages`. Two strategies are exposed:
 ///
-/// - **matching** (the default for Fluent bundles): one best match per requested locale, in priority order.
+/// - **matching** (default): one best match per requested locale, in priority order.
 /// - **filtering**: every available locale that matches any requested locale, in priority order.
 ///
 /// Both pass through canonicalization (deprecated subtag replacement) and maximization

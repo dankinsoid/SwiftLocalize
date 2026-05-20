@@ -9,7 +9,6 @@ public enum PluralCategory: String, CaseIterable, Hashable, Codable, Sendable {
 }
 
 /// Which CLDR plural rule set applies. Cardinal = "5 books"; ordinal = "5th place".
-/// Fluent exposes this via `NUMBER($n, type: "ordinal")`.
 public enum PluralType: String, Hashable, Codable, Sendable {
 	case cardinal, ordinal
 }
