@@ -14,7 +14,7 @@ A CLDR-backed localization toolkit for Swift. Carry translations alongside the c
 - **Grammatical gender** — `Language.grammaticalGenders` returns the language's CLDR-classified gender set (`[.animate, .inanimate, .feminine, .neuter]` for cs, `[.common, .neuter]` for da, `[]` for en/ja/zh, …).
 - **Locale negotiation** — `zh-TW` matches an available `zh-Hant`, `en-AU` walks to `en-001` then `en`, deprecated `iw` canonicalizes to `he` — all data-driven from CLDR.
 - **Typography helpers** — `"Hi".quoted(in: .ru)` → `«Hi»`; `"2020".rangeJoined(to: "2025", in: .ja)` → `2020～2025`.
-- **Composition** — `+` and `Localized.joined(_:separator:)` concatenate per-language with smart fallback; `Localized` itself is a `@resultBuilder` for declarative composition with control flow.
+- **Composition** — `+` and `[Localized<…>].joined(separator:)` concatenate per-language with smart fallback; `Localized` itself is a `@resultBuilder` for declarative composition with control flow.
 
 ## Quick example
 
@@ -271,9 +271,9 @@ phrase.resolved(.ru)   // "красивое дерево"
 
 Concatenation does per-language CLDR-negotiated lookup on both sides. A side missing a translation contributes nothing rather than silently mixing languages; universal sides (`baseLanguage == nil`) contribute their base value to every slot.
 
-### `joined(_:separator:)`
+### `Sequence.joined(separator:)`
 
-Multi-operand concatenation in a single pass:
+Multi-operand concatenation in a single pass — mirrors `[String].joined(separator:)` from the standard library:
 
 ```swift
 let items = [
@@ -282,11 +282,14 @@ let items = [
     Localized<String>(.en, "pears",   [.ru: "груши"]),
 ]
 
-Localized.joined(items, separator: ", ").resolved(.ru)
+items.joined(separator: ", ").resolved(.ru)
 // → "яблоки, апельсины, груши"
+
+// Works on any Sequence — pipelines from .map / .filter included.
+breadcrumbs.map(\.localized).joined(separator: " > ")
 ```
 
-Equivalent to `parts[0] + sep + parts[1] + … + sep + parts[n-1]`, but computes the language union once and resolves each operand exactly once per language instead of N−1 binary merges. The separator is optional (`nil` skips it) and participates like a regular operand — universal contributes to every slot, anchored can drop a slot when it has no translation for that language. Both `+` and the result builder delegate to `joined` under the hood.
+Equivalent to `parts[0] + sep + parts[1] + … + sep + parts[n-1]`, but computes the language union once and resolves each operand exactly once per language instead of N−1 binary merges. The separator is optional (omit for plain concatenation) and participates like a regular operand — universal contributes to every slot, anchored can drop a slot when it has no translation for that language. Both `+` and the result builder delegate here under the hood: the result builder collects all its elements first and makes a single one-pass call, while chained `+` (`a + b + c + d`) is still N−1 binary calls because Swift folds `+` left-associatively — switch to `.joined(separator:)` for long chains.
 
 When all operands are anchored to different languages and none have cross-translations covering each other, no slot can faithfully hold the result. The composition is tagged `Language.mul` (BCP-47 "multiple languages") and asserts in debug — distinct from a `nil` anchor ("language-agnostic by design") so the polyglot result is visible at the type level instead of being silently demoted to universal.
 

@@ -160,11 +160,11 @@ public struct Localized<Value> {
 extension Localized where Value: RangeReplaceableCollection {
 
 	/// Concatenate two localized values. Thin wrapper over
-	/// `Localized.joined(_:separator:)` — see there for per-language merging,
+	/// `Sequence.joined(separator:)` — see there for per-language merging,
 	/// anchor selection, and the `mul`-demotion rule for compositions with
 	/// no shared coverage.
 	public static func + (_ lhs: Localized, _ rhs: Localized) -> Localized {
-		Localized.joined([lhs, rhs])
+		[lhs, rhs].joined()
 	}
 
 	public static func + (_ lhs: Localized, _ rhs: Value) -> Localized {
@@ -190,9 +190,12 @@ extension Localized where Value: RangeReplaceableCollection {
 	public static func += (_ lhs: inout Localized, _ rhs: Value) {
 		lhs = lhs + rhs
 	}
+}
 
-	/// Concatenate `parts` into one value, optionally with `separator` between
-	/// adjacent parts.
+public extension Sequence {
+
+	/// Concatenate localized values into one, optionally with `separator`
+	/// between adjacent elements.
 	///
 	/// One-pass equivalent of `parts[0] + sep + parts[1] + ... + sep + parts[n-1]`
 	/// — computes the language union once and resolves each operand exactly
@@ -236,30 +239,30 @@ extension Localized where Value: RangeReplaceableCollection {
 	/// and likely-subtag pairs (`iw`↔`he`, `zh-TW`↔`zh-Hant`) also pair
 	/// correctly — that's `tryResolved`'s job, not exact-key lookup.
 	///
-	/// Edge cases: empty `parts` returns an empty universal value; a single
-	/// part is returned unchanged (separator ignored).
+	/// Edge cases: an empty sequence returns an empty universal value; a
+	/// single element is returned unchanged (separator ignored).
 	// @ai-generated(solo)
-	public static func joined(
-		_ parts: [Localized],
-		separator: Localized? = nil
-	) -> Localized {
-		guard !parts.isEmpty else { return Localized(nil, Value()) }
+	func joined<V: RangeReplaceableCollection>(
+		separator: Localized<V>? = nil
+	) -> Localized<V> where Element == Localized<V> {
+		let parts = Array(self)
+		guard !parts.isEmpty else { return Localized<V>(nil, V()) }
 		if parts.count == 1 { return parts[0] }
 
 		var languages = Set<Language>()
 		for p in parts { languages.formUnion(p.availableLanguages) }
 		if let separator { languages.formUnion(separator.availableLanguages) }
 
-		var merged: [Language: Value] = [:]
+		var merged: [Language: V] = [:]
 		merged.reserveCapacity(languages.count)
 
 		for lang in languages {
-			var sepValue: Value? = nil
+			var sepValue: V? = nil
 			if let separator {
 				guard let v = separator.tryResolved(lang) else { continue }
 				sepValue = v
 			}
-			var combined = Value()
+			var combined = V()
 			var ok = true
 			for (i, p) in parts.enumerated() {
 				guard let v = p.tryResolved(lang) else { ok = false; break }
@@ -275,18 +278,18 @@ extension Localized where Value: RangeReplaceableCollection {
 		var anchors: [Language] = []
 		var seen = Set<Language>()
 		for p in parts {
-			if let lang = p.baseLanguage, seen.insert(lang).inserted {
+			if let lang = p.base.language, seen.insert(lang).inserted {
 				anchors.append(lang)
 			}
 		}
-		if let lang = separator?.baseLanguage, seen.insert(lang).inserted {
+		if let lang = separator?.base.language, seen.insert(lang).inserted {
 			anchors.append(lang)
 		}
 
 		// Concat of base values (operand-by-operand, with separator). Used
 		// when the result is universal *or* when no anchor has full coverage
 		// and we tag `mul`.
-		func mixedBaseValue() -> Value {
+		func mixedBaseValue() -> V {
 			var v = parts[0].base.value
 			for i in 1..<parts.count {
 				if let separator { v.append(contentsOf: separator.base.value) }
@@ -296,7 +299,7 @@ extension Localized where Value: RangeReplaceableCollection {
 		}
 
 		let baseLanguage: Language?
-		let baseValue: Value
+		let baseValue: V
 
 		if anchors.isEmpty {
 			baseLanguage = nil
@@ -317,7 +320,7 @@ extension Localized where Value: RangeReplaceableCollection {
 				// No language covers all operands. The result necessarily
 				// mixes languages; tag `mul` so callers can distinguish it
 				// from `nil`-anchored "universal by design" values.
-				assertionFailure("Localized.joined: no shared coverage among anchors \(anchors); result tagged `mul`.")
+				assertionFailure("Sequence<Localized>.joined: no shared coverage among anchors \(anchors); result tagged `mul`.")
 				baseLanguage = .mul
 				baseValue = mixedBaseValue()
 			}
@@ -328,7 +331,7 @@ extension Localized where Value: RangeReplaceableCollection {
 			translations.removeValue(forKey: baseLanguage)
 		}
 
-		return Localized(baseLanguage, baseValue, translations)
+		return Localized<V>(baseLanguage, baseValue, translations)
 	}
 }
 
