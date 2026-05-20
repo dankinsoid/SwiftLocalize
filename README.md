@@ -32,6 +32,13 @@ enum Strings {
         [.ru: "Отмена", .de: "Abbrechen", .fr: "Annuler"]
     )
 
+    // Same value, but typed as `String` — the result builder auto-resolves
+    // against the user's preferred languages on every access.
+    @Localized<String>
+    static var delete: String {
+        Localized<String>(.en, "Delete", [.ru: "Удалить", .es: "Eliminar"])
+    }
+
     // Interpolation: each translation is a plain Swift string.
     static func welcome(name: String) -> Localized<String> {
         Localized(
@@ -69,6 +76,10 @@ Strings.songs(5).resolved(.ru)              // "5 песен"
 Strings.cancel(.ru)               // "Отмена"
 Strings.cancel()                  // resolves against the user's preferred chain
 Strings.songs(5)(.ru)             // "5 песен"
+
+// `delete` is typed `String`, not `Localized<String>` — the builder already
+// resolved it. Read it like any other constant.
+label.text = Strings.delete
 ```
 
 ## Core concepts
