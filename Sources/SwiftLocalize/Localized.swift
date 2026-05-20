@@ -32,7 +32,7 @@ public struct Localized<Value> {
 	///
 	/// Cross-language mixing only via the explicit `default:` slot — never
 	/// silently through another language's translation.
-	public func resolved(_ language: Language = .current) -> Value {
+	public func resolved(_ language: Language) -> Value {
 		if let v = translations[language] { return v }
 		if !translations.isEmpty {
 			let chain = LocaleNegotiation.matching(
@@ -46,9 +46,34 @@ public struct Localized<Value> {
 		return fallback
 	}
 
-	/// See `resolve(_:)`.
-	public func callAsFunction(_ language: Language = .current) -> Value {
+	/// Resolve against the user's full preferred-language chain
+	/// (`Locale.preferredLanguages`), so a user with `["fr", "en"]` gets the
+	/// English translation when French is missing — instead of dropping to
+	/// `default:`.
+	///
+	/// Same CLDR-aware negotiation as `resolved(_:)`, but with multiple
+	/// requested locales in priority order.
+	public func resolved() -> Value {
+		guard !translations.isEmpty else { return fallback }
+		let requested = Locale.preferredLanguages.map(Language.init(rawValue:))
+		let chain = LocaleNegotiation.matching(
+			requested: requested,
+			available: Array(translations.keys)
+		)
+		for tag in chain {
+			if let v = translations[tag] { return v }
+		}
+		return fallback
+	}
+
+	/// See `resolved(_:)`.
+	public func callAsFunction(_ language: Language) -> Value {
 		resolved(language)
+	}
+
+	/// See `resolved()`.
+	public func callAsFunction() -> Value {
+		resolved()
 	}
 
 	/// Languages with an explicit translation — does not include those reached
@@ -107,13 +132,14 @@ extension Localized where Value: RangeReplaceableCollection {
 	}
 }
 
-// MARK: - Description (deprecated to flush silent `.current` resolution)
+// MARK: - Description (deprecated to flush silent preferred-chain resolution)
 //
 // Conforming to `CustomStringConvertible` is what makes `"\(localized)"` —
-// or any `String(describing:)` / `print` — produce a localized string at
-// `.current`. That's the silent path we want callers to notice. Keep the
-// conformance for visibility in debugging, but warn on use so the implicit
-// path doesn't sneak into UI strings unobserved.
+// or any `String(describing:)` / `print` — produce a localized string
+// negotiated against the user's preferred languages. That's the silent path
+// we want callers to notice. Keep the conformance for visibility in
+// debugging, but warn on use so the implicit path doesn't sneak into UI
+// strings unobserved.
 
 extension Localized: CustomStringConvertible {
 
@@ -152,7 +178,7 @@ extension Localized: ExpressibleByStringInterpolation where Value: ExpressibleBy
 
 extension DefaultStringInterpolation {
 
-		@available(*, deprecated, message: "Implicit `.current` language resolution. Use `localized.resolved()` or `localized(.en)`.")
+		@available(*, deprecated, message: "Implicit preferred-language resolution. Use `localized.resolved()` or `localized(.en)`.")
 		public mutating func appendInterpolation<Value>(_ value: Localized<Value>) {
 			appendLiteral(value.description)
 		}
