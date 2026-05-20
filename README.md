@@ -86,7 +86,7 @@ label.text = Strings.delete
 
 ### `Localized<Value>`
 
-A value typed by `Value`, holding an optional anchor (`baseLanguage` + `baseValue`) and a `[Language: Value]` translations map. Construction shapes:
+A value typed by `Value`, holding an anchor (`baseLanguage` + `baseValue`) and a `[Language: Value]` translations map. Construction shapes:
 
 ```swift
 // 1. Anchored — base language is explicit.
