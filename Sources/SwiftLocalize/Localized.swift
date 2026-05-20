@@ -32,7 +32,7 @@ public struct Localized<Value> {
 	///
 	/// Cross-language mixing only via the explicit `default:` slot — never
 	/// silently through another language's translation.
-	public func resolve(_ language: Language = .current) -> Value {
+	public func resolved(_ language: Language = .current) -> Value {
 		if let v = translations[language] { return v }
 		if !translations.isEmpty {
 			let chain = LocaleNegotiation.matching(
@@ -48,10 +48,8 @@ public struct Localized<Value> {
 
 	/// See `resolve(_:)`.
 	public func callAsFunction(_ language: Language = .current) -> Value {
-		resolve(language)
+		resolved(language)
 	}
-
-	public var localized: Value { callAsFunction() }
 
 	/// Languages with an explicit translation — does not include those reached
 	/// only via `default:`.
@@ -117,10 +115,9 @@ extension Localized where Value: RangeReplaceableCollection {
 // conformance for visibility in debugging, but warn on use so the implicit
 // path doesn't sneak into UI strings unobserved.
 
-extension Localized: CustomStringConvertible where Value: CustomStringConvertible {
+extension Localized: CustomStringConvertible {
 
-	@available(*, deprecated, message: "Implicit `.current` resolution. Use `localized.localized` for the current locale, or `localized(.en)` for an explicit language.")
-	public var description: String { callAsFunction().description }
+	public var description: String { "\(callAsFunction())" }
 }
 
 // MARK: - Literal conformances
@@ -151,4 +148,12 @@ extension Localized: ExpressibleByStringInterpolation where Value: ExpressibleBy
 	public init(stringInterpolation: Value.StringInterpolation) {
 		self.init(default: Value(stringInterpolation: stringInterpolation))
 	}
+}
+
+extension DefaultStringInterpolation {
+
+		@available(*, deprecated, message: "Implicit `.current` language resolution. Use `localized.resolved()` or `localized(.en)`.")
+		public mutating func appendInterpolation<Value>(_ value: Localized<Value>) {
+			appendLiteral(value.description)
+		}
 }
