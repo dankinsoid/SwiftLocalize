@@ -265,6 +265,24 @@ playlistSummary(name: Localized(nil, "Chill Vibes", [.ru: "Чилл-плейли
 // → "Плейлист «Чилл-плейлист», 3 песни."
 ```
 
+The return type of the builder-annotated function picks what comes back. Declare `-> Localized<String>` to get the composed `Localized` value (and resolve it later); declare `-> String` to have the builder call `.resolved()` against the user's preferred chain and hand you the plain value:
+
+```swift
+// Returns a Localized<String> — caller controls when/how to resolve.
+@Localized<String>
+static func title(_ name: Localized<String>) -> Localized<String> {
+    "Playlist: "
+    name
+}
+
+// Returns a plain String, already resolved for the current user.
+@Localized<String>
+static func currentTitle(_ name: Localized<String>) -> String {
+    "Playlist: "
+    name
+}
+```
+
 ## Typography
 
 ### Quotation marks
