@@ -4,7 +4,7 @@ import XCTest
 
 /// Tests for CLDR-driven locale negotiation: canonicalization (aliases),
 /// maximization (likely subtags), parent chains (parentLocales + region trimming),
-/// and the high-level `Fluent.LocaleNegotiation.matching` algorithm wired into
+/// and the high-level `LocaleNegotiation.matching` algorithm wired into
 /// `LocalizedBundle`.
 final class FluentLocaleNegotiationTests: XCTestCase {
 
@@ -97,7 +97,7 @@ final class FluentLocaleNegotiationTests: XCTestCase {
 	// MARK: Negotiation — matching strategy
 
 	func test_matching_finds_zh_Hant_for_requested_zh_TW() {
-		let chain = Fluent.LocaleNegotiation.matching(
+		let chain = LocaleNegotiation.matching(
 			requested: ["zh-TW"],
 			available: ["en", "zh-Hans", "zh-Hant"],
 			default: "en"
@@ -107,7 +107,7 @@ final class FluentLocaleNegotiationTests: XCTestCase {
 	}
 
 	func test_matching_finds_zh_Hans_for_requested_zh_CN() {
-		let chain = Fluent.LocaleNegotiation.matching(
+		let chain = LocaleNegotiation.matching(
 			requested: ["zh-CN"],
 			available: ["en", "zh-Hans", "zh-Hant"],
 			default: "en"
@@ -117,7 +117,7 @@ final class FluentLocaleNegotiationTests: XCTestCase {
 
 	func test_matching_walks_parent_chain_for_es_AR() {
 		// es-AR has no direct match; parent is es-419, then es. Available has only `es`.
-		let chain = Fluent.LocaleNegotiation.matching(
+		let chain = LocaleNegotiation.matching(
 			requested: ["es-AR"],
 			available: ["en", "es"]
 		)
@@ -126,7 +126,7 @@ final class FluentLocaleNegotiationTests: XCTestCase {
 
 	func test_matching_resolves_deprecated_alias() {
 		// `iw` is the deprecated tag for Hebrew. Available has `he`.
-		let chain = Fluent.LocaleNegotiation.matching(
+		let chain = LocaleNegotiation.matching(
 			requested: ["iw"],
 			available: ["en", "he"],
 			default: "en"
@@ -135,7 +135,7 @@ final class FluentLocaleNegotiationTests: XCTestCase {
 	}
 
 	func test_matching_default_appended_only_when_missing() {
-		let chain = Fluent.LocaleNegotiation.matching(
+		let chain = LocaleNegotiation.matching(
 			requested: ["fr"],
 			available: ["en", "ru"],
 			default: "en"
@@ -145,7 +145,7 @@ final class FluentLocaleNegotiationTests: XCTestCase {
 	}
 
 	func test_matching_default_not_duplicated_when_already_matched() {
-		let chain = Fluent.LocaleNegotiation.matching(
+		let chain = LocaleNegotiation.matching(
 			requested: ["en-US"],
 			available: ["en", "ru"],
 			default: "en"
@@ -154,7 +154,7 @@ final class FluentLocaleNegotiationTests: XCTestCase {
 	}
 
 	func test_matching_preserves_request_priority_order() {
-		let chain = Fluent.LocaleNegotiation.matching(
+		let chain = LocaleNegotiation.matching(
 			requested: ["fr", "de", "ru"],
 			available: ["en", "ru", "de", "fr"],
 			default: "en"

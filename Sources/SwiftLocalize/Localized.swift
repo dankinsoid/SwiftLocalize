@@ -24,29 +24,29 @@ public struct Localized<Value> {
 	///
 	/// Lookup order:
 	///   1. Exact tag (`en-US`).
-	///   2. Same-family negotiation (`en-US` → `en`).
-	///   3. Explicit `any:` slot, if provided.
-	///   4. `default:` fallback.
+	///   2. CLDR-aware negotiation against `translations.keys`: canonicalizes
+	///      deprecated aliases (`iw` → `he`), expands via likely subtags
+	///      (`zh-TW` matches available `zh-Hant`), walks CLDR parent chains
+	///      (`en-AU` → `en-001` → `en`, `es-AR` → `es-419` → `es`).
+	///   3. `default:` fallback.
 	///
-	/// Cross-language mixing only via the explicit `any:` / `default:` slots —
-	/// never silently through another language's translation.
+	/// Cross-language mixing only via the explicit `default:` slot — never
+	/// silently through another language's translation.
 	public func resolve(_ language: Language = .current) -> Value {
 		if let v = translations[language] { return v }
-		let bare = language.languageOnly
-		if bare != language, let v = translations[bare] { return v }
+		if !translations.isEmpty {
+			let chain = LocaleNegotiation.matching(
+				requested: [language],
+				available: Array(translations.keys)
+			)
+			for tag in chain {
+				if let v = translations[tag] { return v }
+			}
+		}
 		return fallback
 	}
-	
-	/// Resolve to a value for `language`.
-	///
-	/// Lookup order:
-	///   1. Exact tag (`en-US`).
-	///   2. Same-family negotiation (`en-US` → `en`).
-	///   3. Explicit `any:` slot, if provided.
-	///   4. `default:` fallback.
-	///
-	/// Cross-language mixing only via the explicit `any:` / `default:` slots —
-	/// never silently through another language's translation.
+
+	/// See `resolve(_:)`.
 	public func callAsFunction(_ language: Language = .current) -> Value {
 		resolve(language)
 	}
@@ -54,7 +54,7 @@ public struct Localized<Value> {
 	public var localized: Value { callAsFunction() }
 
 	/// Languages with an explicit translation — does not include those reached
-	/// only via `any:` / `default:`.
+	/// only via `default:`.
 	public var explicitLanguages: Set<Language> { Set(translations.keys) }
 }
 

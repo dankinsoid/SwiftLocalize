@@ -6,7 +6,7 @@
 // Source: https://github.com/unicode-org/cldr-json (cldr-core/supplemental/)
 import Foundation
 
-private extension Fluent.PluralRule {
+private extension PluralRule {
 
 	static let _af: Self = .init(
 		cardinal: { n in
@@ -2142,7 +2142,7 @@ private extension Fluent.PluralRule {
 	)
 }
 
-public extension Fluent.PluralRule {
+public extension PluralRule {
 	/// CLDR plural rule mapping by BCP-47 language tag.
 	/// Keys cover both primary subtags (e.g. "en") and region variants (e.g. "pt-PT")
 	/// when CLDR distinguishes them; `Bundle` looks up by primary subtag via `default(for:)`.

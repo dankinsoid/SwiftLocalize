@@ -222,8 +222,8 @@ internal extension Fluent {
 				return id.rawValue == s
 			case let (.identifier(id), .number(n)):
 				// Number → plural-category match. `n.options.type` selects cardinal vs ordinal rule set.
-				guard let cat = Fluent.PluralCategory(rawValue: id.rawValue) else { return false }
-				let resolved: Fluent.PluralCategory = n.options.type == .cardinal
+				guard let cat = PluralCategory(rawValue: id.rawValue) else { return false }
+				let resolved: PluralCategory = n.options.type == .cardinal
 					? bundle.pluralRule.cardinal(n.value)
 					: bundle.pluralRule.ordinal(n.value)
 				return resolved == cat

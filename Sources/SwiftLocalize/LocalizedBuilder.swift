@@ -3,13 +3,13 @@ import Foundation
 public extension Localized {
 
 	@inlinable
-	static func buildBlock(_ components: Localized...) -> Localized {
+	static func buildBlock(_ components: Localized...) -> Localized where Value: RangeReplaceableCollection {
 		buildArray(components)
 	}
 
 	@inlinable
-	static func buildOptional(_ component: Localized?) -> Localized {
-		component ?? ""
+	static func buildOptional(_ component: Localized?) -> Localized where Value: RangeReplaceableCollection {
+		component ?? Localized(default: Value.init())
 	}
 
 	@inlinable
@@ -23,8 +23,8 @@ public extension Localized {
 	}
 
 	@inlinable
-	static func buildArray(_ components: [Localized]) -> Localized {
-		guard !components.isEmpty else { return "" }
+	static func buildArray(_ components: [Localized]) -> Localized where Value: RangeReplaceableCollection {
+		guard !components.isEmpty else { return Localized(default: Value.init()) }
 		return components.dropFirst().reduce(into: components[0], +=)
 	}
 
@@ -39,12 +39,12 @@ public extension Localized {
 	}
 
 	@inlinable
-	static func buildExpression<T>(_ expression: T) -> Localized {
-		Localized(expression)
+	static func buildExpression(_ expression: Value) -> Localized {
+		Localized(default: expression)
 	}
 
 	@inlinable
-	static func buildFinalResult(_ component: Localized) -> String {
-		component.localized
+	static func buildFinalResult(_ component: Localized) -> Value {
+		component.resolve()
 	}
 }

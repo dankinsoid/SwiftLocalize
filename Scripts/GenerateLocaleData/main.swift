@@ -1,6 +1,6 @@
 // @ai-generated(guided)
 //
-// Generate Sources/SwiftLocalize/Fluent/LocaleData+Generated.swift from CLDR JSON.
+// Generate Sources/SwiftLocalize/LocaleData+Generated.swift from CLDR JSON.
 //
 // Usage:
 //   swift run GenerateLocaleData <likelySubtags.json> <parentLocales.json> <aliases.json> [<output.swift>]
@@ -10,7 +10,7 @@
 //   cldr-core/supplemental/parentLocales.json
 //   cldr-core/supplemental/aliases.json
 //
-// Output tables drive Fluent's locale negotiation (see Fluent.LocaleNegotiation):
+// Output tables drive locale negotiation (see LocaleNegotiation):
 //   - likelySubtags: maximal-form expansion, so `zh` matches `zh-Hans-CN` and `zh-TW` matches `zh-Hant`.
 //   - parentLocales: non-trivial fallback chains (`en-AU → en-001 → en`, `es-AR → es-419 → es`).
 //   - languageAliases / scriptAliases / regionAliases: replace deprecated subtags during canonicalization.
@@ -34,7 +34,7 @@ guard argv.count >= 4 else {
 let likelyPath = argv[1]
 let parentsPath = argv[2]
 let aliasesPath = argv[3]
-let outputPath = argv.count >= 5 ? argv[4] : "Sources/SwiftLocalize/Fluent/LocaleData+Generated.swift"
+let outputPath = argv.count >= 5 ? argv[4] : "Sources/SwiftLocalize/LocaleData+Generated.swift"
 
 // MARK: - JSON helpers
 
@@ -130,8 +130,7 @@ output += "//\n"
 output += "// Source: https://github.com/unicode-org/cldr-json (cldr-core/supplemental/)\n"
 output += "import Foundation\n\n"
 
-output += "internal extension Fluent {\n\n"
-output += "\tenum LocaleData {\n\n"
+output += "internal enum LocaleData {\n\n"
 output += emitTable(
 	"likelySubtags",
 	"Maximal-form expansion. \"zh\" → \"zh-Hans-CN\", \"zh-TW\" → \"zh-Hant-TW\".",
@@ -161,7 +160,6 @@ output += emitTable(
 	"Deprecated region-subtag replacements. \"BU\" → \"MM\", \"SU\" → \"RU\" (first of CLDR's ordered list).",
 	regionAliases
 )
-output += "\t}\n"
 output += "}\n"
 
 try output.write(to: URL(fileURLWithPath: outputPath), atomically: true, encoding: .utf8)

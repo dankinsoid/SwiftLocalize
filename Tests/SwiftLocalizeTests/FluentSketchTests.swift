@@ -71,22 +71,22 @@ final class FluentSketchTests: XCTestCase {
 
 	func testPluralArabicCategories() {
 		// Arabic spec: 0→zero, 1→one, 2→two, 3-10→few, 11-99→many, else→other.
-		XCTAssertEqual(Fluent.PluralCategory.of(0, locale: .ar), .zero)
-		XCTAssertEqual(Fluent.PluralCategory.of(1, locale: .ar), .one)
-		XCTAssertEqual(Fluent.PluralCategory.of(2, locale: .ar), .two)
-		XCTAssertEqual(Fluent.PluralCategory.of(5, locale: .ar), .few)
-		XCTAssertEqual(Fluent.PluralCategory.of(50, locale: .ar), .many)
-		XCTAssertEqual(Fluent.PluralCategory.of(100, locale: .ar), .other)
+		XCTAssertEqual(PluralCategory.of(0, locale: .ar), .zero)
+		XCTAssertEqual(PluralCategory.of(1, locale: .ar), .one)
+		XCTAssertEqual(PluralCategory.of(2, locale: .ar), .two)
+		XCTAssertEqual(PluralCategory.of(5, locale: .ar), .few)
+		XCTAssertEqual(PluralCategory.of(50, locale: .ar), .many)
+		XCTAssertEqual(PluralCategory.of(100, locale: .ar), .other)
 	}
 
 	func testWelshHasAllSixCategories() {
 		// Welsh actually uses all six categories.
-		XCTAssertEqual(Fluent.PluralCategory.of(0, locale: .cy), .zero)
-		XCTAssertEqual(Fluent.PluralCategory.of(1, locale: .cy), .one)
-		XCTAssertEqual(Fluent.PluralCategory.of(2, locale: .cy), .two)
-		XCTAssertEqual(Fluent.PluralCategory.of(3, locale: .cy), .few)
-		XCTAssertEqual(Fluent.PluralCategory.of(6, locale: .cy), .many)
-		XCTAssertEqual(Fluent.PluralCategory.of(7, locale: .cy), .other)
+		XCTAssertEqual(PluralCategory.of(0, locale: .cy), .zero)
+		XCTAssertEqual(PluralCategory.of(1, locale: .cy), .one)
+		XCTAssertEqual(PluralCategory.of(2, locale: .cy), .two)
+		XCTAssertEqual(PluralCategory.of(3, locale: .cy), .few)
+		XCTAssertEqual(PluralCategory.of(6, locale: .cy), .many)
+		XCTAssertEqual(PluralCategory.of(7, locale: .cy), .other)
 	}
 
 	func testVariablePlaceable() {
@@ -221,34 +221,34 @@ final class FluentSketchTests: XCTestCase {
 
 	func testOrdinalEnglishCategories() {
 		// en: 1→one(1st), 2→two(2nd), 3→few(3rd), other for the rest (including 11/12/13).
-		XCTAssertEqual(Fluent.PluralCategory.of(1, locale: .en, type: .ordinal), .one)
-		XCTAssertEqual(Fluent.PluralCategory.of(2, locale: .en, type: .ordinal), .two)
-		XCTAssertEqual(Fluent.PluralCategory.of(3, locale: .en, type: .ordinal), .few)
-		XCTAssertEqual(Fluent.PluralCategory.of(4, locale: .en, type: .ordinal), .other)
-		XCTAssertEqual(Fluent.PluralCategory.of(11, locale: .en, type: .ordinal), .other)
-		XCTAssertEqual(Fluent.PluralCategory.of(12, locale: .en, type: .ordinal), .other)
-		XCTAssertEqual(Fluent.PluralCategory.of(13, locale: .en, type: .ordinal), .other)
-		XCTAssertEqual(Fluent.PluralCategory.of(21, locale: .en, type: .ordinal), .one)
-		XCTAssertEqual(Fluent.PluralCategory.of(22, locale: .en, type: .ordinal), .two)
-		XCTAssertEqual(Fluent.PluralCategory.of(23, locale: .en, type: .ordinal), .few)
-		XCTAssertEqual(Fluent.PluralCategory.of(101, locale: .en, type: .ordinal), .one)
+		XCTAssertEqual(PluralCategory.of(1, locale: .en, type: .ordinal), .one)
+		XCTAssertEqual(PluralCategory.of(2, locale: .en, type: .ordinal), .two)
+		XCTAssertEqual(PluralCategory.of(3, locale: .en, type: .ordinal), .few)
+		XCTAssertEqual(PluralCategory.of(4, locale: .en, type: .ordinal), .other)
+		XCTAssertEqual(PluralCategory.of(11, locale: .en, type: .ordinal), .other)
+		XCTAssertEqual(PluralCategory.of(12, locale: .en, type: .ordinal), .other)
+		XCTAssertEqual(PluralCategory.of(13, locale: .en, type: .ordinal), .other)
+		XCTAssertEqual(PluralCategory.of(21, locale: .en, type: .ordinal), .one)
+		XCTAssertEqual(PluralCategory.of(22, locale: .en, type: .ordinal), .two)
+		XCTAssertEqual(PluralCategory.of(23, locale: .en, type: .ordinal), .few)
+		XCTAssertEqual(PluralCategory.of(101, locale: .en, type: .ordinal), .one)
 	}
 
 	func testOrdinalCardinalAreIndependent() {
 		// Sanity: cardinal "2 books" → other, but ordinal "2nd" → two.
-		XCTAssertEqual(Fluent.PluralCategory.of(2, locale: .en, type: .cardinal), .other)
-		XCTAssertEqual(Fluent.PluralCategory.of(2, locale: .en, type: .ordinal), .two)
+		XCTAssertEqual(PluralCategory.of(2, locale: .en, type: .cardinal), .other)
+		XCTAssertEqual(PluralCategory.of(2, locale: .en, type: .ordinal), .two)
 	}
 
 	func testOrdinalWelshCategories() {
 		// Welsh ordinal: 0,7,8,9→zero; 1→one; 2→two; 3,4→few; 5,6→many; else→other.
-		XCTAssertEqual(Fluent.PluralCategory.of(0, locale: .cy, type: .ordinal), .zero)
-		XCTAssertEqual(Fluent.PluralCategory.of(1, locale: .cy, type: .ordinal), .one)
-		XCTAssertEqual(Fluent.PluralCategory.of(2, locale: .cy, type: .ordinal), .two)
-		XCTAssertEqual(Fluent.PluralCategory.of(3, locale: .cy, type: .ordinal), .few)
-		XCTAssertEqual(Fluent.PluralCategory.of(5, locale: .cy, type: .ordinal), .many)
-		XCTAssertEqual(Fluent.PluralCategory.of(7, locale: .cy, type: .ordinal), .zero)
-		XCTAssertEqual(Fluent.PluralCategory.of(10, locale: .cy, type: .ordinal), .other)
+		XCTAssertEqual(PluralCategory.of(0, locale: .cy, type: .ordinal), .zero)
+		XCTAssertEqual(PluralCategory.of(1, locale: .cy, type: .ordinal), .one)
+		XCTAssertEqual(PluralCategory.of(2, locale: .cy, type: .ordinal), .two)
+		XCTAssertEqual(PluralCategory.of(3, locale: .cy, type: .ordinal), .few)
+		XCTAssertEqual(PluralCategory.of(5, locale: .cy, type: .ordinal), .many)
+		XCTAssertEqual(PluralCategory.of(7, locale: .cy, type: .ordinal), .zero)
+		XCTAssertEqual(PluralCategory.of(10, locale: .cy, type: .ordinal), .other)
 	}
 
 	func testOrdinalSelectorViaNUMBER() {

@@ -1,6 +1,6 @@
 // @ai-generated(guided)
 //
-// Generate Sources/SwiftLocalize/Fluent/PluralRule+Generated.swift from CLDR JSON.
+// Generate Sources/SwiftLocalize/PluralRule+Generated.swift from CLDR JSON.
 //
 // Usage:
 //   swift run GeneratePluralRules <plurals.json> [<ordinals.json>] [<output.swift>]
@@ -37,7 +37,7 @@ guard argv.count >= 2 else {
 
 let pluralsPath = argv[1]
 let ordinalsPath: String? = argv.count >= 3 ? argv[2] : nil
-let outputPath = argv.count >= 4 ? argv[3] : "Sources/SwiftLocalize/Fluent/PluralRule+Generated.swift"
+let outputPath = argv.count >= 4 ? argv[3] : "Sources/SwiftLocalize/PluralRule+Generated.swift"
 
 // MARK: - JSON loading
 
@@ -335,7 +335,7 @@ header += "//\n"
 header += "// Source: https://github.com/unicode-org/cldr-json (cldr-core/supplemental/)\n"
 header += "import Foundation\n\n"
 
-var body = "public extension Fluent.PluralRule {\n\n"
+var body = "public extension PluralRule {\n\n"
 
 // Per-language `static let` — declared individually so the type-checker handles them in
 // isolation. A single 200+ entry dictionary literal with inline closures stresses the

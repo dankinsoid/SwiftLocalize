@@ -6,9 +6,7 @@
 // Source: https://github.com/unicode-org/cldr-json (cldr-core/supplemental/)
 import Foundation
 
-internal extension Fluent {
-
-	enum LocaleData {
+internal enum LocaleData {
 
 	/// Maximal-form expansion. "zh" → "zh-Hans-CN", "zh-TW" → "zh-Hant-TW".
 	static let likelySubtags: [String: String] = [
@@ -3117,5 +3115,4 @@ internal extension Fluent {
 		"ZWE": "ZW",
 		"ZZZ": "ZZ",
 	]
-	}
 }

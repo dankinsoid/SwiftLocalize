@@ -45,7 +45,7 @@ public extension Fluent {
 		/// `fallbackChain`, then the first available variant. Returns `nil` only when
 		/// `variants` is empty.
 		public func callAsFunction(language: Tag = .current) -> Value? {
-			let chain = Fluent.LocaleNegotiation.matching(
+			let chain = LocaleNegotiation.matching(
 				requested: [language] + fallbackChain,
 				available: Array(variants.keys)
 			)
@@ -115,7 +115,7 @@ public extension Fluent {
 			args: Arguments = [:],
 			language: Tag = .current
 		) -> String {
-			let chain = Fluent.LocaleNegotiation.matching(
+			let chain = LocaleNegotiation.matching(
 				requested: [language] + fallbackChain,
 				available: Array(bundles.keys)
 			)
