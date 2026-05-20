@@ -42,16 +42,18 @@ enum Strings {
     }
 
     // Cardinal plurals via CLDR rules.
+    // `$0` is a `PluralCategorized` — interpolating it formats the number
+    // for the current language (decimal separator, digit grouping, …).
     static func songs(_ n: Int) -> Localized<String> {
         Localized(
             .en, n.plural(in: .en) { switch $0 {
-                case .one: "\(n) song"
-                default:   "\(n) songs"
+                case .one: "\($0) song"
+                default:   "\($0) songs"
             }},
             [.ru: n.plural(in: .ru) { switch $0 {
-                case .one: "\(n) песня"      // 1, 21, 31…
-                case .few: "\(n) песни"      // 2–4, 22–24…
-                default:   "\(n) песен"      // 0, 5–20, 11–14…
+                case .one: "\($0) песня"      // 1, 21, 31…
+                case .few: "\($0) песни"      // 2–4, 22–24…
+                default:   "\($0) песен"      // 0, 5–20, 11–14…
             }}]
         )
     }
@@ -149,24 +151,26 @@ Plural rules and categories follow Unicode CLDR. Categories: `zero`, `one`, `two
 ```swift
 n.plural(in: .ru) {
     switch $0 {
-    case .one: "\(n) песня"
-    case .few: "\(n) песни"
-    default:   "\(n) песен"
+    case .one: "\($0) песня"
+    case .few: "\($0) песни"
+    default:   "\($0) песен"
     }
 }
 ```
 
 The closure receives a `PluralCategorized<Int>` that pattern-matches on either `PluralCategory` cases (`.one`, `.few`, …) or the number itself (`case 0:`, `case 11:`).
 
+Interpolating `$0` (`"\($0)"`) renders the number using the language's own locale — French gets `1 234,5`, Indian English gets `12,34,567`, Japanese gets fullwidth digits when appropriate — so you don't need to format the number separately and interpolate it back in.
+
 ### Ordinal — rank / position
 
 ```swift
 n.ordinal(in: .en) {
     switch $0 {
-    case .one: "\(n)st place"   // 1, 21, 31…
-    case .two: "\(n)nd place"   // 2, 22, 32…
-    case .few: "\(n)rd place"   // 3, 23, 33…
-    default:   "\(n)th place"   // 11–13, everything else
+    case .one: "\($0)st place"   // 1, 21, 31…
+    case .two: "\($0)nd place"   // 2, 22, 32…
+    case .few: "\($0)rd place"   // 3, 23, 33…
+    default:   "\($0)th place"   // 11–13, everything else
     }
 }
 ```
@@ -187,7 +191,9 @@ Cardinal and ordinal use *different* rule sets — English cardinal collapses ev
 //                     not .one from 1, not .many by coincidence from 5
 ```
 
-This consults CLDR's `pluralRanges.json` — a per-language map of `(start_category, end_category) → result_category`. Picking either endpoint manually would land on the wrong form for compound cases like Russian `one + many` or French `one + other`. Endpoints are formatted with the language's range pattern (`–` in en/ru/de, `～` in ja, `-` in zh), and start-equals-end collapses to a single value.
+This consults CLDR's `pluralRanges.json` — a per-language map of `(start_category, end_category) → result_category`. Picking either endpoint manually would land on the wrong form for compound cases like Russian `one + many` or French `one + other`.
+
+Interpolating `r` (a `PluralRangeCategorized`) joins both endpoints through the language's range pattern (`–` in en/ru/de, `～` in ja, `-` in zh) with locale-formatted numbers; when start equals end it collapses to a single value, so `(5...5).plural(in: .ru) { "\($0) яблок" }` yields `"5 яблок"` rather than `"5–5 яблок"`.
 
 For languages absent from `pluralRanges.json` (e.g. Maltese), the end endpoint's own plural category is used per UTS #35.
 
