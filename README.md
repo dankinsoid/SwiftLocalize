@@ -64,6 +64,11 @@ Strings.cancel.resolved("en-US")  // "Cancel"   — walks en-US → en
 Strings.cancel.resolved("ja")     // "Cancel"   — falls back to anchor
 Strings.welcome(name: "Анна").resolved(.ru) // "С возвращением, Анна!"
 Strings.songs(5).resolved(.ru)              // "5 песен"
+
+// callAsFunction sugar — same as `.resolved(_:)` / `.resolved()`.
+Strings.cancel(.ru)               // "Отмена"
+Strings.cancel()                  // resolves against the user's preferred chain
+Strings.songs(5)(.ru)             // "5 песен"
 ```
 
 ## Core concepts
@@ -93,7 +98,10 @@ loc.resolved()              // user's preferred languages, in order
 loc.resolved(.ru)           // single language
 loc.resolved(preferring: [.ru, .en, .de])   // priority chain
 loc.tryResolved(.ru)        // nil if nothing in the ru family matches (no anchor fallback)
-loc(.ru)                    // callAsFunction sugar
+
+// callAsFunction is sugar for `.resolved(_:)` / `.resolved()`:
+loc(.ru)                    // == loc.resolved(.ru)
+loc()                       // == loc.resolved()
 ```
 
 `Localized` is `Sendable`, `Hashable`, `Codable`, and `Equatable` whenever `Value` is.
