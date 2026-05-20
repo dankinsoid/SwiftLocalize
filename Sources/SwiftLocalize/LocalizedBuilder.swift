@@ -47,4 +47,9 @@ public extension Localized {
 	static func buildFinalResult(_ component: Localized) -> Value {
 		component.resolve()
 	}
+
+	@inlinable
+	static func buildFinalResult(_ component: Localized) -> Localized {
+		component
+	}
 }
