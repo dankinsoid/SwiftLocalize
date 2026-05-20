@@ -149,9 +149,10 @@ extension Localized where Value: RangeReplaceableCollection {
 			baseLanguage = lhs.base.language
 			baseValue = lhs.base.value + rhs.resolved(lhs.base.language!)
 		} else {
-			var preffered = Set(mergedTranslations.keys).intersection([lhs.base.language!, rhs.base.language!])
+			var translationsKeys = Set(mergedTranslations.keys)
+			var preffered = translationsKeys.intersection([lhs.base.language!, rhs.base.language!])
 			if preffered.isEmpty {
-				preffered = Set(mergedTranslations.keys)
+				preffered = translationsKeys
 			}
 			let lanugage = preffered.sorted(by: { $0.rawValue < $1.rawValue }).first
 			if lanugage == nil {
