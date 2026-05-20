@@ -266,6 +266,116 @@ extension Localized where Value: RangeReplaceableCollection {
 	public static func += (_ lhs: inout Localized, _ rhs: Value) {
 		lhs = lhs + rhs
 	}
+
+	/// Concatenate `parts` into one value, optionally with `separator` between
+	/// adjacent parts.
+	///
+	/// One-pass equivalent of `parts[0] + sep + parts[1] + ... + sep + parts[n-1]`
+	/// — computes the union of languages once and resolves each operand exactly
+	/// once per language, avoiding the N−1 binary merges (and their repeated
+	/// CLDR negotiation) that chained `+` would do.
+	///
+	/// Per-language semantics, anchor selection, and base-value picking match
+	/// binary `+` (see above), generalized over N parts. The separator
+	/// participates like any other operand: a universal separator contributes
+	/// its base value to every slot; an anchored separator can drop a slot when
+	/// it has no translation for that language, exactly as an anchored part can.
+	///
+	/// Edge cases: empty `parts` returns an empty universal value; a single
+	/// part is returned unchanged (separator ignored).
+	// @ai-generated(solo)
+	public static func joined(
+		_ parts: [Localized],
+		separator: Localized? = nil
+	) -> Localized {
+		guard !parts.isEmpty else { return Localized(nil, Value()) }
+		if parts.count == 1 { return parts[0] }
+
+		var languages = Set<Language>()
+		for p in parts { languages.formUnion(p.availableLanguages) }
+		if let separator { languages.formUnion(separator.availableLanguages) }
+
+		var merged: [Language: Value] = [:]
+		merged.reserveCapacity(languages.count)
+
+		for lang in languages {
+			var sepValue: Value? = nil
+			if let separator {
+				guard let v = separator.tryResolved(lang) else { continue }
+				sepValue = v
+			}
+			var combined = Value()
+			var ok = true
+			for (i, p) in parts.enumerated() {
+				guard let v = p.tryResolved(lang) else { ok = false; break }
+				if i > 0, let sepValue { combined.append(contentsOf: sepValue) }
+				combined.append(contentsOf: v)
+			}
+			if ok { merged[lang] = combined }
+		}
+
+		// Collect anchors in caller order, deduplicated. Separator's anchor
+		// participates too — an anchored separator commits the result to its
+		// language family the same way an anchored part does.
+		var anchors: [Language] = []
+		var seen = Set<Language>()
+		for p in parts {
+			if let lang = p.baseLanguage, seen.insert(lang).inserted {
+				anchors.append(lang)
+			}
+		}
+		if let lang = separator?.baseLanguage, seen.insert(lang).inserted {
+			anchors.append(lang)
+		}
+
+		func fold(_ lang: Language) -> Value {
+			var v = parts[0].resolved(lang)
+			for i in 1..<parts.count {
+				if let separator { v.append(contentsOf: separator.resolved(lang)) }
+				v.append(contentsOf: parts[i].resolved(lang))
+			}
+			return v
+		}
+
+		let baseLanguage: Language?
+		let baseValue: Value
+
+		if anchors.isEmpty {
+			baseLanguage = nil
+			var v = parts[0].base.value
+			for i in 1..<parts.count {
+				if let separator { v.append(contentsOf: separator.base.value) }
+				v.append(contentsOf: parts[i].base.value)
+			}
+			baseValue = v
+		} else if anchors.count == 1 {
+			baseLanguage = anchors[0]
+			// Single anchor means every operand either shares that anchor or is
+			// universal — both always resolve in it, so `merged[anchor]` is
+			// populated. `fold` is a defensive fallback for that "can't happen".
+			baseValue = merged[anchors[0]] ?? fold(anchors[0])
+		} else {
+			let mergedKeys = Set(merged.keys)
+			let priority = anchors + Locale.preferredLanguages.map(Language.init(rawValue:))
+			let picked = priority.first(where: mergedKeys.contains)
+				?? mergedKeys.sorted(by: { $0.rawValue < $1.rawValue }).first
+				?? anchors[0]
+			baseLanguage = picked
+			if let v = merged[picked] {
+				baseValue = v
+			} else {
+				assertionFailure("Localized.joined: no shared coverage among anchors \(anchors); base value will silently mix anchors.")
+				baseValue = fold(picked)
+			}
+		}
+
+		var translations = merged
+		if let baseLanguage {
+			translations.removeValue(forKey: baseLanguage)
+		}
+
+		return Localized(baseLanguage, baseValue, translations)
+	}
 }
 
 // MARK: - Description (deprecated to flush silent preferred-chain resolution)
