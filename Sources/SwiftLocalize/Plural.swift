@@ -17,17 +17,27 @@ public struct PluralCategorized<Number> {
 
 	public var number: Number
 	public var category: PluralCategory
+	public var language: Language
 	
-	public init(number: Number, category: PluralCategory) {
+	public init(number: Number, category: PluralCategory, language: Language) {
 		self.number = number
 		self.category = category
+		self.language = language
 	}
 }
 
 extension PluralCategorized: CustomStringConvertible {
-	
+
 	public var description: String {
-		"\(number)"
+		if let int = number as? any FormattableNumber {
+			return int.formatted(lang: language)
+		}
+		if let number = number as? NSNumber {
+			let formatter = NumberFormatter()
+			formatter.locale = Locale(identifier: language.rawValue)
+			return formatter.string(from: number) ?? "\(number)"
+		}
+		return "\(number)"
 	}
 }
 
@@ -80,7 +90,8 @@ public extension FixedWidthInteger {
 	func plural<T>(in language: Language, _ body: (PluralCategorized<Self>) -> T) -> T {
 		body(PluralCategorized(
 			number: self,
-			category: .of(Double(self), locale: language, type: .cardinal)
+			category: .of(Double(self), locale: language, type: .cardinal),
+			language: language
 		))
 	}
 
@@ -102,7 +113,92 @@ public extension FixedWidthInteger {
 	func ordinal<T>(in language: Language, _ body: (PluralCategorized<Self>) -> T) -> T {
 		body(PluralCategorized(
 			number: self,
-			category: .of(Double(self), locale: language, type: .ordinal)
+			category: .of(Double(self), locale: language, type: .ordinal),
+			language: language
 		))
+	}
+}
+
+protocol FormattableNumber {
+	
+	func formatted(lang: Language) -> String
+}
+
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension Int: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
+	}
+}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension Int8: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
+	}
+}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension Int16: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
+	}
+}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension Int32: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
+	}
+}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension Int64: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
+	}
+}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension UInt: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
+	}
+}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension UInt8: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
+	}
+}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension UInt16: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
+	}
+}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension UInt32: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
+	}
+}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension UInt64: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
+	}
+}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension Float: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
+	}
+}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension Float16: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
+	}
+}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+extension Double: FormattableNumber {
+	func formatted(lang: Language) -> String {
+		formatted(.number.language(lang))
 	}
 }

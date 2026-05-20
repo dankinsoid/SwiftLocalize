@@ -65,28 +65,28 @@ enum AppStrings {
 	// by `PluralCategorized`'s `~=` overloads.
 	static func songsCount(_ n: Int) -> Localized<String> {
 		Localized(
-			.en, n.plural(in: .en) {
-				switch $0 {
+			.en, n.plural(in: .en) { n in
+				switch n {
 				case .one: "\(n) song"
 				default:   "\(n) songs"
 				}
 			},
 			[
-				.ru: n.plural(in: .ru) {
-					switch $0 {
+				.ru: n.plural(in: .ru) { n in
+					switch n {
 					case .one: "\(n) песня"
 					case .few: "\(n) песни"
 					default:   "\(n) песен"
 					}
 				},
-				.de: n.plural(in: .de) {
-					switch $0 {
+				.de: n.plural(in: .de) { n in
+					switch n {
 					case .one: "\(n) Lied"
 					default:   "\(n) Lieder"
 					}
 				},
-				.fr: n.plural(in: .fr) {
-					switch $0 {
+				.fr: n.plural(in: .fr) { n in
+					switch n {
 					case .one: "\(n) chanson"
 					default:   "\(n) chansons"
 					}
@@ -97,15 +97,15 @@ enum AppStrings {
 
 	static func minutesAgo(_ n: Int) -> Localized<String> {
 		Localized(
-			.en, n.plural(in: .en) {
-				switch $0 {
+			.en, n.plural(in: .en) { n in
+				switch n {
 				case .one: "1 minute ago"
 				default:   "\(n) minutes ago"
 				}
 			},
 			[
-				.ru: n.plural(in: .ru) {
-					switch $0 {
+				.ru: n.plural(in: .ru) { n in
+					switch n {
 					case .one: "\(n) минуту назад"
 					case .few: "\(n) минуты назад"
 					default:   "\(n) минут назад"
@@ -123,8 +123,8 @@ enum AppStrings {
 	// don't need the closure at all.
 	static func placeNumber(_ n: Int) -> Localized<String> {
 		Localized(
-			.en, n.ordinal(in: .en) {
-				switch $0 {
+			.en, n.ordinal(in: .en) { n in
+				switch n {
 				case .one: "\(n)st place"
 				case .two: "\(n)nd place"
 				case .few: "\(n)rd place"
@@ -134,8 +134,8 @@ enum AppStrings {
 			[
 				.ru: "\(n)-е место",
 				.de: "\(n). Platz",
-				.fr: n.ordinal(in: .fr) {
-					switch $0 {
+				.fr: n.ordinal(in: .fr) { n in
+					switch n {
 					case .one: "\(n)ᵉʳ place"
 					default:   "\(n)ᵉ place"
 					}
@@ -299,34 +299,3 @@ final class AppStringsExampleTests: XCTestCase {
 		XCTAssertEqual(summary.resolved(.en), "Playlist “Solo”, 1 song.")
 	}
 }
-
-extension Localized {
-	
-	struct Helper {
-
-	 let language: Language
- }
-	
-	func with(_ language: Language, _ value: (Helper) -> Value) -> Localized<Value> {
-		let helper = Helper(language: language)
-		fatalError()
-	}
-}
-
-extension Localized.Helper {
-	
-	func plural<T, I: FixedWidthInteger>(for value: I, _ body: (PluralCategorized<I>) -> T) -> T {
-		value.plural(in: language, body)
-	}
-}
-
-let string = Localized<String>(.en, "You have \(5) new messages")
-	.with(.ru) { helper in
-		helper.plural(for: 5) { category in
-			switch category {
-			case .one: "У вас \(5) новое сообщение"
-			case .few: "У вас \(5) новых сообщения"
-			default:   "У вас \(5) новых сообщений"
-			}
-		}
-	}
