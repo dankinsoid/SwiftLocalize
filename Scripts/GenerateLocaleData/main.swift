@@ -175,7 +175,9 @@ func swiftLiteral(_ s: String) -> String {
 	"\"" + s + "\""
 }
 
-func emitTable(_ name: String, _ doc: String, _ pairs: [(String, String)]) -> String {
+/// Inline dictionary literal. Use only for small tables (~tens of entries) —
+/// large dictionary literals stall the Swift type-checker.
+func emitInlineDict(_ name: String, _ doc: String, _ pairs: [(String, String)]) -> String {
 	var s = "\t/// \(doc)\n"
 	s += "\tstatic let \(name): [String: String] = [\n"
 	for (k, v) in pairs {
@@ -185,17 +187,33 @@ func emitTable(_ name: String, _ doc: String, _ pairs: [(String, String)]) -> St
 	return s
 }
 
-/// Sorted `[(String, String)]` literal. Used for the cold side of the
-/// hot/cold split — a dictionary literal of thousands of entries chokes
-/// Swift's type checker, but an array of tuples is cheap to type-check
-/// and supports an O(log n) binary search at runtime.
-func emitSortedArray(_ name: String, _ doc: String, _ pairs: [(String, String)]) -> String {
+/// Emit a table as a `key\tvalue\n…` string literal plus a parsed `static let`
+/// that materializes it into `[String: String]` on first access. The string is
+/// type-checked as a single literal — no quadratic-feeling dictionary literal —
+/// so files with hundreds-to-thousands of entries compile in subsecond time.
+/// Tags are pure ASCII (`[A-Za-z0-9-]`), so `\t` / `\n` are unambiguous separators.
+func emitPackedDict(_ name: String, _ doc: String, _ pairs: [(String, String)]) -> String {
 	var s = "\t/// \(doc)\n"
-	s += "\tstatic let \(name): [(String, String)] = [\n"
+	s += "\tstatic let \(name): [String: String] = LocaleData.parseDict(_\(name)Raw)\n"
+	s += "\tprivate static let _\(name)Raw: String = \"\"\"\n"
 	for (k, v) in pairs {
-		s += "\t\t(\(swiftLiteral(k)), \(swiftLiteral(v))),\n"
+		s += "\t\(k)\t\(v)\n"
 	}
-	s += "\t]\n"
+	s += "\t\"\"\"\n"
+	return s
+}
+
+/// Same idea as `emitPackedDict` but materializes a sorted `[(String, String)]`,
+/// used for the cold side of the hot/cold split that backs `likelySubtag(for:)`.
+/// Pairs must already be sorted by key.
+func emitPackedArray(_ name: String, _ doc: String, _ pairs: [(String, String)]) -> String {
+	var s = "\t/// \(doc)\n"
+	s += "\tstatic let \(name): [(String, String)] = LocaleData.parsePairs(_\(name)Raw)\n"
+	s += "\tprivate static let _\(name)Raw: String = \"\"\"\n"
+	for (k, v) in pairs {
+		s += "\t\(k)\t\(v)\n"
+	}
+	s += "\t\"\"\"\n"
 	return s
 }
 
@@ -209,37 +227,40 @@ output += "// Source: https://github.com/unicode-org/cldr-json (cldr-core/supple
 output += "import Foundation\n\n"
 
 output += "internal enum LocaleData {\n\n"
-output += emitTable(
+// Small (<100 entries) → inline literal: fast to compile, no parse cost.
+// Large (100+ entries) → packed string literal: keeps compile time linear,
+// parsed once on first access into the same final shape.
+output += emitInlineDict(
 	"likelySubtagsCommon",
 	"Maximal-form expansion, O(1) hot path keyed by the most-used bare language subtags. Use `likelySubtag(for:)` to query both sides.",
 	likelyCommonPairs
 )
 output += "\n"
-output += emitSortedArray(
+output += emitPackedArray(
 	"likelySubtagsRare",
 	"Maximal-form expansion, sorted-by-key cold path. Binary-searched via `likelySubtag(for:)`.",
 	likelyRarePairs
 )
 output += "\n"
-output += emitTable(
+output += emitPackedDict(
 	"parentLocales",
 	"Non-trivial parent chains. \"en-AU\" → \"en-001\", \"es-AR\" → \"es-419\". Plain trim-last-subtag covers the rest.",
 	parentPairs
 )
 output += "\n"
-output += emitTable(
+output += emitPackedDict(
 	"languageAliases",
 	"Deprecated language-subtag replacements. \"iw\" → \"he\", \"in\" → \"id\", \"sh\" → \"sr-Latn\".",
 	languageAliases
 )
 output += "\n"
-output += emitTable(
+output += emitInlineDict(
 	"scriptAliases",
 	"Deprecated script-subtag replacements. \"Qaai\" → \"Zinh\".",
 	scriptAliases
 )
 output += "\n"
-output += emitTable(
+output += emitPackedDict(
 	"regionAliases",
 	"Deprecated region-subtag replacements. \"BU\" → \"MM\", \"SU\" → \"RU\" (first of CLDR's ordered list).",
 	regionAliases

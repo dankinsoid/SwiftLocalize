@@ -1,4 +1,4 @@
-// @ai-generated(solo)
+// @ai-generated(guided)
 import Foundation
 
 internal extension LocaleData {
@@ -29,5 +29,42 @@ internal extension LocaleData {
 			}
 		}
 		return lo < pairs.count && pairs[lo].0 == key ? pairs[lo].1 : nil
+	}
+
+	// MARK: - Packed-literal parsers
+	//
+	// The large generated tables are emitted as `key\tvalue\n…` string literals
+	// rather than as `[String: String]` / `[(String, String)]` literals — Swift's
+	// type-checker handles a single long string literal in milliseconds, but
+	// stalls for tens of seconds on dictionary literals with thousands of
+	// entries. We pay back the saved compile time with a one-shot parse on first
+	// access (sub-millisecond per table; `static let` caches the result).
+	//
+	// Tags are pure ASCII (`[A-Za-z0-9-]`), so `\t` and `\n` are unambiguous
+	// separators — no escaping needed. Empty/malformed lines are skipped
+	// defensively but should never appear in generator output.
+
+	static func parseDict(_ raw: String) -> [String: String] {
+		var out: [String: String] = [:]
+		out.reserveCapacity(raw.utf8.count / 16)
+		for line in raw.split(separator: "\n", omittingEmptySubsequences: true) {
+			guard let tab = line.firstIndex(of: "\t") else { continue }
+			let key = String(line[..<tab])
+			let value = String(line[line.index(after: tab)...])
+			out[key] = value
+		}
+		return out
+	}
+
+	static func parsePairs(_ raw: String) -> [(String, String)] {
+		var out: [(String, String)] = []
+		out.reserveCapacity(raw.utf8.count / 16)
+		for line in raw.split(separator: "\n", omittingEmptySubsequences: true) {
+			guard let tab = line.firstIndex(of: "\t") else { continue }
+			let key = String(line[..<tab])
+			let value = String(line[line.index(after: tab)...])
+			out.append((key, value))
+		}
+		return out
 	}
 }
