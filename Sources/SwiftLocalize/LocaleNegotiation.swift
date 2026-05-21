@@ -47,7 +47,7 @@ public extension Language {
 			c.language,
 		]
 		for key in keys {
-			guard !key.isEmpty, let hit = LocaleData.likelySubtags[key] else { continue }
+			guard !key.isEmpty, let hit = LocaleData.likelySubtag(for: key) else { continue }
 			let h = Components(hit)
 			let merged = Components(
 				language: h.language,
@@ -82,7 +82,7 @@ public extension Language {
 		}
 		if let s = c.script {
 			// Only strip if it's the language's default script.
-			if let likely = LocaleData.likelySubtags[c.language] {
+			if let likely = LocaleData.likelySubtag(for: c.language) {
 				let defaultScript = Components(likely).script
 				if defaultScript == s {
 					return Language(rawValue: c.language)
