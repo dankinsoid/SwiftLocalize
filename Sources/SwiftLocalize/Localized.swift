@@ -252,7 +252,6 @@ public extension Sequence {
 	///
 	/// Edge cases: an empty sequence returns an empty universal value; a
 	/// single element is returned unchanged (separator ignored).
-	// @ai-generated(solo)
 	func joined<V: RangeReplaceableCollection>(
 		separator: Localized<V>? = nil
 	) -> Localized<V> where Element == Localized<V> {
