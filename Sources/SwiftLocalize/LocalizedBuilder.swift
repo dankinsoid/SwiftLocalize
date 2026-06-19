@@ -73,11 +73,13 @@ extension Localized where Value == NSAttributedString {
 	}
 	
 	#if canImport(UIKit)
+	@available(iOS 13.0, *)
 	@inlinable
 	static func buildExpression(_ expression: Localized<UIImage>) -> Localized {
 		expression.map { NSAttributedString(attachment: NSTextAttachment(image: $0)) }
 	}
 	
+	@available(iOS 13.0, *)
 	@inlinable
 	static func buildExpression(_ expression: UIImage) -> Localized {
 		Localized(nil, NSAttributedString(attachment: NSTextAttachment(image: expression)))
