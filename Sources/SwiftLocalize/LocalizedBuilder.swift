@@ -104,6 +104,9 @@ extension Localized where Value == NSAttributedString {
 	}
 	#endif
 
+	// AttributedString <-> NSAttributedString bridging inits are Darwin-only,
+	// swift-corelibs-foundation on Linux doesn't provide them
+	#if canImport(ObjectiveC)
 	@available(macOS 12, iOS 15, tvOS 15, watchOS 8, *)
 	@inlinable
 	static func buildExpression(_ expression: Localized<AttributedString>) -> Localized {
@@ -115,6 +118,7 @@ extension Localized where Value == NSAttributedString {
 	static func buildExpression(_ expression: AttributedString) -> Localized {
 		Localized(nil, NSAttributedString(expression))
 	}
+	#endif
 }
 
 @available(macOS 12, iOS 15, tvOS 15, watchOS 8, *)
@@ -130,6 +134,9 @@ extension Localized where Value == AttributedString {
 		Localized(nil, AttributedString(expression))
 	}
 
+	// AttributedString <-> NSAttributedString bridging inits are Darwin-only,
+	// swift-corelibs-foundation on Linux doesn't provide them
+	#if canImport(ObjectiveC)
 	@inlinable
 	static func buildExpression(_ expression: Localized<NSAttributedString>) -> Localized {
 		expression.map { AttributedString($0) }
@@ -139,4 +146,5 @@ extension Localized where Value == AttributedString {
 	static func buildExpression(_ expression: NSAttributedString) -> Localized {
 		Localized(nil, AttributedString(expression))
 	}
+	#endif
 }
